@@ -1,13 +1,34 @@
 
-from biosquad.tools import *
+
 from agents import Agent, ItemHelpers, MessageOutputItem, Runner, trace
 
-from agents.tool import FileSearchTool, WebSearchTool
+from tldr.tools import *
+from agents.tool import WebSearchTool
 
 import pyaml
 
 
+def create_agent(name_str, instructions_str, tools_lst, llm="gpt-4o")
+    """Shortcut function to more easily generate agents on the fly"""
+    try:
+        global client
+        assistant = client.beta.assistants.create(
+            name=name_str,
+            instructions=instructions_str,
+            tools=tools_lst,
+            model=llm)
+        print(f"{name_str} agent created with ID: {assistant.id}")
+    except Exception as e:
+        print(f"Error creating {name_str} agent: {e}")
 
+    return assistant
+
+
+
+
+requester_instructions = """
+
+"""
 
 
 
@@ -38,11 +59,17 @@ output_guardrails: list[OutputGuardrail[TContext]] = field(default_factory=list)
 
 """
 
+# TODO: pull url text agent
 
 # Should rank sources???
 literature_collector = Agent(
     name = "Literature Assembly Agent",
-    tools = [find_readable_files, FileSearchTool],
+    tools = [find_readable_files, 
+    FileSearchTool(
+                max_num_results=3,
+                vector_store_ids=["vs1"],
+                include_search_results=True,
+            )],
     instructions = collector_instructions,
     handoffs = [research_gapfiller],
     handoff_description = collector_handoff,
@@ -62,7 +89,6 @@ research_gapfiller = Agent(
 
 
 # TODO:
-# Gapfiller 
 # RAG specialist
 # Science validation agent: LLMs as tools with topic experts
 

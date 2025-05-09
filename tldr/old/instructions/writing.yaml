@@ -1,18 +1,10 @@
 
-# ---- GENERAL ------------------------------------------------------------------------------------------ #
-
-
-temperature: 0.7
-max_output_tokens: 2048
-output_type: text
-model: "gpt-4o-mini"
-
-
-# ---- AGENTS ------------------------------------------------------------------------------------------- #
-
-
 writer_instructions:
   description: "An expert science communicator specializing in explaining complex scientific and technological concepts to a general audience with factual accuracy and engaging clarity."
+  temperature: 0.7
+  max_output_tokens: 2048
+  output_type: text
+  model: "gpt-4o-mini"
   system_instruction: |
     System Role: Expert Science Writer
     Primary Function: You are an expert science communicator whose sole purpose is explaining complex scientific and technological concepts to a general audience. You must maintain absolute factual accuracy while making concepts accessible and engaging.

@@ -2,16 +2,15 @@ from scipy.special import logsumexp
 import numpy as np
 from typing import Tuple, List, Any
 
-# Configuration parameters
-DIVERSITY_WEIGHT = 1.0  # Weight for diversity in document selection
-RELEVANCE_WEIGHT = 1.0  # Weight for relevance to query
-SIGMA = 0.1  # Smoothing parameter for probability distribution
 
 def greedy_dartsearch(
     query_distances: np.ndarray,
     document_distances: np.ndarray,
     documents: List[str],
-    num_results: int
+    num_results: int = 10,
+    div_weight: float = 1.0, # Weight for diversity in document selection
+    rel_weight: float = 1.0, # Weight for relevance to query
+    sigma: float = 0.1 # Smoothing parameter for probability distribution
 ) -> Tuple[List[str], List[float]]:
     """
     Perform greedy dartboard search to select top k documents balancing relevance and diversity.
@@ -28,7 +27,7 @@ def greedy_dartsearch(
         - List of selection scores for each document
     """
     # Avoid division by zero in probability calculations
-    sigma = max(SIGMA, 1e-5)
+    sigma = max(sigma, 1e-5)
     
     # Convert distances to probability distributions
     query_probabilities = lognorm(query_distances, sigma)
@@ -49,8 +48,8 @@ def greedy_dartsearch(
         
         # Calculate combined diversity and relevance scores
         combined_scores = (
-            updated_distances * DIVERSITY_WEIGHT +
-            query_probabilities * RELEVANCE_WEIGHT
+            updated_distances * div_weight +
+            query_probabilities * rel_weight
         )
         
         # Normalize scores and mask already selected documents

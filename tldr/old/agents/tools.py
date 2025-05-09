@@ -18,50 +18,19 @@ from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 
 from agents import function_tool
+from agents.tool import FileSearchTool, WebSearchTool
 
 
-#--- MAIN -----------------------------------------------------------------------------#
 
+# File search tool with include_search_results set
+file_tool = FileSearchTool(
+    max_num_results=3, 
+    vector_store_ids=["vs1"], 
+    include_search_results=True)
 
-@function_tool
-def extract_code_snippets(message):
-    """
-    Extract code snippets from a large body of text using triple backticks as delimiters.
-    Also saves the language tag at the start of each snippet.
-    """
-    # Regular expression to match code blocks enclosed in triple backticks, including the language tag
-    code_snippets = defaultdict(str)
-    code_pattern = re.compile(r"```(\w+)\n(.*?)```", re.DOTALL)
-    snippets = code_pattern.findall(message)
-    for lang, code in snippets:
-        code_snippets[lang] += code.strip()
+# Web search tool with custom params
+web_tool = WebSearchTool(user_location="San Francisco", search_context_size="medium")
 
-    return code_snippets
-
-
-@function_tool
-def write_script(content, lang, outDir="code"):
-    """Writes code to a file."""
-    os.makedirs(outDir, exist_ok=True)
-    file_name = _select_object_name(content, lang) + extDict.get(lang, f".{lang}")
-    with open(os.path.join(outDir, file_name), "w", encoding="utf-8") as f:
-        f.write(f"#!/usr/bin/env {lang}\n\n{content}")
-
-
-@function_tool
-def import_python_module(file_path: str):
-    """Import python modules from AI generated code"""
-
-    if os.path.splitext(file_path)[1].lower() == '.py' and os.path.exists(file_path):
-        module_name = file_path.replace('/','.')[0:-3]
-        try:
-            module = importlib.import_module(module_name)
-            for import_name in dir(module):
-                if not import_name.startswith('_'):  # Avoid importing private attributes
-                    globals()[import_name] = getattr(module, import_name)
-                    print(f"\tImported {import_name} to current environment.")
-        except ModuleNotFoundError:
-            print(f"Module {module_name} not found.")
 
 
 @function_tool
@@ -100,39 +69,6 @@ def find_readable_files(directory):
                 continue  # Skip unreadable or corrupted files
 
     return text_readable_files
-
-
-@function_tool
-def merge_pdf_library(directory: str = None):
-    '''Concatenate PDFs in a given directory.'''
-    files = os.listdir(directory) if directory else os.listdir()
-
-    # Check if there are any PDF files in the directory
-    pdf_files = [file for file in files if file.endswith('.pdf')]
-    if not pdf_files:
-        print("No PDF files found in the current directory.")
-        return
-
-    # Loop through all PDF files and append them to the merger
-    merger = PdfMerger()
-    for pdf_file in pdf_files:
-        try:
-            merger.append(pdf_file)
-            print(f"Added {pdf_file} to the merger.")
-        except Exception as e:
-            print(f"Failed to add {pdf_file}: {e}")
-
-    # Write out the concatenated PDF
-    output_filename = f"merged.{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.pdf"
-    try:
-        merger.write(output_filename)
-        print(f"All PDFs have been concatenated into {output_filename}")
-    except Exception as e:
-        print(f"Failed to write the concatenated PDF: {e}")
-    finally:
-        merger.close()
-
-    return output_filename
 
 
 @function_tool
@@ -197,6 +133,7 @@ def scrape_confluence_text(url: str, page_id: str, username: str = None, api_tok
     text = soup.get_text(separator='\n').strip()
     
     return text
+
 
 @function_tool
 def scrape_webpage_text(url, auth=None, headers=None, use_playwright=False, proxies=None, timeout=10):
@@ -279,76 +216,3 @@ def scrape_webpage_text(url, auth=None, headers=None, use_playwright=False, prox
         return f"Request failed: {e}"
     except Exception as e:
         return f"Unexpected error: {e}"
-
-
-#--- SUPPORT --------------------------------------------------------------------------#
-
-
-def _select_object_name(code, language):
-    """Extract defined object names from a code snippet"""
-
-    # Get language-specific patterns
-    patterns = patternDict.get(language, {})
-
-    # Extract object names using the language-specific patterns
-    classes = patterns.get("class", re.compile(r"")).findall(code)
-    functions = patterns.get("function", re.compile(r"")).findallS(code)
-    variables = patterns.get("variable", re.compile(r"")).findall(code)
-
-    # Select objects to return based on hierarachy
-    if len(classes) > 0:
-        return max(classes, key=len)
-    elif len(functions) > 0:
-        return max(functions, key=len)
-    else:
-        return max(variables, key=len)
-
-
-# File extension dictionary (do not match language directly)
-extDict = {
-   'bash': '.sh',
-   'cuda': '.cu',
-   'cython': '.pyx',
-   'c++': '.cpp',
-   'javascript':'.js',
-   'julia':'.jl',
-   'markdown': '.md',
-   'matlab': '.mat',
-   'nextflow': '.nf',
-   'perl': '.pl',
-   'python': '.py',
-   'ruby': '.rb',
-   'shell': '.sh',
-   'text':'.txt',
-   'plaintext': '.txt',
-   }
-
-
-# Code object patterns
-patternDict = {
-   "python": {
-      "function": re.compile(r'def\s+(\w+)\s*\('),
-      "class": re.compile(r'class\s+(\w+)\s*[:\(]'),
-      "variable": re.compile(r'(\w+)\s*=\s*[^=\n]+'),
-   },
-   "javascript": {
-      "function": re.compile(r'function\s+(\w+)\s*\('),
-      "class": re.compile(r'class\s+(\w+)\s*[{]'),
-      "variable": re.compile(r'(?:let|const|var)\s+(\w+)\s*='),
-   },
-   "java": {
-      "function": re.compile(r'(?:public|private|protected)?\s*\w+\s+(\w+)\s*\('),
-      "class": re.compile(r'class\s+(\w+)\s*[{]'),
-      "variable": re.compile(r'(?:public|private|protected)?\s*\w+\s+(\w+)\s*='),
-   },
-   "r": {
-      "function": re.compile(r'(\w+)\s*<-\s*function\s*\('),
-      "variable": re.compile(r'(\w+)\s*<-\s*[^=\n]+'),
-   },
-   "groovy": {
-      "function": re.compile(r'def\s+(\w+)\s*\('),
-      "class": re.compile(r'class\s+(\w+)\s*[{]'),
-      "variable": re.compile(r'def\s+(\w+)\s*='),
-   },
-}
-
