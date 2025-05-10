@@ -2,7 +2,7 @@
 import os
 import asyncio
 
-from openai import OpenAI
+from openai import AsyncOpenAI
 
 
 class ChatCompletionHandler:
@@ -12,76 +12,56 @@ class ChatCompletionHandler:
         if not self.api_key:
             raise ValueError("OpenAI API key not provided.")
 
+        # Initialize OpenAI clients
+		self.client = AsyncOpenAI(api_key=self.api_key)
 
-    def chat_completion(self, prompt, instructions, **kwargs):
+
+    async def async_completion(self, prompt, prompt_type, **kwargs):
 		"""Initialize and submit a single chat completion request"""
 
-		# Initialize normal client
-		client = OpenAI(api_key=self.api_key)
+		# Fetch params
+		instructions_dict = self.instructions[prompt_type]
+		instructions = instructions_dict['system_instruction']
+		model = instructions_dict['model']
+		max_output_tokens = instructions_dict['max_output_tokens']
 
 		# Assemble messages object
 		messages = [{"role": "user", "content": prompt}, {"role": "system", "content": instructions}]
 
-	    # Construct parameters dictionary, allowing kwargs to override defaults
-	    params = {
-	        'model': kwargs.pop('temperature', 'gpt-4o-mini'),
-	        'messages': messages,
-	        'temperature': kwargs.pop('temperature', 0.7), 
-	        'top_p': kwargs.pop('top_p', 1.0), 
-	        'seed': kwargs.pop('seed', 42), 
-	        'max_tokens': kwargs.pop('max_tokens', 2048), 
-	        **kwargs}
-
 		# Run completion query
-		completion = client.chat.completions.create(**params)
+		completion = await self.client.chat.completions.create(messages=messages, 
+			model=model, max_completion_tokens=max_output_tokens)
 
 		# Extract and return text
 		return completion.choices[0].message.content.strip()
 
 
-    async def async_completion(
-        self,
-        content_dict: dict,
-        **kwargs # For any other arguments like frequency_penalty etc.
-    ) -> str:
-        """
-        Initialize and submit a single asynchronous chat completion request.
-        This is a helper for the main async function.
-        """
-        for content in content_dict.keys():
+	async def async_multi_completion(self, prompt_dict):
+	    """
+	    Runs multiple async_chat_completion calls concurrently using asyncio.gather.
+	    """
+	    # Create a list of coroutine objects
+	    coroutine_tasks = []
+	    for ext in prompt_dict.keys():
+	    	if ext == 'pdf':
+	    		prompt_type = 'summarize_publication'
+	    	else:
+	    		prompt_type = 'summarize_document'
 
-        try:
-            # Assemble messages object
-            messages = [
-                {"role": "user", "content": prompt},
-                {"role": "system", "content": instructions}
-            ]
+	    	for prompt in prompt_dict[ext]:
+		        task = tldr_instance.async_completion(
+		        	prompt=prompt, prompt_type=prompt_type)
+		        coroutine_tasks.append(task)
 
-            # Construct parameters dictionary
-            params = {
-                'model': model,
-                'messages': messages,
-                'temperature': temperature,
-                'top_p': top_p,
-                'seed': seed,
-                'max_tokens': max_tokens,
-                **kwargs # Add any extra kwargs passed from the calling function
-            }
+	    # Gather all completion results
+	    all_completions = await asyncio.gather(*coroutine_tasks, return_exceptions=True)
 
-            # Run completion query asynchronously
-            completion = await self.async_client.chat.completions.create(**params)
-
-            # Extract and return text
-            return completion.choices[0].message.content.strip()
-
-        except Exception as e:
-            # Handle potential errors for this specific completion
-            print(f"Error processing prompt: '{prompt[:50]}...' - {e}")
-            return f"Error: {e}" # Or return None, or raise the exception
+	    return all_completions
 
 
     def search_web(self, questions):
     	"""Use web search tool to fill holes in current reading set"""
+
     	# Initialize normal client
 		client = OpenAI(api_key=self.api_key)
 
@@ -93,34 +73,3 @@ class ChatCompletionHandler:
 
 		# Retrun answers
 		return response.output_text
-
-
-
-
-
-	async def async_multi_completion(self, data_for_completions: list):
-	    """
-	    Runs multiple async_chat_completion calls concurrently using asyncio.gather.
-	    """
-	    # Create a list of coroutine objects
-	    coroutine_tasks = []
-	    for text in data_for_completions.keys():
-	        task = tldr_instance.async_chat_completion(
-	        	prompt=text, instructions=data_for_completions[text])
-	        coroutine_tasks.append(task)
-
-	    # Gather all completion results
-	    all_summaries = await asyncio.gather(*coroutine_tasks, return_exceptions=True)
-
-	    # You might want to process the results list, checking for errors if return_exceptions=True
-	    processed_results = []
-	    for i, result in enumerate(all_summaries):
-	        if isinstance(result, Exception):
-	            processed_results.append(f"Task Failed: {result}")
-	        else:
-	            processed_results.append(result) # Add the successful result
-
-	    return processed_results
-
-
-

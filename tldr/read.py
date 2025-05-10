@@ -100,5 +100,3 @@ def _find_readable_files(directory: str = '.') -> dict:
 	    content_list.append(text.strip())
 
     return content_list
-
-

@@ -4,7 +4,7 @@ import os
 from openai import AsyncOpenAI
 
 from .read import fetch_content
-from .utils import system_instructions
+from .utils import system_instructions, save_response_text
 from .completion import ChatCompletionHandler
 
 
@@ -12,58 +12,84 @@ class TldrClass(ChatCompletionHandler):
     """
 	Main TLDR class
     """
-    def __init__(self, query=None, search_directory = "."):
+    def __init__(
+    	self, 
+    	query=None, 
+    	search_directory = ".",
+    	verbose=True):
 
-    	# Confirm environment API key
-		self.api_key = os.getenv("OPENAI_API_KEY")
-		if self.api_key is None:
-		    raise EnvironmentError("OPENAI_API_KEY environment variable not found!")
-
-		# Initialize async OpenAI client
-		self.client = AsyncOpenAI(api_key=api_key)
+    	self.verbose = verbose
+    	self.output_directory = output_directory
 
 		# Read in files and contents
 		self.content = fetch_content(search_directory)
+		self.sources = sum([len(self.content[x]) for x in self.content.keys()])
 
-		# Read in system instructions and pair with content
+		# Read in system instructions
 		self.instructions = system_instructions()
-        self.filetype_instructions = self._pair_instructions_with_filetypes()
 
 		# Extend user query
 		if query is not None:
-			self.query = self.chat_completion(query, self.instructions['refine_prompt']['system_instruction'])
+			query = self.async_completion(prompt=query, prompt_type='refine_prompt')
+			addon = "\n\nAllow the following user query to direct points of focus in your summary:\n\n"
+			self.query = addon + query
 		else:
-			self.query = query
+			self.query = ""
 
 
-    def _pair_instructions_with_filetypes(self) -> dict:
-        """
-        Pairs file types found in self.files with relevant system instructions.
-        """
-        doc_summary = self.instructions["summarize_document"]["system_instruction"]
-        pub_summary = self.instructions["summarize_publication"]["system_instruction"]
+	def summarize_resources(self):
+		"""Generate component and synthesis summary text"""
 
-        # Iterate through the file extensions we actually content for
-        paired_instructions = {}
-        for ext in self.content.keys():
-        	for text in self.content[ext]:
-        		paired_instructions[text] = pub_summary if key == 'pdf' else doc_summary
+		# Summarize documents
+	    if self.verbose == True:
+	        print(f'Generating summary from {self.sources} resources...')
+	    summaries = await self.async_multi_completion(self.content)
+	    summary = "\n\n".join(summaries)
+	    save_response_text(summary, label='summaries', output_dir=self.output_directory)
 
-        return paired_instructions
+	    # Generate synthesis
+	    prompt = f"{summary}\n\n{self.query}"
+	    glyph_synthesis = await self.async_completion(prompt=prompt, prompt_type='glyph_prompt')
+	    synthesis = await self.async_completion(prompt=glyph_synthesis, prompt_type='interpret_glyphs')
+	    save_response_text(synthesis, label='synthesis', output_dir=self.output_directory)
+
+	    return synthesis
 
 
-	def save_response_text(data_str: str, filename: str, errors: str = 'strict', chunk_size: int = 1024*1024):
-	    """
-	    Saves a large string variable to a text file.
-	    """
-	    try:
-	        with open(filename, 'w', encoding='utf-8', errors=errors) as f:
-	            for i in range(0, len(data_str), chunk_size):
-	                f.write(data_string[i:i + chunk_size])
-	        print(f"Successfully saved data to {filename}")
-	    except IOError as e:
-	        print(f"Error writing to file {filename}: {e}")
-	        raise  # Re-raise the exception after printing
-	    except Exception as e:
-	        print(f" An unexpected error occurred: {e}")
-	        raise # Re-raise the exception
+    def apply_research(self, summary):
+        """Identify knowledge gaps and use web search to fill them. Integrating new info into summary."""
+        
+        # Identify gaps in understanding
+        if self.verbose == True:
+            print('Researching technical gaps in summary...')
+        gap_questions = await self.async_completion(prompt=summary, prompt_type='research_instructions')
+
+        # Search web for to fill gaps
+        filling_text = self.search_web(gap_questions)
+        research_text = f"{gap_questions}\n\n{filling_text}"
+        save_response_text(research_text, label='research', output_dir=self.output_directory)
+
+        # Add findings to previous summary text
+        return f"{summary}\n\n{filling_text}"
+
+
+    def polish_response(self, response, query, output_type: str = 'default'):
+    	""" """
+    	if self.verbose == True:
+            print('Finalizing response text...\n\n')
+
+        if query != "":
+        	query = "Ensure addressing the following user query is the central theme of the text below it:\n{query}\n\n" + 
+
+        tone = 'polishing_instructions' if output_type == 'default' else 'modified_polishing'
+
+        # Run completion and save final response text
+    	polished = await self.async_completion(prompt=query+response, prompt_type=tone)
+    	save_response_text(polished, label='final', output_dir=self.output_directory)
+
+    	# Print final answer to terminal
+    	if self.verbose == True:
+    		print(polished)
+
+    	return polished
+

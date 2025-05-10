@@ -35,15 +35,10 @@ def parse_tldr_arguments() -> Namespace:
         action='store_true', 
         help='Addition research agent.')
     parser.add_argument(
-        '-t', '--tone',
-        choices=['formal', 'casual'],
-        default='formal',
+        '-t', '--output_type',
+        choices=['default', 'modified'],
+        default='default',
         help='Response tone.')
-    parser.add_argument(
-        '-s', '--summary_type',
-        choices=['document', 'lesson', 'podcast'],
-        default='document',
-        help='Response type.')
 
     return parser.parse_args()
 
@@ -63,7 +58,6 @@ def system_instructions(self, file_path: str = 'instructions.yaml') -> dict:
                 print(f"Error: Content in '{instructions_path}' is not a dictionary (YAML root is type: {type(data)}).")
     except Exception as e:
         print(f"An unexpected error occurred while reading '{instructions_path}': {e}")
-
 
 
 def save_response_text(data_str: str, label: str = "response", output_dir: str = ".") -> str:
@@ -100,3 +94,5 @@ def save_response_text(data_str: str, label: str = "response", output_dir: str =
     except Exception as e:
         print(f"An unexpected error occurred while saving {filename}: {e}")
         raise # Re-raise the exception
+
+
