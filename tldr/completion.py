@@ -1,75 +1,91 @@
-
 import os
 import asyncio
 
-from openai import AsyncOpenAI
 
+class CompletionHandler:
 
-class ChatCompletionHandler:
-    def __init__(self, api_key=None):
-        # Prefer API key from argument, fallback to environment variable
-        self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
-        if not self.api_key:
-            raise ValueError("OpenAI API key not provided.")
+	def __init__(self):
+		pass
 
-        # Initialize OpenAI clients
-		self.client = AsyncOpenAI(api_key=self.api_key)
-
-
-    async def async_completion(self, prompt, prompt_type, **kwargs):
+	async def _async_completion(self, prompt, prompt_type, **kwargs):
 		"""Initialize and submit a single chat completion request"""
 
 		# Fetch params
 		instructions_dict = self.instructions[prompt_type]
-		instructions = instructions_dict['system_instruction']
-		model = instructions_dict['model']
-		max_output_tokens = instructions_dict['max_output_tokens']
+		instructions = instructions_dict["system_instruction"]
+		model = instructions_dict["model"]
+		max_output_tokens = instructions_dict["max_output_tokens"]
 
 		# Assemble messages object
-		messages = [{"role": "user", "content": prompt}, {"role": "system", "content": instructions}]
+		messages = [
+			{"role": "system", "content": instructions}, # System prompt often better first
+			{"role": "user", "content": prompt},
+		]
 
 		# Run completion query
-		completion = await self.client.chat.completions.create(messages=messages, 
-			model=model, max_completion_tokens=max_output_tokens)
-
-		# Extract and return text
-		return completion.choices[0].message.content.strip()
-
-
-	async def async_multi_completion(self, prompt_dict):
-	    """
-	    Runs multiple async_chat_completion calls concurrently using asyncio.gather.
-	    """
-	    # Create a list of coroutine objects
-	    coroutine_tasks = []
-	    for ext in prompt_dict.keys():
-	    	if ext == 'pdf':
-	    		prompt_type = 'summarize_publication'
-	    	else:
-	    		prompt_type = 'summarize_document'
-
-	    	for prompt in prompt_dict[ext]:
-		        task = tldr_instance.async_completion(
-		        	prompt=prompt, prompt_type=prompt_type)
-		        coroutine_tasks.append(task)
-
-	    # Gather all completion results
-	    all_completions = await asyncio.gather(*coroutine_tasks, return_exceptions=True)
-
-	    return all_completions
+		try:
+			completion = await self.async_client.chat.completions.create(
+				messages=messages,
+				model=model,
+				max_tokens=max_output_tokens,
+				**kwargs 
+			)
+			# Extract and return text
+			return completion.choices[0].message.content.strip()
+		except Exception as e:
+			print(f"Error during OpenAI API call for prompt '{prompt[:50]}...': {e}")
+			return f"Error: {e}" 
 
 
-    def search_web(self, questions):
-    	"""Use web search tool to fill holes in current reading set"""
+	async def async_completions(self, prompt_dict):
+		"""
+		Runs multiple _async_completion calls concurrently using asyncio.gather.
+		"""
+		coroutine_tasks = []
+		for ext, prompts in prompt_dict.items(): 
+			if ext == "pdf":
+				prompt_type = "summarize_publication"
+			else: 
+				prompt_type = "summarize_document"
 
-    	# Initialize normal client
-		client = OpenAI(api_key=self.api_key)
+			for prompt in prompts:
+				task = self._async_completion( 
+					prompt=prompt, prompt_type=prompt_type
+				)
+				coroutine_tasks.append(task)
+
+		# Gather all completion results
+		all_completions = await asyncio.gather(*coroutine_tasks, return_exceptions=False)
+
+		return all_completions
+
+
+	def search_web(self, questions):
+		"""Use web search tool to fill holes in current reading set"""
+		instruction = "Use web search to answer the following questions as thoroughly as possible. Cite all sources.\n"
+		response = self.client.responses.create(
+			model="gpt-4o", tools=[{"type": "web_search_preview"}], input=instruction+questions)
+		return response.output_text
+
+
+	def completion(self, message, prompt_type, **kwargs):
+		"""Single synchronous chat completion"""
+
+		# Fetch params
+		instructions_dict = self.instructions[prompt_type]
+		instructions = instructions_dict["system_instruction"]
+		model = instructions_dict["model"]
+		max_output_tokens = instructions_dict["max_output_tokens"]
+
+		# Assemble messages object
+		messages = [
+			{"role": "user", "content": message},
+			{"role": "system", "content": instructions},
+		]
 
 		# Get single chat response
-		response = client.responses.create(
-		    model="o4-mini",
-		    tools=[{"type": "web_search_preview"}],
-		    input=questions)
+		response = self.client.responses.create(input=messages, 
+			model=model, max_output_tokens=max_output_tokens, **kwargs)
 
-		# Retrun answers
+		# Return response test
 		return response.output_text
