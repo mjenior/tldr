@@ -4,8 +4,8 @@ import asyncio
 
 from openai import OpenAI, AsyncOpenAI
 
-from tldr.i_o import fetch_content, read_system_instructions, save_response_text
-from tldr.completion import CompletionHandler
+from .i_o import fetch_content, read_system_instructions, save_response_text
+from .completion import CompletionHandler
 
 
 class TldrClass(CompletionHandler):

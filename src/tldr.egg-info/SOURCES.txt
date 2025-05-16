@@ -10,5 +10,6 @@ src/tldr/tldr.py
 src/tldr.egg-info/PKG-INFO
 src/tldr.egg-info/SOURCES.txt
 src/tldr.egg-info/dependency_links.txt
+src/tldr.egg-info/entry_points.txt
 src/tldr.egg-info/requires.txt
 src/tldr.egg-info/top_level.txt

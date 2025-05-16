@@ -20,3 +20,6 @@ Homepage = "https://github.com/mjenior/tldr"
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project.scripts]
+tldr = "tldr.tldr:main"

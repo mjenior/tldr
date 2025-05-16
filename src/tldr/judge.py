@@ -2,10 +2,10 @@
 import os
 from openai import OpenAI
 
-from tldr.i_o import read_system_instructions
+from .i_o import read_system_instructions
 
 class SummaryJudge():
-	""" """
+	"""Attempt to objectively score the quality of a summary from a highly technical resource."""
 	def __init__(
     	self, 
     	summary, 
