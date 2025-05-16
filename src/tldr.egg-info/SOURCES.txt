@@ -1,0 +1,14 @@
+LICENSE.txt
+README.md
+pyproject.toml
+src/tldr/__init.__.py
+src/tldr/completion.py
+src/tldr/core.py
+src/tldr/i_o.py
+src/tldr/judge.py
+src/tldr/tldr.py
+src/tldr.egg-info/PKG-INFO
+src/tldr.egg-info/SOURCES.txt
+src/tldr.egg-info/dependency_links.txt
+src/tldr.egg-info/requires.txt
+src/tldr.egg-info/top_level.txt

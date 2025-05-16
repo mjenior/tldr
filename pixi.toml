@@ -1,0 +1,19 @@
+[workspace]
+name = "tldr"
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64"]
+
+[dependencies]
+python = ">=3.11"
+
+[pypi-dependencies]
+openai = ">=1.78.1"
+python-docx = "*"
+pypdf2 = "*"
+beautifulsoup4 = "*"
+pillow = ">=10.2.0"
+pyyaml = ">=6.0.1"
+jsonschema = ">=4.21.1"
+build = "*"
+setuptools = "*"
+wheel = ""
