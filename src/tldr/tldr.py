@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import argparse
 import asyncio
 from .core import TldrClass
@@ -43,6 +44,8 @@ def main():
         verbose=args.verbose, 
         glyphs=args.glyphs
     )
+    if tldr.sources == 0:
+        sys.exit(1)
 
     # Extend user query
     if args.refine_query: 
