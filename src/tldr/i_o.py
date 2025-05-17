@@ -134,7 +134,7 @@ def read_system_instructions(file_path: str = "instructions.yaml") -> dict:
 
 
 def save_response_text(
-    out_data: str, label: str = "response", output_dir: str = "."
+    out_data: list, label: str = "response", output_dir: str = "."
 ) -> str:
     """
     Saves a large string variable to a text file with a dynamic filename
