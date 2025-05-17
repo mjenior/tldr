@@ -18,9 +18,8 @@ class CompletionHandler:
 
 		# Assemble messages object
 		messages = [
-			{"role": "system", "content": instructions}, # System prompt often better first
-			{"role": "user", "content": prompt},
-		]
+			{"role": "system", "content": instructions},
+			{"role": "user", "content": prompt}]
 
 		# Run completion query
 		try:
@@ -32,39 +31,52 @@ class CompletionHandler:
 			)
 			# Extract and return text
 			return completion.choices[0].message.content.strip()
-		except Exception as e:
-			print(f"Error during OpenAI API call for prompt '{prompt[:50]}...': {e}")
-			return f"Error: {e}" 
+		
+		except openai.RateLimitError as e:
+			# Handle hitting the rate limit silently
+			pass
 
 
 	async def async_completions(self, prompt_dict):
 		"""
-		Runs multiple _async_completion calls concurrently using asyncio.gather.
+		Runs multiple _async_completion calls concurrently using asyncio.gather, with retry on 429.
 		"""
 		coroutine_tasks = []
 		for ext, prompts in prompt_dict.items(): 
-			if ext == "pdf":
-				prompt_type = "summarize_publication"
-			else: 
-				prompt_type = "summarize_document"
+			prompt_type = "summarize_publication" if ext == "pdf" else "summarize_document"
 
 			for prompt in prompts:
-				task = self._async_completion( 
-					prompt=prompt, prompt_type=prompt_type
-				)
+				task = self._retry_on_429(self._async_completion, prompt=prompt, prompt_type=prompt_type)
 				coroutine_tasks.append(task)
 
-		# Gather all completion results
-		all_completions = await asyncio.gather(*coroutine_tasks, return_exceptions=False)
+		return await asyncio.gather(*coroutine_tasks, return_exceptions=True)
 
-		return all_completions
+
+	async def _retry_on_429(self, coro_fn, prompt, prompt_type, **kwargs):
+		"""Retry summary generation on token rate limit per hour exceeded errors."""
+
+		max_retries=5
+		for attempt in range(1, max_retries + 1):
+			try:
+				return await coro_fn(prompt, prompt_type)
+			except Exception as e:
+				if hasattr(e, 'status') and e.status == 429:
+					wait_time = random.uniform(*(1, 3)) * attempt
+					print(f"Rate limit hit. Retrying in {wait_time:.2f}s (attempt {attempt})...")
+					await asyncio.sleep(wait_time)
+				else:
+					raise  # Not a 429 error, re-raise
+
+		raise RuntimeError("Max retries exceeded for task")
 
 
 	def search_web(self, questions):
 		"""Use web search tool to fill holes in current reading set"""
+		
 		instruction = "Use web search to answer the following questions as thoroughly as possible. Cite all sources.\n"
 		response = self.client.responses.create(
 			model="gpt-4o", tools=[{"type": "web_search_preview"}], input=instruction+questions)
+		
 		return response.output_text
 
 
@@ -87,5 +99,4 @@ class CompletionHandler:
 		response = self.client.responses.create(input=messages, 
 			model=model, max_output_tokens=max_output_tokens, **kwargs)
 
-		# Return response test
 		return response.output_text

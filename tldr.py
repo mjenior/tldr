@@ -17,7 +17,7 @@ def parse_user_arguments():
         help="Directory to scan for text files (Default is working directory)")
     parser.add_argument("-o", "--output_directory", default=".", 
         help="Directory for output files (Default is working directory)")
-    parser.add_argument("-r", "--refine_query", type=bool, default=True, 
+    parser.add_argument("-r", "--refine_query", type=bool, default=False, 
         help="Automatically refine and improve the user query")
     parser.add_argument("-v", "--verbose", type=bool, default=True, 
         help="Verbose stdout reporting")

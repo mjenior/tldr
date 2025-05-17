@@ -20,7 +20,7 @@ def fetch_content(search_dir):
 	# Extract text from found files
 	content = {}
 	for ext in files.keys():
-		content[ext] = _read_file_content(files[ext], ext)
+		content[ext] = read_file_content(files[ext], ext)
 
 	return content
 
@@ -72,12 +72,18 @@ def _find_readable_files(directory: str = '.') -> dict:
     return {k: v for k, v in readable_files_by_type.items() if v}
 
 
-def _read_file_content(filelist, ext):
+def read_file_content(filelist, ext=None):
     """
     Reads the main body text from a given file paths and returns as strings.
     """
+    if isinstance(filelist, str):
+        filelist = [filelist]
+
     content_list = []
     for filepath in filelist:
+        # If now extension is provided, try and grab it
+        if ext == None:
+            ext = filepath.split('.')[-1]
 
         try:
             if ext == 'pdf':
@@ -128,7 +134,7 @@ def read_system_instructions(file_path: str = "instructions.yaml") -> dict:
 
 
 def save_response_text(
-    data_str: str, label: str = "response", output_dir: str = "."
+    out_data: list, label: str = "response", output_dir: str = "."
 ) -> str:
     """
     Saves a large string variable to a text file with a dynamic filename
@@ -141,33 +147,33 @@ def save_response_text(
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # Sanitize the label to create a valid filename part
-    # Replace spaces with underscores and remove characters not suitable for filenames
     sanitized_label = "".join(
         c if c.isalnum() or c in ("_", "-") else "_" for c in label
     ).strip("_")
 
-    # Construct the dynamic filename
-    filename = f"tldr.{sanitized_label}.{timestamp}.txt"
-    filepath = os.path.join(output_dir, filename)
-
     # Format text just in case
-    if isinstance(data_str, list):
-        data_str = "\n\n".join([str(x) for x in data_str])
-    else:
-        data_str = str(data_str)
+    if isinstance(out_data, str):
+        out_data = [out_data]
 
-    try:
-        with open(filename, "w", encoding="utf-8", errors=errors) as f:
-            # Write in chunks to avoid excessive memory usage for very large strings
-            for i in range(0, len(data_str), chunk_size):
-                # Note: Corrected variable name from data_string to data_str
-                f.write(data_str[i : i + chunk_size])
+    # Save all strings individually
+    for idx in range(len(out_data)):
+        current_data = out_data[idx]
 
-        print(f"\tSaved data to {filename}")
+        # Construct the dynamic filename
+        filename = f"tldr.{sanitized_label}.{idx+1}.{timestamp}.txt"
+        filepath = os.path.join(output_dir, filename)
 
-    except IOError as e:
-        print(f"Error writing to file {filename}: {e}")
-        raise  # Re-raise the exception after printing
-    except Exception as e:
-        print(f"An unexpected error occurred while saving {filename}: {e}")
-        raise  # Re-raise the exception
+        try:
+            with open(filename, "w", encoding="utf-8", errors=errors) as f:
+                # Write in chunks to avoid excessive memory usage for very large strings
+                for i in range(0, len(current_data), chunk_size):
+                    f.write(current_data[i : i + chunk_size])
+
+            print(f"\tSaved data to {filename}")
+
+        except IOError as e:
+            print(f"Error writing to file {filename}: {e}")
+            raise  # Re-raise the exception after printing
+        except Exception as e:
+            print(f"An unexpected error occurred while saving {filename}: {e}")
+            raise  # Re-raise the exception
