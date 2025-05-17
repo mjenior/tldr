@@ -21,6 +21,7 @@ A powerful text summarization tool that uses OpenAI's models to generate concise
 - **Knowledge gap research**: Automatically identifies and researches missing information
 - **Customizable output**: Supports different output formats and tones
 - **Glyph-based synthesis**: Optional advanced synthesis mode using symbolic representation
+- **Objective summary evaluation**: More objectively evaluate the quality of individual output summaries
 
 ## Installation
 
@@ -91,6 +92,27 @@ tldr.apply_research()
 
 # Polish the final response
 tldr.polish_response(output_type="default")
+```
+
+### Summary Quality Evaluator
+
+```python
+from tldr.summary_judge import SummaryJudge
+
+# Define paths and inputs
+content_path = "path/to/original_technical_text.txt"
+generated_summary_path = "path/to/summary_text.txt"
+
+# Instantiate the evaluator
+judge = SummaryJudge(
+    content_path=content_path,
+    summary=generated_summary_path)
+
+# Generate objective scoring
+score_report = judge.generate_scoring()
+
+# Print results
+print(score_report)
 ```
 
 ## Output Files

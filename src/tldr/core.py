@@ -76,12 +76,13 @@ class TldrClass(CompletionHandler):
 
 		self.user_query = processed_query
 
+		
 	def refine_user_query(self):
 		if self.verbose == True: print('Refining user query...')
 		new_query = self.completion(message=self.user_query, prompt_type='refine_prompt')
 		addon = "Ensure that addressing the following user query is the central theme of your output text:\n{query}\n\n"
 		save_response_text(new_query, label='new_query', output_dir=self.output_directory)
-
+		if self.verbose == True: print('Refined query:\n{new_query}\n')
 		self.user_query = addon + new_query
 
 
