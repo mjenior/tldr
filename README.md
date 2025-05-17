@@ -29,7 +29,7 @@ A powerful text summarization tool that uses OpenAI's models to generate concise
 # Install from source
 git clone https://github.com/mattjenior/tldr.git
 cd tldr
-pip install -e .
+pip install -u .
 ```
 
 ## Requirements
@@ -54,8 +54,8 @@ tldr "CRISPR advances" -r True
 # Specify input directory and output directory
 tldr -i ./my_papers -o ./summaries
 
-# Disable research agent
-tldr -r False
+# Enable research agent
+tldr -s True
 
 # Use modified output tone
 tldr -t modified

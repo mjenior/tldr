@@ -21,7 +21,7 @@ def parse_user_arguments():
         help="Automatically refine and improve the user query")
     parser.add_argument("-v", "--verbose", type=bool, default=True, 
         help="Verbose stdout reporting")
-    parser.add_argument("-a", "--research", type=bool, default=True, 
+    parser.add_argument("-s", "--research", type=bool, default=False, 
         help="Additional research agent to fill knowledge gaps")
     parser.add_argument("-t", "--output_type", choices=["default", "modified"], default="default",
         help="Response tone")
