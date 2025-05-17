@@ -29,7 +29,7 @@ A powerful text summarization tool that uses OpenAI's models to generate concise
 # Install from source
 git clone https://github.com/mattjenior/tldr.git
 cd tldr
-pip install -u .
+pip install -e .
 ```
 
 ## Requirements
