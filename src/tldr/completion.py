@@ -38,38 +38,38 @@ class CompletionHandler:
 
 
 	async def async_completions(self, prompt_dict):
-	    """
-	    Runs multiple _async_completion calls concurrently using asyncio.gather, with retry on 429.
-	    """
-	    coroutine_tasks = []
-	    for ext, prompts in prompt_dict.items(): 
-	        prompt_type = "summarize_publication" if ext == "pdf" else "summarize_document"
+		"""
+		Runs multiple _async_completion calls concurrently using asyncio.gather, with retry on 429.
+		"""
+		coroutine_tasks = []
+		for ext, prompts in prompt_dict.items(): 
+			prompt_type = "summarize_publication" if ext == "pdf" else "summarize_document"
 
-	        for prompt in prompts:
-	            task = retry_on_429(self._async_completion, prompt=prompt, prompt_type=prompt_type)
-	            coroutine_tasks.append(task)
+			for prompt in prompts:
+				task = retry_on_429(self._async_completion, prompt=prompt, prompt_type=prompt_type)
+				coroutine_tasks.append(task)
 
-	    all_completions = await asyncio.gather(*coroutine_tasks, return_exceptions=True)
+		all_completions = await asyncio.gather(*coroutine_tasks, return_exceptions=True)
 
-	    return all_completions
+		return all_completions
 
 
 	async def retry_on_429(coro_fn, *args, **kwargs):
 		"""Retry summary generation on token rate limit per hour exceeded errors."""
 
 		max_retries=5
-	    for attempt in range(1, max_retries + 1):
-	        try:
-	            return await coro_fn(*args, **kwargs)
-	        except Exception as e:
-	            if hasattr(e, 'status') and e.status == 429:
-	                wait_time = random.uniform(*(1, 3)) * attempt
-	                print(f"Rate limit hit. Retrying in {wait_time:.2f}s (attempt {attempt})...")
-	                await asyncio.sleep(wait_time)
-	            else:
-	                raise  # Not a 429 error, re-raise
+		for attempt in range(1, max_retries + 1):
+			try:
+				return await coro_fn(*args, **kwargs)
+			except Exception as e:
+				if hasattr(e, 'status') and e.status == 429:
+					wait_time = random.uniform(*(1, 3)) * attempt
+					print(f"Rate limit hit. Retrying in {wait_time:.2f}s (attempt {attempt})...")
+					await asyncio.sleep(wait_time)
+				else:
+					raise  # Not a 429 error, re-raise
 
-	    raise RuntimeError("Max retries exceeded for task")
+		raise RuntimeError("Max retries exceeded for task")
 
 
 	def search_web(self, questions):
