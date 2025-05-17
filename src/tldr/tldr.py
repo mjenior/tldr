@@ -3,7 +3,7 @@
 import sys
 import argparse
 import asyncio
-from .core import TldrClass
+from tldr.core import TldrClass
 
 
 def parse_user_arguments():

@@ -4,8 +4,8 @@ import asyncio
 
 from openai import OpenAI, AsyncOpenAI
 
-from .i_o import fetch_content, read_system_instructions, save_response_text
-from .completion import CompletionHandler
+from tldr.i_o import fetch_content, read_system_instructions, save_response_text
+from tldr.completion import CompletionHandler
 
 
 class TldrClass(CompletionHandler):
@@ -97,8 +97,8 @@ class TldrClass(CompletionHandler):
 		# Join response strings
 		all_summaries = []
 		for i in range(0, len(summaries)):
-			all_summaries.append(f"Reference {i+1} Summary\n{summaries[i]}\n\n\n")
-		save_response_text(all_summaries, label='summaries', output_dir=self.output_directory)
+			all_summaries.append(f"Reference {i+1} Summary\n{summaries[i]}\n")
+		save_response_text(all_summaries, label='summary', output_dir=self.output_directory)
 
 		return all_summaries
 
@@ -107,7 +107,7 @@ class TldrClass(CompletionHandler):
 		""" """
 		if self.verbose == True: print('Generating integrated text...')
 
-		user_prompt = self.user_query + self.all_summaries
+		user_prompt = self.user_query + "\n\n".join(self.all_summaries)
 
 		if self.glyph_synthesis == True:
 
