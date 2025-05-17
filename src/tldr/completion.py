@@ -46,7 +46,7 @@ class CompletionHandler:
 			prompt_type = "summarize_publication" if ext == "pdf" else "summarize_document"
 
 			for prompt in prompts:
-				task = retry_on_429(self._async_completion, prompt=prompt, prompt_type=prompt_type)
+				task = self._retry_on_429(self._async_completion, prompt=prompt, prompt_type=prompt_type)
 				coroutine_tasks.append(task)
 
 		all_completions = await asyncio.gather(*coroutine_tasks, return_exceptions=True)
@@ -54,7 +54,7 @@ class CompletionHandler:
 		return all_completions
 
 
-	async def retry_on_429(coro_fn, *args, **kwargs):
+	async def _retry_on_429(coro_fn, *args, **kwargs):
 		"""Retry summary generation on token rate limit per hour exceeded errors."""
 
 		max_retries=5

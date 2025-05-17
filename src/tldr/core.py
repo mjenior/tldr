@@ -95,9 +95,9 @@ class TldrClass(CompletionHandler):
 		await self.async_client.close()
 		
 		# Join response strings
-		all_summaries = ""
+		all_summaries = []
 		for i in range(0, len(summaries)):
-			all_summaries += f"Reference {i+1} Summary\n{summaries[i]}\n\n\n"
+			all_summaries.append(f"Reference {i+1} Summary\n{summaries[i]}\n\n\n")
 		save_response_text(all_summaries, label='summaries', output_dir=self.output_directory)
 
 		return all_summaries
