@@ -4,7 +4,7 @@ from openai import OpenAI
 
 from .i_o import read_system_instructions
 
-class SummaryJudge():
+class SummaryJudge(CompletionHandler):
 	"""Attempt to objectively score the quality of a summary from a highly technical resource."""
 	def __init__(
 		self, 
@@ -13,7 +13,7 @@ class SummaryJudge():
 		iters=5, 
 		temp=0.6, 
 		rng=42, 
-		p=1.0,
+		top_p=1.0,
 		api_key=None,
 		evals=rubric_str,
 		condensation=condense_str):
@@ -25,70 +25,61 @@ class SummaryJudge():
 		self.evaluation_criteria = criteria
 		self.temperature = temp
 		self.random_seed = rng
-		self.top_p = p
+		self.top_p = top_p
 
-		# Assign instruction strings
-		instructions = read_system_instructions()
-		self.evaluation_criteria = instructions['rubric_instructions']['system_instruction']
-		self.condense_iters = instructions['condense_instructions']['system_instruction']
-
-		# Fetch API key
+		# Fetch API key abd initialize client
 		api_key = api_key or os.environ.get("OPENAI_API_KEY")
 		if not api_key:
 			raise ValueError("OpenAI API key not provided.")
-
-		# Initialize OpenAI clients
 		self.client = OpenAI(api_key=api_key)
+
+		# Reaad in system instructions
+		instructions = read_system_instructions()
 
 
 	def score_summary(self, summary):
-		""" """
-		messages = [
-				{"role": "user", "content": summary},
-				{"role": "system", "content": self.evaluation_criteria},
-			]
+		"""Generate multiple scoring responses for the provided summary text"""
 
-		response = self.client.chat.completions.create(
-				model=self.model,
-				messages=messages,
+		# Ensure replication
+		iters = int(self.iterations) if self.iterations >= 3 else 3
+
+		# Request repeated scoring text
+		scoring = self.completion(
+			message=summary, 
+			prompt_type='rubric_instructions',
+			n=iters,
+			seed=self.random_seed,
+			temperature=self.temperature,
+			top_p=self.top_p)
+
+		# Condense responses
+		scoring = self._condense_iterations(scoring)
+
+		return scoring
+
+
+	def _condense_iterations(self, responses):
+			"""Condenses multiple API responses into a single coherent message."""
+			
+			# Combine strings to demarcated single message
+			responses = self._gen_iteration_str(responses)
+
+			# Obtain final score text
+			condensed = self.completion(
+				message=responses, 
+				prompt_type='rubric_instructions',
 				n=self.iterations,
 				seed=self.random_seed,
 				temperature=self.temperature,
 				top_p=self.top_p)
 
-			if self.iterations > 1:
-				message = self._condense_iterations(response)
-			else:
-				message = response.choices[0].message.content.strip()
-
-		return message
-
-
-	def _condense_iterations(self, response, instructions=condense_str):
-			"""Condenses multiple API responses into a single coherent response."""
-			self.evaluations = [r.message.content.strip() for r in response.choices]
-			responses = self._gen_iteration_str(self.evaluations)
-
-			messages = [{"role": "system", "content": condense_str}, 
-				{"role": "user", "content": responses}]
-
-			condensed = self.client.chat.completions.create(
-				model=self.model,
-				seed=self.seed,
-				temperature=self.temperature,
-				top_p=self.top_p,
-				messages=messages)
-
-		return condensed.choices[0].message.content.strip()
+		return condensed
 
 
 	def _gen_iteration_str(self, responses):
 		"""Format single string with response iteration text"""
 		compiled_str = "\n\n".join(
-			[
-				"\n".join([f"Summary iteration: {i + 1}", responses[i]])
-				for i in range(len(responses))
-			]
-		)
+			["\n".join([f"Summary iteration: {i + 1}", responses[i].strip()])
+				for i in range(len(responses))])
 
 		return compiled_str

@@ -128,10 +128,11 @@ class TldrClass(CompletionHandler):
 		"""Identify knowledge gaps and use web search to fill them. Integrating new info into summary."""
 		
 		# Identify gaps in understanding
-		if self.verbose == True: print('\rResearching technical gaps in summary...')
+		if self.verbose == True: print('\rIdentifying technical gaps in summary...')
 		gap_questions = self.completion(message=self.content_synthesis, prompt_type='research_instructions')
 
 		# Search web for to fill gaps
+		if self.verbose == True: print('\rResearching gaps in important background...')
 		filling_text = self.search_web(gap_questions)
 		
 		# Handle output
