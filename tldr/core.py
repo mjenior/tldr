@@ -19,7 +19,7 @@ class TldrClass(CompletionHandler):
 		output_directory = ".",
 		verbose=True,
 		api_key=None,
-		glyphs=False):
+		evaluate=False):
 
 		self.user_query = user_query
 		self.verbose = verbose
@@ -49,7 +49,7 @@ class TldrClass(CompletionHandler):
 		if len(self.user_query) > 0: self._lint_user_query()
 
 
-	def __call__(self, refine=False, research=False, polish=True):
+	def __call__(self, refine=False, research=False, polish=True, glyphs=False):
 		"""
 		Callable interface to run the main TLDR pipeline.
 
@@ -72,6 +72,10 @@ class TldrClass(CompletionHandler):
 			# Apply research if needed
 			if research:
 				self.apply_research()
+
+			# Glyph-based summary condensation: UNDER CONSTRUCTION
+			#if glyphs:
+			#	self.glyph_summary()
 
 			# Polish the final result
 			self.polish_response()

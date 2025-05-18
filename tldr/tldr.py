@@ -44,7 +44,8 @@ def main():
         search_directory=args.input_directory, 
         output_directory=args.output_directory,
         verbose=args.verbose, 
-        glyphs=args.glyphs
+        glyphs=args.glyphs,
+        evaluate=args.evaluate
     )
     if tldr.sources == 0:
         sys.exit(1)
