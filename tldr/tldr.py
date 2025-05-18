@@ -27,6 +27,8 @@ def parse_user_arguments():
         help="Response tone")
     parser.add_argument("-g", "--glyphs", type=bool, default=False,
         help="Utilize associative glyphs during executive summary")
+    parser.add_argument("-e", "--evaluate", type=bool, default=False,
+        help="Generate quality evaluations for each step of tldr")
 
     return parser.parse_args()
 

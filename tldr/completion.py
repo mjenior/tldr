@@ -7,7 +7,7 @@ class CompletionHandler:
 	def __init__(self):
 		pass
 
-	async def _async_completion(self, prompt, prompt_type, **kwargs):
+	async def _async_single_completion(self, prompt, prompt_type, **kwargs):
 		"""Initialize and submit a single chat completion request"""
 
 		# Fetch params
@@ -37,25 +37,25 @@ class CompletionHandler:
 			pass
 
 
-	async def async_completions(self, prompt_dict):
+	async def async_multi_completions(self, prompt_dict):
 		"""
-		Runs multiple _async_completion calls concurrently using asyncio.gather, with retry on 429.
+		Runs multiple _async_single_completion calls concurrently using asyncio.gather, with retry on 429.
 		"""
 		coroutine_tasks = []
 		for ext, prompts in prompt_dict.items(): 
 			prompt_type = "summarize_publication" if ext == "pdf" else "summarize_document"
 
+			# Generate summaries for each prompt, handling rate limit errors
 			for prompt in prompts:
-				task = self._retry_on_429(self._async_completion, prompt=prompt, prompt_type=prompt_type)
+				task = self._retry_on_429(self._async_single_completion, prompt=prompt, prompt_type=prompt_type)
 				coroutine_tasks.append(task)
 
 		return await asyncio.gather(*coroutine_tasks, return_exceptions=True)
 
 
-	async def _retry_on_429(self, coro_fn, prompt, prompt_type, **kwargs):
+	async def _retry_on_429(self, coro_fn, prompt, prompt_type, max_retries = 5):
 		"""Retry summary generation on token rate limit per hour exceeded errors."""
 
-		max_retries=5
 		for attempt in range(1, max_retries + 1):
 			try:
 				return await coro_fn(prompt, prompt_type)

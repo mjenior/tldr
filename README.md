@@ -2,6 +2,8 @@
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
+Version = 0.1.1
+
 ## Overview
 
 `tldr` is a Python package designed to help researchers, scientists, and knowledge workers quickly extract key information from scientific publications and technical documents. It uses OpenAI's language models to:
@@ -104,12 +106,15 @@ content_path = "path/to/original_technical_text.txt"
 generated_summary_path = "path/to/summary_text.txt"
 
 # Instantiate the evaluator
-judge = SummaryJudge(
+judge = SummaryEvaluator()
+
+# Generate objective scoring
+score_report = judge.evaluate(
     content_path=content_path,
     summary=generated_summary_path)
 
-# Generate objective scoring
-score_report = judge.generate_scoring()
+# Also can handle content and summary strings directly from tldr
+score_report = judge.evaluate(content_path=content, summary=summary_str)
 
 # Print results
 print(score_report)

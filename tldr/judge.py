@@ -1,38 +1,33 @@
 
 import os
+import sys
 from openai import OpenAI
 
-from .completion import CompletionHandler
-from .i_o import read_system_instructions, read_file_content
+from tldr.completion import CompletionHandler
+from tldr.i_o import read_system_instructions, read_file_content
 
-class SummaryJudge(CompletionHandler):
+
+class SummaryEvaluator(CompletionHandler):
 	"""Attempt to objectively score the quality of a summary from a highly technical resource."""
 	def __init__(
 		self, 
-		content_path,
-		summary, 
 		model='gpt-4o-mini',
+		output_directory = ".",
 		verbose=True,
-		iters=5, 
+		iters=3, 
 		temp=0.6, 
 		rng=42, 
 		top_p=1.0,
-		api_key=None,
-		evals=rubric_str,
-		condensation=condense_str):
+		api_key=None):
 
 		# Assign attr
 		self.model = model
+		self.output_directory = output_directory
 		self.verbose = verbose
 		self.iterations = iters
-		self.evaluation_criteria = criteria
 		self.temperature = temp
 		self.random_seed = rng
 		self.top_p = top_p
-
-		# Read target content and summary files
-		self.content = read_file_content(content_path)
-		self.summary = read_file_content(summary_path)
 
 		# Fetch API key abd initialize client
 		api_key = api_key or os.environ.get("OPENAI_API_KEY")
@@ -44,33 +39,80 @@ class SummaryJudge(CompletionHandler):
 		self.instructions = read_system_instructions()
 
 
-	def _update_request(self):
+	def evaluate(
+		self,
+		content=None,
+		content_path=None,
+		summary=None, 
+		summary_path=None):
+		"""Evaluate summary text of a paired reference"""
+
+		# Handle target text
+		message = self._get_content_and_summary_text()
+
+		# Generate n responses to request
+		self._generate_eval_iterations(message)
+
+		# Condense all evals to single response
+		condensed = self._condense_iterations()
+
+		# Report final evaulation
+		save_response_text(condensed, label='evaluation', output_dir=self.output_directory)
+		return condensed
+
+
+	def _get_content_and_summary_text(self):
+		"""Handle grabbing user-provided text files"""
+
+		# Check user arguments
+		if self.content == None and self.content_path == None:
+			print("No original content text or filepath was provided.")
+			sys.exit(1)
+		elif self.summary == None and self.summary_path == None:
+			print("No summary text or filepath was provided.")
+			sys.exit(1)
+
+		# Read target content and summary files
+		if self.content == None:
+			try:
+				self.content = read_file_content(self.content_path)
+			except FileNotFoundError:
+				print("Original content file was not found.")
+				sys.exit(1)
+		if self.summary == None:
+			try:
+				self.summary = read_file_content(self.summary_path)
+			except FileNotFoundError:
+				print("Summary file was not found.")
+				sys.exit(1)
+
+		# Combine target and summary texts
+		return self._update_request()
+
+
+	def _create_request(self):
 		"""Form combined content and summary string"""
 
-		full_message = """
-		The following content is the original target text of expert summary generating agent:
-		{self.content}
+		full_message = """The following content is the original target text of expert summary generating agent:
+{self.content}
 
-		Below here is the generated summary you are to score:
-		{self.summary}
-		"""
+Below here is the generated summary you are to score:
+{self.summary}
+"""
 
 		return full_message
 
 
-	def generate_scoring(self):
+	def _generate_eval_iterations(self, message):
 		"""Generate multiple scoring responses for the provided summary text"""
 
 		# Ensure replication
 		iters = int(self.iterations) if self.iterations >= 3 else 3
 
-		# Combine target and summary texts
-		message = self._update_request()
-
 		# Request repeated scoring text
 		if self.verbose == True:
 			print("Generating summary evaluation iterations...")
-		scoring = self.completion(
+		self.evaluations = self.completion(
 			message=self.summary, 
 			prompt_type='rubric_instructions',
 			n=iters,
@@ -78,19 +120,14 @@ class SummaryJudge(CompletionHandler):
 			temperature=self.temperature,
 			top_p=self.top_p)
 
-		# Condense responses
+
+	def _condense_iterations(self):
+		"""Condenses multiple API responses into a single coherent message."""
 		if self.verbose == True:
 			print("Condensing final evaluation text...")
-		scoring = self._condense_iterations(scoring)
-
-		return scoring
-
-
-	def _condense_iterations(self, responses):
-		"""Condenses multiple API responses into a single coherent message."""
 		
 		# Combine strings into demarcated single message
-		responses = self._gen_iteration_str(responses)
+		responses = self._gen_iteration_str(self.evaluations)
 
 		# Obtain final score text
 		condensed = self.completion(

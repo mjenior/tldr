@@ -123,7 +123,7 @@ class TldrClass(CompletionHandler):
 
 		# Asynchronously summarize documents
 		if self.verbose == True: print('Generating summaries for selected resources...')
-		summaries = await self.async_completions(self.content)
+		summaries = await self.async_multi_completions(self.content)
 		await self.async_client.close()
 		
 		# Join response strings
