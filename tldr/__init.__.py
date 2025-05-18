@@ -1,6 +1,6 @@
 from tldr.core import TldrClass
 from tldr.tldr import main
 
-__all__ = ['TldrClass', 'main']
+__all__ = ["TldrClass", "main"]
 
 __version__ = "0.1.1"

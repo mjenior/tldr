@@ -20,8 +20,8 @@ bump-minor:
 bump-major:
 	bump2version major
 
-
 build: format
+	pixi lock
 	pixi run python -m build
 
 deploy: build
@@ -32,8 +32,7 @@ setup:
 	python3.11 -m pip install -e .
 
 format:
-	pixi run black .
-	pixi run ruff .
+	pixi run black tldr/*.py
 
 clean:  ## Remove build artifacts
 	rm -rf dist build *.egg-info
