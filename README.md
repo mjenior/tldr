@@ -31,7 +31,7 @@ Version = 0.1.1
 # Install from source
 git clone https://github.com/mattjenior/tldr.git
 cd tldr
-pip install -e .
+make install
 ```
 
 ## Requirements

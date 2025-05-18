@@ -27,13 +27,13 @@ build: format
 deploy: build
 	python -m twine upload --repository pypi dist/*
 
-setup:
+install:
 	pixi install
 	pip install -e .
 
 format:
 	pixi run black tldr/*.py
 
-clean:  ## Remove build artifacts
-	rm -rf dist build *.egg-info
+clean: 
+	rm -rf build *.egg-info
 
