@@ -25,11 +25,11 @@ build: format
 	pixi run python -m build
 
 deploy: build
-	python3.11 -m twine upload --repository pypi dist/*
+	python -m twine upload --repository pypi dist/*
 
 setup:
 	pixi install
-	python3.11 -m pip install -e .
+	pip install -e .
 
 format:
 	pixi run black tldr/*.py

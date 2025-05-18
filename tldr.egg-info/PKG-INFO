@@ -13,6 +13,7 @@ Requires-Dist: beautifulsoup4
 Requires-Dist: pillow>=10.2.0
 Requires-Dist: pyyaml>=6.0.1
 Requires-Dist: jsonschema>=4.21.1
+Requires-Dist: black
 Dynamic: license-file
 
 # tldr
