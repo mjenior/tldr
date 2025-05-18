@@ -19,13 +19,14 @@ class TldrClass(CompletionHandler):
 		output_directory = ".",
 		verbose=True,
 		api_key=None,
-		evaluate=False):
+		evaluate=False,
+		glyph_synthesis=False):
 
 		self.user_query = user_query
 		self.verbose = verbose
 		self.output_directory = output_directory
 		self.gap_research = ''
-		self.glyph_synthesis = False
+		self.glyph_synthesis = glyph_synthesis
 
 		# Set API key
 		self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
@@ -57,6 +58,7 @@ class TldrClass(CompletionHandler):
 		- refine: whether to refine the user query
 		- research: whether to search for missing background knowledge
 		- polish: whether to finalize and polish the response
+		- glyphs: whether or not to enable glyph-based synthesis
 		"""
 
 		async def _pipeline():
@@ -67,15 +69,11 @@ class TldrClass(CompletionHandler):
 			self.all_summaries = await self.summarize_resources()
 
 			# Integrate summaries
-			self.integrate_summaries()
+			self.integrate_summaries(glyph_synthesis=glyphs)
 
 			# Apply research if needed
 			if research:
 				self.apply_research()
-
-			# Glyph-based summary condensation: UNDER CONSTRUCTION
-			#if glyphs:
-			#	self.glyph_summary()
 
 			# Polish the final result
 			self.polish_response()
@@ -139,13 +137,14 @@ class TldrClass(CompletionHandler):
 		return all_summaries
 
 
-	def integrate_summaries(self):
-		""" """
+	def integrate_summaries(self, glyph_synthesis = False):
+		"""Generate integrated executive summaries combine all current summary text"""
 		if self.verbose == True: print('Synthesizing integrated summary...')
 
+		# Add focus on user query
 		user_prompt = self.user_query + "\n\n".join(self.all_summaries)
 
-		if self.glyph_synthesis == True:
+		if self.glyph_synthesis == True or glyph_synthesis == True:
 
 			# Generate glyph-formatted prompt
 			glyph_synthesis = self.completion(message=user_prompt, prompt_type='glyph_prompt')
@@ -154,10 +153,11 @@ class TldrClass(CompletionHandler):
 			# Summarize documents based on glyph summary
 			synthesis = self.completion(message=glyph_synthesis, prompt_type='interpret_glyphs')
 		else:
+			# Otherwise, use standard synthesis system instructions prompt
 			synthesis = self.completion(message=user_prompt, prompt_type='executive_summary')
 
+		# Handle output
 		save_response_text(synthesis, label='synthesis', output_dir=self.output_directory)
-
 		self.content_synthesis = synthesis
 
 

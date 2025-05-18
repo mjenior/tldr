@@ -26,9 +26,7 @@ def parse_user_arguments():
     parser.add_argument("-t", "--output_type", choices=["default", "modified"], default="default",
         help="Response tone")
     parser.add_argument("-g", "--glyphs", type=bool, default=False,
-        help="Utilize associative glyphs during executive summary")
-    parser.add_argument("-e", "--evaluate", type=bool, default=False,
-        help="Generate quality evaluations for each step of tldr")
+        help="Utilize associative glyphs during executive summary synthesis")
 
     return parser.parse_args()
 
@@ -44,8 +42,7 @@ def main():
         search_directory=args.input_directory, 
         output_directory=args.output_directory,
         verbose=args.verbose, 
-        glyphs=args.glyphs,
-        evaluate=args.evaluate
+        glyph_synthesis=args.glyphs,
     )
     if tldr.sources == 0:
         sys.exit(1)
@@ -63,6 +60,10 @@ def main():
     # Use research agent to fill gaps
     if args.research: 
         tldr.apply_research()
+
+    # Glyph-based summary condensation: UNDER CONSTRUCTION
+    #if glyphs:
+    #   self.glyph_summary()
     
     # Rewrite for response type and tone
     tldr.polish_response(args.output_type)
