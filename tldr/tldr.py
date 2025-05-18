@@ -30,7 +30,7 @@ def parse_user_arguments():
         "-r",
         "--refine_query",
         type=bool,
-        default=True,
+        default=False,
         help="Automatically refine and improve the user query",
     )
     parser.add_argument(
@@ -40,8 +40,8 @@ def parse_user_arguments():
         "-s",
         "--research",
         type=bool,
-        default=False,
-        help="Additional research agent to fill knowledge gaps",
+        default=True,
+        help="Additional research agent to find and fill knowledge gaps",
     )
     parser.add_argument(
         "-t",

@@ -56,6 +56,9 @@ tldr "CRISPR advances" -r True
 # Specify input directory and output directory
 tldr -i ./my_papers -o ./summaries
 
+# Enable query prompt refinement
+tldr -r True
+
 # Disable research agent
 tldr -s False
 
