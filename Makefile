@@ -4,7 +4,6 @@ VERSION = 0.1.1
 .DEFAULT_GOAL := help
 
 # Help message generator
-.PHONY: help
 help:  ## Show this help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make <target>\n\nTargets:\n"} /^[a-zA-Z_-]+:.*##/ { printf "  %-20s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 

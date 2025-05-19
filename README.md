@@ -117,10 +117,12 @@ score_report = judge.evaluate(
     summary=generated_summary_path)
 
 # Also can handle content and summary strings directly from tldr
-score_report = judge.evaluate(content_path=content, summary=summary_str)
+judge.evaluate(content_path=content, summary=summary_str)
 
 # Print results
-print(score_report)
+print('Iterations:', '\n\n'.join(judge.evaluation_iters))
+print('\nFinal Evaluation:\n', judge.evaluations)
+
 ```
 
 ## Output Files

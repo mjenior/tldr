@@ -40,8 +40,7 @@ class SummaryEvaluator(CompletionHandler):
         self.instructions = read_system_instructions()
 
     def evaluate(
-        self, content=None, content_path=None, summary=None, summary_path=None
-    ):
+        self, content=None, content_path=None, summary=None, summary_path=None):
         """Evaluate summary text of a paired reference"""
 
         # Handle target text
@@ -51,13 +50,12 @@ class SummaryEvaluator(CompletionHandler):
         self._generate_eval_iterations(message)
 
         # Condense all evals to single response
-        condensed = self._condense_iterations()
+        self.evaulation = self._condense_iterations()
 
         # Report final evaulation
         save_response_text(
-            condensed, label="evaluation", output_dir=self.output_directory
-        )
-        return condensed
+            self.evaulation, label="evaluation", output_dir=self.output_directory)
+
 
     def _get_content_and_summary_text(self):
         """Handle grabbing user-provided text files"""
@@ -108,7 +106,7 @@ Below here is the generated summary you are to score:
         # Request repeated scoring text
         if self.verbose == True:
             print("Generating summary evaluation iterations...")
-        self.evaluations = self.completion(
+        self.evaluation_iters = self.completion(
             message=self.summary,
             prompt_type="rubric_instructions",
             n=iters,
@@ -123,7 +121,7 @@ Below here is the generated summary you are to score:
             print("Condensing final evaluation text...")
 
         # Combine strings into demarcated single message
-        responses = self._gen_iteration_str(self.evaluations)
+        responses = self._gen_iteration_str(self.evaluation_iters)
 
         # Obtain final score text
         condensed = self.completion(
