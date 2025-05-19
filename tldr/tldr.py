@@ -44,11 +44,11 @@ def parse_user_arguments():
         help="Additional research agent to find and fill knowledge gaps",
     )
     parser.add_argument(
-        "-t",
-        "--output_type",
+        "-n",
+        "--output_tone",
         choices=["default", "modified"],
         default="default",
-        help="Response tone",
+        help="Final executive summary response tone",
     )
     parser.add_argument(
         "-g",
@@ -56,6 +56,14 @@ def parse_user_arguments():
         type=bool,
         default=False,
         help="Utilize associative glyphs during executive summary synthesis",
+    )
+    parser.add_argument(
+        "-t",
+        "--token_scale",
+        type="str",
+        choices=["short", "default", "long"],
+        default="default",
+        help="Modifier for scale of maximum output tokens window",
     )
 
     return parser.parse_args()

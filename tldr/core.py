@@ -19,8 +19,8 @@ class TldrClass(CompletionHandler):
         output_directory=".",
         verbose=True,
         api_key=None,
-        evaluate=False,
         glyph_synthesis=False,
+        token_scale='default',
     ):
 
         self.user_query = user_query
@@ -28,6 +28,7 @@ class TldrClass(CompletionHandler):
         self.output_directory = output_directory
         self.gap_research = ""
         self.glyph_synthesis = glyph_synthesis
+        self.token_scale = token_scale
 
         # Set API key
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")

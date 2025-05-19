@@ -7,6 +7,14 @@ class CompletionHandler:
     def __init__(self):
         pass
 
+
+    def _scale_token(self, tokens):
+        """Multiply the size of maximum output tokens allowed."""
+        scaling = {"short":0.5, "default":1.0, "long":1.5}
+        factor = scaling[self.token_scale]
+        return int(tokens * factor)
+
+
     async def _async_single_completion(self, prompt, prompt_type, **kwargs):
         """Initialize and submit a single chat completion request"""
 
@@ -14,13 +22,16 @@ class CompletionHandler:
         instructions_dict = self.instructions[prompt_type]
         instructions = instructions_dict["system_instruction"]
         model = instructions_dict["model"]
-        max_output_tokens = instructions_dict["max_output_tokens"]
+        output_tokens = instructions_dict["max_output_tokens"]
 
         # Assemble messages object
         messages = [
             {"role": "system", "content": instructions},
             {"role": "user", "content": prompt},
         ]
+
+        # Rescale max tokens
+        max_output_tokens = self._scale_token(output_tokens)
 
         # Run completion query
         try:
@@ -92,13 +103,16 @@ class CompletionHandler:
         instructions_dict = self.instructions[prompt_type]
         instructions = instructions_dict["system_instruction"]
         model = instructions_dict["model"]
-        max_output_tokens = instructions_dict["max_output_tokens"]
+        output_tokens = instructions_dict["max_output_tokens"]
 
         # Assemble messages object
         messages = [
             {"role": "user", "content": message},
             {"role": "system", "content": instructions},
         ]
+
+        # Rescale max tokens
+        max_output_tokens = self._scale_token(output_tokens)
 
         # Get single chat response
         response = self.client.responses.create(

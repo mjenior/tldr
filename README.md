@@ -2,7 +2,7 @@
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-VERSION = "0.1.2"
+VERSION = "0.1.3"
 
 ## Overview
 
@@ -52,6 +52,18 @@ make install
 
 ## Usage
 
+### Available Arguments
+
+*   `query` (Positional): Optional user query. (Default: None)
+*   `-i, --input_directory <path>`: Directory for input text files. (Default: `.`)
+*   `-o, --output_directory <path>`: Directory for output files. (Default: `.`)
+*   `-r, --refine_query <True|False>`: Automatically refine user query. (Default: `False`)
+*   `-v, --verbose <True|False>`: Verbose stdout reporting. (Default: `True`)
+*   `-s, --research <True|False>`: Use research agent for knowledge gaps. (Default: `True`)
+*   `-n, --output_tone <tone>`: Final summary tone. (Choices: `default`, `modified`; Default: `default`)
+*   `-g, --glyphs <True|False>`: Utilize associative glyphs in summary. (Default: `False`)
+*   `-t, --token_scale <scale>`: Scale for max output tokens. (Choices: `short`, `default`, `long`; Default: `default`)
+
 ### Command Line
 
 ```bash
@@ -74,7 +86,7 @@ tldr -r True
 tldr -s False
 
 # Use modified output tone
-tldr -t modified
+tldr -n modified
 
 # Enable glyph-based synthesis
 tldr -g True
