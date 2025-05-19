@@ -1,23 +1,22 @@
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 
 # Default target
 .DEFAULT_GOAL := help
 
 # Help message generator
-help:  ## Show this help.
+help: 
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make <target>\n\nTargets:\n"} /^[a-zA-Z_-]+:.*##/ { printf "  %-20s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
 # -----------------------------------------------------------------------------
 
 patch:
-	#bumpversion --current-version ${VERSION} patch --allow-dirty --no-tag --no-commit
-	bump2version patch
+	bumpversion --current-version ${VERSION} patch --allow-dirty --no-tag --no-commit
 
-bump-minor:
-	bump2version minor
+minor:
+	bumpversion --current-version ${VERSION} minor --allow-dirty --no-tag --no-commit
 
-bump-major:
-	bump2version major
+major:
+	bumpversion --current-version ${VERSION} major --allow-dirty --no-tag --no-commit
 
 build: format
 	pixi lock

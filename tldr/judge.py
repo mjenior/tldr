@@ -40,7 +40,8 @@ class SummaryEvaluator(CompletionHandler):
         self.instructions = read_system_instructions()
 
     def evaluate(
-        self, content=None, content_path=None, summary=None, summary_path=None):
+        self, content=None, content_path=None, summary=None, summary_path=None
+    ):
         """Evaluate summary text of a paired reference"""
 
         # Handle target text
@@ -54,8 +55,8 @@ class SummaryEvaluator(CompletionHandler):
 
         # Report final evaulation
         save_response_text(
-            self.evaulation, label="evaluation", output_dir=self.output_directory)
-
+            self.evaulation, label="evaluation", output_dir=self.output_directory
+        )
 
     def _get_content_and_summary_text(self):
         """Handle grabbing user-provided text files"""
