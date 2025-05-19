@@ -57,6 +57,17 @@ make install
 - Python 3.11 or higher
 - OpenAI API key (set as environment variable `OPENAI_API_KEY`)
 
+### Packages:
+
+- openai >= 1.78.1
+- pillow >= 10.2.0
+- pyyaml >= 6.0.1
+- jsonschema >= 4.21.1
+- python-docx
+- pypdf2
+- beautifulsoup4
+- black
+
 ## Usage
 
 ### Command Line

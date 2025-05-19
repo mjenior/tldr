@@ -123,9 +123,7 @@ generated_summary_path = "path/to/summary_text.txt"
 judge = SummaryEvaluator()
 
 # Generate objective scoring
-score_report = judge.evaluate(
-    content_path=content_path,
-    summary=generated_summary_path)
+judge.evaluate(content_path=content_path, summary=generated_summary_path)
 
 # Also can handle content and summary strings directly from tldr
 judge.evaluate(content_path=content, summary=summary_str)
