@@ -7,13 +7,11 @@ class CompletionHandler:
     def __init__(self):
         pass
 
-
     def _scale_token(self, tokens):
         """Multiply the size of maximum output tokens allowed."""
-        scaling = {"short":0.5, "default":1.0, "long":1.5}
+        scaling = {"short": 0.5, "default": 1.0, "long": 1.5}
         factor = scaling[self.token_scale]
         return int(tokens * factor)
-
 
     async def _async_single_completion(self, prompt, prompt_type, **kwargs):
         """Initialize and submit a single chat completion request"""

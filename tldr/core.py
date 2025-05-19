@@ -20,7 +20,7 @@ class TldrClass(CompletionHandler):
         verbose=True,
         api_key=None,
         glyph_synthesis=False,
-        token_scale='default',
+        token_scale="default",
     ):
 
         self.user_query = user_query

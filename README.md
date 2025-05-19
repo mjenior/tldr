@@ -2,7 +2,7 @@
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-VERSION = "0.1.3"
+VERSION = "0.1.4"
 
 ## Overview
 
@@ -90,6 +90,9 @@ tldr -n modified
 
 # Enable glyph-based synthesis
 tldr -g True
+
+# Increase the scale of max tokens allowed per response
+tldr -t long
 ```
 
 ### Python API
