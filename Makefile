@@ -1,4 +1,4 @@
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 
 # Default target
 .DEFAULT_GOAL := help
@@ -22,12 +22,12 @@ build: format
 	pixi lock
 	pixi run python -m build
 
-deploy: build
-	python -m twine upload --repository pypi dist/*
+#deploy: build
+#	python -m twine upload --repository pypi dist/*
 
 install:
 	pixi install
-	pip install -e .
+	python3.11 -m pip install -e .
 
 format:
 	pixi run black tldr/*.py

@@ -52,9 +52,14 @@ class CompletionHandler:
 
         coroutine_tasks = []
         for ext, prompts in prompt_dict.items():
-            prompt_type = (
-                "summarize_publication" if ext == "pdf" else "summarize_document"
-            )
+
+            # Define correct summary to generate
+            if ext == "pdf":
+                prompt_type = "summarize_publication"
+            elif ext == "md":
+                prompt_type = "summarize_readme"
+            else:
+                prompt_type = "summarize_document"
 
             # Generate summaries for each prompt, handling rate limit errors
             for prompt in prompts:

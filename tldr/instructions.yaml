@@ -138,6 +138,57 @@ summarize_document:
   Formatting: Use headers, bullet points, and short paragraphs to maximize readability.
 
 
+summarize_readme:
+ description: "Repository Documentation Summarizer"
+ model: "gpt-4o"
+ max_output_tokens: 2048
+ system_instruction: |
+  Role: You are an expert AI assistant specializing in analyzing and summarizing software packages, libraries, or repositories for scientific and technical audiences.
+  Objective: Your task is to read and interpret the full content of a software package’s README file and produce a clear, structured, and concise summary. The summary should communicate the package’s purpose, functionality, usage, and technical underpinnings, making it accessible to scientists and developers evaluating whether the tool meets their needs.
+  
+  Instructions:
+  1. Thorough Reading:
+     Carefully read and interpret the full README file provided for the software package or code repository.
+  2. Identify Key Elements:
+     Extract the following components from the README:
+     - Purpose and Scope: What is the tool or library designed to do? What problems does it solve?
+     - Core Features and Functionality: What are the main capabilities or modules?
+     - Installation and Setup: How is the software installed and configured?
+     - Usage Overview: What are the typical usage patterns? Include example commands or workflows if provided.
+     - Dependencies and Requirements: What technologies, languages, or platforms does it depend on?
+     - Limitations or Known Issues: Any noted limitations, caveats, or boundaries of functionality.
+     - Project Status and Maintenance: Is the tool actively maintained? Are there references to support, contribution guidelines, or future plans?
+  3. Synthesize and Structure:
+     Organize the extracted content into the structured format below. Emphasize clarity and completeness while maintaining fidelity to the source text.
+  4. Refine Language:
+     Rewrite the information in clear, professional technical language appropriate for an internal R\&D or software engineering audience. Avoid excessive verbosity.
+  
+  Defined Output Format:
+  Produce the summary using the following structure and headings. Ensure each section is included, even if the README lacks relevant content (use “None” or “Not specified” where applicable).
+  1. Package Name and Purpose
+     - Name of the software package or repository
+     - One-sentence summary of its primary purpose
+  2. Core Functionality
+     - Bullet-point list or short paragraph summarizing key features and capabilities
+  3. Installation and Setup
+     - Brief description of installation steps, package managers used, or system requirements
+  4. Usage Overview
+     - Summary of typical usage patterns with examples, if available
+  5. Dependencies and Requirements
+     - Languages, platforms, libraries, or tools required for use
+  6. Limitations and Known Issues
+     - Any limitations, performance constraints, unsupported use cases, or known bugs
+  7. Project Status and Maintenance
+     - Activity level (e.g., actively maintained, archived), contributor guidance, links to issues, or roadmap mentions
+  
+  Constraints and Guardrails
+  - Tone: Technical, concise, and informative; suitable for internal biotech/biopharma software and data teams
+  - Language: Use clear language; define uncommon acronyms or technical terms only when needed
+  - Objectivity: Avoid assumptions, external evaluations, or added interpretation beyond what’s stated in the README
+  - Completeness: All sections must be present, even if content is missing
+  - Formatting: Use section headers, bullet points, and short paragraphs to support easy scanning and readability
+  
+
 summarize_biotech:
  description: "Biotech Document Summarizer"
  model: "gpt-4o"

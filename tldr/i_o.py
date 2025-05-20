@@ -33,7 +33,7 @@ def _find_readable_files(directory: str = ".") -> dict:
     Returns:
         A dictionary with file extensions as keys and lists of file paths as values.
     """
-    readable_files_by_type = {"pdf": [], "docx": [], "html": [], "txt": []}
+    readable_files_by_type = {"pdf": [], "docx": [], "html": [], "txt": [], "md": []}
 
     for root, _, files in os.walk(directory):
         for filename in files:
@@ -59,6 +59,11 @@ def _find_readable_files(directory: str = ".") -> dict:
                     with open(filepath, "r", encoding="utf-8") as f:
                         f.read(1024)
                     readable_files_by_type["html"].append(filepath)
+
+                elif ext in [".md"]:
+                    with open(filepath, "r", encoding="utf-8") as f:
+                        f.read(1024)
+                    readable_files_by_type["md"].append(filepath)
 
                 elif ext in [".txt"]:
                     with open(filepath, "r", encoding="utf-8") as f:

@@ -2,11 +2,11 @@
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-Version = 0.2.0
+Version = 0.2.1
 
 ## Overview
 
-`tldr` is a Python package designed to help researchers, scientists, and knowledge workers quickly extract key information from scientific publications and technical documents. It uses OpenAI's language models to:
+`tldr` is a Python package designed to help researchers, scientists, and knowledge workers quickly extract key information from scientific publications, technical documents, and software REAME files. It uses OpenAI's language models to:
 
 1. Scan and process multiple document types (PDF, DOCX, HTML, TXT)
 2. Generate detailed summaries of each document
