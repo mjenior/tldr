@@ -80,7 +80,7 @@ class TldrClass(CompletionHandler):
         # Run the async pipeline
         asyncio.run(_pipeline())
 
-    @static_method
+    @staticmethod
     def _lint_user_query(current_query) -> None:
         """
         Normalizes `self.user_query` to ensure it's a well-formed string query.
