@@ -2,7 +2,7 @@
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-VERSION = "0.1.4"
+Version = 0.2.0
 
 ## Overview
 
@@ -60,9 +60,10 @@ make install
 *   `-r, --refine_query <True|False>`: Automatically refine user query. (Default: `False`)
 *   `-v, --verbose <True|False>`: Verbose stdout reporting. (Default: `True`)
 *   `-s, --research <True|False>`: Use research agent for knowledge gaps. (Default: `True`)
-*   `-n, --output_tone <tone>`: Final summary tone. (Choices: `default`, `modified`; Default: `default`)
+*   `-n, --tone <tone>`: Final summary tone. (Choices: `default`, `modified`; Default: `default`)
 *   `-g, --glyphs <True|False>`: Utilize associative glyphs in summary. (Default: `False`)
-*   `-t, --token_scale <scale>`: Scale for max output tokens. (Choices: `short`, `default`, `long`; Default: `default`)
+*   `-t, --token_scale <scale>`: Scale for max output tokens. (Choices: `low`, `medium`, `high`; Default: `medium`)
+*   `-c, --context_size <scale>`: Context window size for research agent web search. (Choices: `low`, `medium`, `high`; Default: `medium`)
 
 ### Command Line
 
@@ -93,6 +94,9 @@ tldr -g True
 
 # Increase the scale of max tokens allowed per response
 tldr -t long
+
+# Increase conext window size for gap-filling web search
+tldr -c high
 ```
 
 ### Python API
@@ -102,15 +106,10 @@ import asyncio
 from tldr import TldrClass
 
 # Initialize with a user query
-tldr = TldrClass(
-    user_query="What are the latest advancements in CRISPR gene editing?",
-    search_directory="./my_papers",
-    output_directory="./summaries",
-    verbose=True
-)
+tldr = TldrClass(search_directory="./my_papers", output_directory="./summaries")
 
 # Refine the user query
-tldr.refine_user_query()
+tldr.refine_user_query("What are the latest advancements in CRISPR gene editing?")
 
 # Generate document summaries
 tldr.all_summaries = asyncio.run(tldr.summarize_resources())
@@ -122,7 +121,7 @@ tldr.integrate_summaries()
 tldr.apply_research()
 
 # Polish the final response
-tldr.polish_response(output_type="default")
+tldr.polish_response()
 ```
 
 ### Summary Quality Evaluator
@@ -137,11 +136,10 @@ generated_summary_path = "path/to/summary_text.txt"
 # Instantiate the evaluator
 judge = SummaryEvaluator()
 
-# Generate objective scoring
-judge.evaluate(content_path=content_path, summary=generated_summary_path)
-
-# Also can handle content and summary strings directly from tldr
-judge.evaluate(content_path=content, summary=summary_str)
+# Generate objective scoring from file paths
+judge.evaluate(content_path=content_path, summary_path=generated_summary_path)
+# Also can handle content and summary strings variables directly
+judge.evaluate(content=content_str, summary=generated_summary_str)
 
 # Print results
 print('Iterations:', '\n\n'.join(judge.evaluation_iters))
@@ -153,7 +151,7 @@ print('\nFinal Evaluation:\n', judge.evaluations)
 
 The tool generates several output files during processing:
 
-- `tldr.summaries.[timestamp].txt`: Individual document summaries
+- `tldr.summaries.[file_count].[timestamp].txt`: Individual document summaries
 - `tldr.synthesis.[timestamp].txt`: Integrated summary across documents
 - `tldr.research.[timestamp].txt`: Additional research information
 - `tldr.final.[timestamp].txt`: Final polished response

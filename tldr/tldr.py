@@ -44,8 +44,16 @@ def parse_user_arguments():
         help="Additional research agent to find and fill knowledge gaps",
     )
     parser.add_argument(
+        "-c",
+        "--context_size",
+        type=str,
+        default="medium",
+        choices=["low", "medium", "high"],
+        help="Context window size for research agent web search",
+    )
+    parser.add_argument(
         "-n",
-        "--output_tone",
+        "--tone",
         choices=["default", "modified"],
         default="default",
         help="Final executive summary response tone",
@@ -61,8 +69,8 @@ def parse_user_arguments():
         "-t",
         "--token_scale",
         type="str",
-        choices=["short", "default", "long"],
-        default="default",
+        choices=["low", "medium", "high"],
+        default="medium",
         help="Modifier for scale of maximum output tokens window",
     )
 
@@ -76,35 +84,34 @@ def main():
 
     # Read in content and extend user query
     tldr = TldrClass(
-        user_query=args.query,
         search_directory=args.input_directory,
         output_directory=args.output_directory,
         verbose=args.verbose,
-        glyph_synthesis=args.glyphs,
+        token_scale=args.token_scale,
     )
+
+    # Check if no resources were found
     if tldr.sources == 0:
         sys.exit(1)
 
     # Extend user query
-    if args.refine_query:
-        tldr.refine_user_query()
+    if args.refine_query == True and args.query is not None:
+        self.user_query = self.refine_user_query(args.query)
+    else:
+        self.user_query = ""
 
     # Summarize documents
     tldr.all_summaries = asyncio.run(tldr.summarize_resources())
 
     # Synthesize content
-    tldr.integrate_summaries()
+    tldr.integrate_summaries(args.glyphs)
 
     # Use research agent to fill gaps
     if args.research:
-        tldr.apply_research()
-
-    # Glyph-based summary condensation: UNDER CONSTRUCTION
-    # if glyphs:
-    #   self.glyph_summary()
+        tldr.apply_research(context_size=args.context_size)
 
     # Rewrite for response type and tone
-    tldr.polish_response(args.output_type)
+    tldr.polish_response(args.tone)
 
 
 if __name__ == "__main__":

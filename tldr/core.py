@@ -14,20 +14,16 @@ class TldrClass(CompletionHandler):
 
     def __init__(
         self,
-        user_query="",
         search_directory=".",
         output_directory=".",
         verbose=True,
         api_key=None,
-        glyph_synthesis=False,
-        token_scale="default",
+        token_scale="medium",
     ):
 
         self.user_query = user_query
         self.verbose = verbose
         self.output_directory = output_directory
-        self.gap_research = ""
-        self.glyph_synthesis = glyph_synthesis
         self.token_scale = token_scale
 
         # Set API key
@@ -50,33 +46,32 @@ class TldrClass(CompletionHandler):
         # Read in system instructions
         self.instructions = read_system_instructions()
 
-        # Lint user query
-        if len(self.user_query) > 0:
-            self._lint_user_query()
-
-    def __call__(self, refine=False, research=False, polish=True, glyphs=False):
+    def __call__(self, query=None, refine=False, research=False):
         """
-        Callable interface to run the main TLDR pipeline.
+        More streamlined, callable interface to run the main TLDR pipeline.
 
         Arguments:
+        - query: user query for focused summary context
         - refine: whether to refine the user query
         - research: whether to search for missing background knowledge
-        - polish: whether to finalize and polish the response
-        - glyphs: whether or not to enable glyph-based synthesis
         """
 
         async def _pipeline():
-            if refine:
-                self.refine_user_query()
+
+            # Update user query
+            if refine == True and query is not None:
+                self.user_query = self.refine_user_query(query)
+            else:
+                self.user_query = ""
 
             # Generate async summaries
             self.all_summaries = await self.summarize_resources()
 
             # Integrate summaries
-            self.integrate_summaries(glyph_synthesis=glyphs)
+            self.integrate_summaries()
 
             # Apply research if needed
-            if research:
+            if research == True:
                 self.apply_research()
 
             # Polish the final result
@@ -85,11 +80,11 @@ class TldrClass(CompletionHandler):
         # Run the async pipeline
         asyncio.run(_pipeline())
 
-    def _lint_user_query(self) -> None:
+    @static_method
+    def _lint_user_query(current_query) -> None:
         """
         Normalizes `self.user_query` to ensure it's a well-formed string query.
         """
-        current_query = self.user_query
 
         # 1. Handle list input or convert to string
         if isinstance(current_query, list):
@@ -108,24 +103,35 @@ class TldrClass(CompletionHandler):
         # Ensure the query ends with a question mark (if the string is not empty)
         if processed_query and not processed_query.endswith("?"):
             processed_query += "?"
-        elif not processed_query and self.user_query is not None:
+        elif not processed_query:
             pass
 
-        self.user_query = processed_query
+        return processed_query
 
-    def refine_user_query(self):
+    def refine_user_query(self, query):
+        """Attempt to automatically improve user query for greater specificity"""
+
         if self.verbose == True:
             print("Refining user query...")
-        new_query = self.completion(
-            message=self.user_query, prompt_type="refine_prompt"
-        )
-        addon = "Ensure that addressing the following user query is the central theme of your output text:\n{query}\n\n"
+
+        # Check text formatting
+        user_query = _lint_user_query(query)
+
+        # Generate new query text
+        new_query = self.completion(message=user_query, prompt_type="refine_prompt")
+
+        # Handle output text
+        new_query = "Ensure that addressing the following user query is the central theme of your output text:\n{new_query}\n\n"
         save_response_text(
-            new_query, label="new_query", output_dir=self.output_directory
+            new_query,
+            label="new_query",
+            output_dir=self.output_directory,
+            verbose=self.verbose,
         )
         if self.verbose == True:
             print("Refined query:\n{new_query}\n")
-        self.user_query = addon + new_query
+
+        return new_query
 
     async def summarize_resources(self):
         """Generate component and synthesis summary text"""
@@ -141,7 +147,10 @@ class TldrClass(CompletionHandler):
         for i in range(0, len(summaries)):
             all_summaries.append(f"Reference {i+1} Summary\n{summaries[i]}\n")
         save_response_text(
-            all_summaries, label="summary", output_dir=self.output_directory
+            all_summaries,
+            label="summary",
+            output_dir=self.output_directory,
+            verbose=self.verbose,
         )
 
         return all_summaries
@@ -151,8 +160,8 @@ class TldrClass(CompletionHandler):
         if self.verbose == True:
             print("Synthesizing integrated summary...")
 
-        # Add focus on user query
-        user_prompt = self.user_query + "\n\n".join(self.all_summaries)
+        # Join all summaries for one large submission
+        user_prompt = "\n\n".join(self.all_summaries)
 
         if self.glyph_synthesis == True or glyph_synthesis == True:
 
@@ -164,6 +173,7 @@ class TldrClass(CompletionHandler):
                 glyph_synthesis,
                 label="glyph_synthesis",
                 output_dir=self.output_directory,
+                verbose=self.verbose,
             )
 
             # Summarize documents based on glyph summary
@@ -178,11 +188,14 @@ class TldrClass(CompletionHandler):
 
         # Handle output
         save_response_text(
-            synthesis, label="synthesis", output_dir=self.output_directory
+            synthesis,
+            label="synthesis",
+            output_dir=self.output_directory,
+            verbose=self.verbose,
         )
         self.content_synthesis = synthesis
 
-    def apply_research(self):
+    def apply_research(self, context_size="medium"):
         """Identify knowledge gaps and use web search to fill them. Integrating new info into summary."""
 
         # Identify gaps in understanding
@@ -195,7 +208,7 @@ class TldrClass(CompletionHandler):
         # Search web for to fill gaps
         if self.verbose == True:
             print("\rResearching gaps in important background...")
-        filling_text = self.search_web(gap_questions)
+        filling_text = self.search_web(gap_questions, context_size=context_size)
 
         # Handle output
         research_text = f"""Gap questions:
@@ -205,27 +218,33 @@ Answers:
 {filling_text}
 """
         save_response_text(
-            research_text, label="research", output_dir=self.output_directory
+            research_text,
+            label="research",
+            output_dir=self.output_directory,
+            verbose=self.verbose,
         )
 
-        self.gap_research = research_text
+        self.content_synthesis += research_text
 
-    def polish_response(self, output_type: str = "default"):
+    def polish_response(self, tone: str = "default"):
         """Refine final response text"""
         if self.verbose == True:
             print("Finalizing response text...")
 
         # Select tone
-        tone = (
-            "polishing_instructions"
-            if output_type == "default"
-            else "modified_polishing"
+        tone_instructions = (
+            "polishing_instructions" if tone == "default" else "modified_polishing"
         )
-        response_text = self.user_query + self.content_synthesis + self.gap_research
+        response_text = self.user_query + self.content_synthesis
 
         # Run completion and save final response text
-        polished = self.completion(message=response_text, prompt_type=tone)
-        save_response_text(polished, label="final", output_dir=self.output_directory)
+        polished = self.completion(message=response_text, prompt_type=tone_instructions)
+        save_response_text(
+            polished,
+            label="final",
+            output_dir=self.output_directory,
+            verbose=self.verbose,
+        )
 
         # Print final answer to terminal
         if self.verbose == True:

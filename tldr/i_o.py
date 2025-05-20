@@ -133,7 +133,7 @@ def read_system_instructions(file_path: str = "instructions.yaml") -> dict:
 
 
 def save_response_text(
-    out_data: list, label: str = "response", output_dir: str = "."
+    out_data: list, label: str = "response", output_dir: str = ".", verbose: bool = True
 ) -> str:
     """
     Saves a large string variable to a text file with a dynamic filename
@@ -159,7 +159,10 @@ def save_response_text(
         current_data = out_data[idx]
 
         # Construct the dynamic filename
-        filename = f"tldr.{sanitized_label}.{idx+1}.{timestamp}.txt"
+        if label == "summary":
+            filename = f"tldr.{sanitized_label}.{idx+1}.{timestamp}.txt"
+        else:
+            filename = f"tldr.{sanitized_label}.{timestamp}.txt"
         filepath = os.path.join(output_dir, filename)
 
         try:
@@ -167,8 +170,8 @@ def save_response_text(
                 # Write in chunks to avoid excessive memory usage for very large strings
                 for i in range(0, len(current_data), chunk_size):
                     f.write(current_data[i : i + chunk_size])
-
-            print(f"\tSaved data to {filename}")
+            if verbose == True:
+                print(f"\tResponse text saved to {filename}")
 
         except IOError as e:
             print(f"Error writing to file {filename}: {e}")

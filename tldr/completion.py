@@ -9,7 +9,7 @@ class CompletionHandler:
 
     def _scale_token(self, tokens):
         """Multiply the size of maximum output tokens allowed."""
-        scaling = {"short": 0.5, "default": 1.0, "long": 1.5}
+        scaling = {"low": 0.5, "medium": 1.0, "high": 1.5}
         factor = scaling[self.token_scale]
         return int(tokens * factor)
 
@@ -47,6 +47,9 @@ class CompletionHandler:
         """
         Runs multiple _async_single_completion calls concurrently using asyncio.gather, with retry on 429.
         """
+        prompt_dict = self.content
+        context_query = self.user_query
+
         coroutine_tasks = []
         for ext, prompts in prompt_dict.items():
             prompt_type = (
@@ -57,7 +60,7 @@ class CompletionHandler:
             for prompt in prompts:
                 task = self._retry_on_429(
                     self._async_single_completion,
-                    prompt=prompt,
+                    prompt=context_query + prompt,
                     prompt_type=prompt_type,
                 )
                 coroutine_tasks.append(task)
@@ -82,13 +85,13 @@ class CompletionHandler:
 
         raise RuntimeError("Max retries exceeded for task")
 
-    def search_web(self, questions):
+    def search_web(self, questions: str, context_size: str = "medium"):
         """Use web search tool to fill holes in current reading set"""
 
         instruction = "Use web search to answer the following questions as thoroughly as possible. Cite all sources.\n"
         response = self.client.responses.create(
             model="gpt-4o",
-            tools=[{"type": "web_search_preview"}],
+            tools=[{"type": "web_search_preview", "search_context_size": context_size}],
             input=instruction + questions,
         )
 
@@ -102,10 +105,11 @@ class CompletionHandler:
         instructions = instructions_dict["system_instruction"]
         model = instructions_dict["model"]
         output_tokens = instructions_dict["max_output_tokens"]
+        context_query = self.user_query
 
         # Assemble messages object
         messages = [
-            {"role": "user", "content": message},
+            {"role": "user", "content": context_query + message},
             {"role": "system", "content": instructions},
         ]
 
