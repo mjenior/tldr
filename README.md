@@ -16,7 +16,7 @@ Version = 0.2.3
 
 ## Features
 
-- **Multi-format document support**: PDF, DOCX, HTML, and TXT files
+- **Multi-format document support**: PDF, DOCX, HTML, MD, and TXT files
 - **Intelligent query refinement**: Automatically improves user queries
 - **Document summarization**: Creates detailed summaries of scientific publications and technical documents
 - **Cross-document synthesis**: Integrates information across multiple sources
