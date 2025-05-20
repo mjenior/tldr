@@ -21,7 +21,6 @@ class TldrClass(CompletionHandler):
         token_scale="medium",
     ):
 
-        self.user_query = user_query
         self.verbose = verbose
         self.output_directory = output_directory
         self.token_scale = token_scale
@@ -46,20 +45,18 @@ class TldrClass(CompletionHandler):
         # Read in system instructions
         self.instructions = read_system_instructions()
 
-    def __call__(self, query=None, refine=False, research=False):
+    def __call__(self, query=None):
         """
         More streamlined, callable interface to run the main TLDR pipeline.
 
         Arguments:
         - query: user query for focused summary context
-        - refine: whether to refine the user query
-        - research: whether to search for missing background knowledge
         """
 
         async def _pipeline():
 
             # Update user query
-            if refine == True and query is not None:
+            if query is not None:
                 self.user_query = self.refine_user_query(query)
             else:
                 self.user_query = ""
@@ -71,8 +68,7 @@ class TldrClass(CompletionHandler):
             self.integrate_summaries()
 
             # Apply research if needed
-            if research == True:
-                self.apply_research()
+            self.apply_research()
 
             # Polish the final result
             self.polish_response()
@@ -163,7 +159,7 @@ class TldrClass(CompletionHandler):
         # Join all summaries for one large submission
         user_prompt = "\n\n".join(self.all_summaries)
 
-        if self.glyph_synthesis == True or glyph_synthesis == True:
+        if glyph_synthesis == True:
 
             # Generate glyph-formatted prompt
             glyph_synthesis = self.completion(

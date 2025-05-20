@@ -68,7 +68,7 @@ def parse_user_arguments():
     parser.add_argument(
         "-t",
         "--token_scale",
-        type="str",
+        type=str,
         choices=["low", "medium", "high"],
         default="medium",
         help="Modifier for scale of maximum output tokens window",
@@ -96,9 +96,9 @@ def main():
 
     # Extend user query
     if args.refine_query == True and args.query is not None:
-        self.user_query = self.refine_user_query(args.query)
+        tldr.user_query = tldr.refine_user_query(args.query)
     else:
-        self.user_query = ""
+        tldr.user_query = ""
 
     # Summarize documents
     tldr.all_summaries = asyncio.run(tldr.summarize_resources())
