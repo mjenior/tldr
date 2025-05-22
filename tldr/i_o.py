@@ -7,6 +7,11 @@ from PyPDF2 import PdfReader, PdfMerger
 from bs4 import BeautifulSoup
 
 
+def create_timestamp():
+    """Generate a timestamp string (e.g., 20231027_103000)"""
+    return datetime.now().strftime("%Y%m%d_%H%M%S")
+
+
 def fetch_content(search_dir):
     """
     Find files and read in thier contents.
@@ -147,8 +152,8 @@ def save_response_text(
     errors = "strict"
     chunk_size = 1024 * 1024
 
-    # Generate a timestamp string (e.g., 20231027_103000)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    # Get current timestamp
+    timestamp = create_timestamp()
 
     # Sanitize the label to create a valid filename part
     sanitized_label = "".join(

@@ -3,7 +3,12 @@ import asyncio
 
 from openai import OpenAI, AsyncOpenAI
 
-from tldr.i_o import fetch_content, read_system_instructions, save_response_text
+from tldr.i_o import (
+    create_timestamp,
+    fetch_content,
+    read_system_instructions,
+    save_response_text,
+)
 from tldr.completion import CompletionHandler
 
 
@@ -20,9 +25,8 @@ class TldrClass(CompletionHandler):
         api_key=None,
         token_scale="medium",
     ):
-
+        # Set basic attr
         self.verbose = verbose
-        self.output_directory = output_directory
         self.token_scale = token_scale
 
         # Set API key
@@ -44,6 +48,9 @@ class TldrClass(CompletionHandler):
 
         # Read in system instructions
         self.instructions = read_system_instructions()
+
+        # Establish output directory
+        self.output_directory = self._handle_output_path(output_directory)
 
     def __call__(self, query=None):
         """
@@ -75,6 +82,25 @@ class TldrClass(CompletionHandler):
 
         # Run the async pipeline
         asyncio.run(_pipeline())
+
+    @staticmethod
+    def _handle_output_path(output_path) -> str:
+        """Set up where to write output summaries"""
+
+        # Create new path string if wd
+        if output_path == ".":
+            current = create_timestamp()
+            new_path = f"./tldr.{current}"
+        else:
+            # Use user-provided
+            new_path = output_path
+
+        # Check if exists
+        os.makedirs(new_path, exist_ok=True)
+
+        return new_path
+
+    self.output_directory = output_directory
 
     @staticmethod
     def _lint_user_query(current_query) -> None:

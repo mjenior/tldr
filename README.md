@@ -2,7 +2,7 @@
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-Version = 0.2.3
+Version = 0.2.4"
 
 ## Overview
 
@@ -56,7 +56,7 @@ pip install -e .
 
 *   `query` (Positional): Optional user query. (Default: None)
 *   `-i, --input_directory <path>`: Directory for input text files. (Default: `.`)
-*   `-o, --output_directory <path>`: Directory for output files. (Default: `.`)
+*   `-o, --output_directory <path>`: Directory for output files. (Default: `tldr.[timestamp]`)
 *   `-r, --refine_query <True|False>`: Automatically refine user query. (Default: `False`)
 *   `-v, --verbose <True|False>`: Verbose stdout reporting. (Default: `True`)
 *   `-s, --research <True|False>`: Use research agent for knowledge gaps. (Default: `True`)
@@ -93,9 +93,9 @@ tldr -n modified
 tldr -g True
 
 # Increase the scale of max tokens allowed per response
-tldr -t long
+tldr -t high
 
-# Increase conext window size for gap-filling web search
+# Increase context window size for gap-filling web search
 tldr -c high
 ```
 

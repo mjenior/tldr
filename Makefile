@@ -1,4 +1,4 @@
-VERSION = "0.2.3"
+VERSION = "0.2.4"
 
 # Default target
 .DEFAULT_GOAL := help
@@ -21,9 +21,6 @@ major:
 build: format
 	pixi lock
 	pixi run python -m build
-
-#deploy: build
-#	python -m twine upload --repository pypi dist/*
 
 install:
 	pixi install
