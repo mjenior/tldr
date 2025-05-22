@@ -1,0 +1,36 @@
+Gap questions:
+• What genetic and phenotypic criteria define a “non-toxigenic, less virulent” C. difficile strain, and which markers distinguish it from toxigenic strains?  
+• Through what molecular mechanism does glycine trigger C. difficile spore germination, and which germinant receptors or signaling pathways are involved?  
+• Are there additional known amino acid or bile acid germinants for C. difficile spores besides glycine, and how do they compare in potency?  
+• What is the concept of colonization resistance in the gut microbiota, and what are its principal microbial and metabolic mechanisms?  
+• What are the standard methodologies for constructing a genome-scale metabolic reconstruction (GENRE) for a bacterial species?  
+• How is transcriptomic data typically integrated into a GENRE to produce context-specific metabolic models, and what algorithms are used?  
+• What are the functional differences between the C. difficile strains 630 and R20291 in terms of genome content, toxin production, and epidemiology?  
+• What is the role of the pentose phosphate pathway in bacterial metabolism, and how are its oxidative and non-oxidative branches regulated?  
+• What is N-acetylneuraminate (sialic acid) metabolism in bacteria, and how might it contribute to C. difficile’s growth or virulence?  
+• How can disruption of cytidine metabolism impact bacterial growth or stress responses, and what enzymes are key in this pathway?  
+• What examples exist of engineered probiotic bacterial strains designed to outcompete gut pathogens, and by what mechanisms do they act?  
+• Which small-molecule inhibitors targeting bacterial metabolic enzymes (e.g., in pentose phosphate or sialic acid pathways) have been reported, and what are their modes of action?  
+• What are the principal clades or lineages of C. difficile circulating in clinical settings, and how do their metabolic profiles differ?  
+• What are the typical recurrence rates for CDI after standard antibiotic therapy, and what factors contribute to relapse?
+
+Answers:
+Non-toxigenic, less virulent *Clostridioides difficile* (C. difficile) strains are characterized by specific genetic and phenotypic markers that distinguish them from toxigenic strains.
+
+**Genetic Criteria:**
+
+- **Absence of Pathogenicity Locus (PaLoc):** Toxigenic *C. difficile* strains possess a pathogenicity locus (PaLoc) containing genes responsible for toxin production, including *tcdA* and *tcdB*. Non-toxigenic strains lack this locus, replaced by a conserved non-coding region, rendering them incapable of producing these toxins. ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC7734020/?utm_source=openai))
+
+- **Binary Toxin Genes:** Some toxigenic strains also carry genes for binary toxin production (*cdtA* and *cdtB*). Non-toxigenic strains typically lack these genes, further reducing their virulence potential. ([journals.asm.org](https://journals.asm.org/doi/full/10.1128/spectrum.01788-21?utm_source=openai))
+
+**Phenotypic Criteria:**
+
+- **Colony Morphology:** Non-toxigenic strains often exhibit distinct colony morphologies, such as enlarged, branched colonies, differentiating them from toxigenic counterparts. ([frontiersin.org](https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2019.00084/full?utm_source=openai))
+
+- **Antibiotic Resistance:** Variations in antibiotic resistance profiles are observed. Some non-toxigenic strains display higher resistance to certain antibiotics, like metronidazole, compared to toxigenic strains. ([frontiersin.org](https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2019.00084/full?utm_source=openai))
+
+- **Sporulation Efficiency:** Increased sporulation efficiency is noted in some non-toxigenic strains, which may influence their persistence in the environment and potential for colonization. ([frontiersin.org](https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2019.00084/full?utm_source=openai))
+
+- **Adherence and Motility:** Differences in motility and adherence capabilities have been reported, potentially affecting colonization dynamics. ([frontiersin.org](https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2019.00084/full?utm_source=openai))
+
+These genetic and phenotypic distinctions are crucial for understanding the epidemiology of *C. difficile* infections and developing strategies for prevention and treatment. 
