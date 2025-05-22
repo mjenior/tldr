@@ -100,8 +100,6 @@ class TldrClass(CompletionHandler):
 
         return new_path
 
-    self.output_directory = output_directory
-
     @staticmethod
     def _lint_user_query(current_query) -> None:
         """
