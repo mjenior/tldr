@@ -72,7 +72,10 @@ class TldrClass(CompletionHandler):
             self.all_summaries = await self.summarize_resources()
 
             # Integrate summaries
-            self.integrate_summaries()
+            if len(self.all_summaries) >= 2:
+                self.integrate_summaries()
+            else:
+                self.content_synthesis = self.all_summaries[0]
 
             # Apply research if needed
             self.apply_research()

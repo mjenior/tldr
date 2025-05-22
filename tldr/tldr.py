@@ -104,7 +104,10 @@ def main():
     tldr.all_summaries = asyncio.run(tldr.summarize_resources())
 
     # Synthesize content
-    tldr.integrate_summaries(args.glyphs)
+    if len(tldr.all_summaries) >= 2:
+        tldr.integrate_summaries(args.glyphs)
+    else:
+        tldr.content_synthesis = self.all_summaries[0]
 
     # Use research agent to fill gaps
     if args.research:
