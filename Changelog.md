@@ -1,5 +1,6 @@
 # Changelog
 
+* d14f224 - New output directory handling. (Matt Jenior)
 * 113149b - Added reaerch context and applied user queries correctly. (Matt Jenior)
 * 93e684b - Implemented token scaling and released a new version. (Matt Jenior)
 * 342a608 - Added max token scaling functionality. (Matt Jenior)
