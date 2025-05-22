@@ -50,7 +50,7 @@ class TldrClass(CompletionHandler):
         self.instructions = read_system_instructions()
 
         # Establish output directory
-        self.output_directory = self._handle_output_path(output_directory)
+        self.output_directory = self._handle_output_path(output_directory, verbose)
 
     def __call__(self, query=None):
         """
@@ -84,19 +84,18 @@ class TldrClass(CompletionHandler):
         asyncio.run(_pipeline())
 
     @staticmethod
-    def _handle_output_path(output_path) -> str:
+    def _handle_output_path(output_path, verbose=True) -> str:
         """Set up where to write output summaries"""
 
-        # Create new path string if wd
-        if output_path == ".":
-            current = create_timestamp()
-            new_path = f"./tldr.{current}"
-        else:
-            # Use user-provided
-            new_path = output_path
+        # Create new path string
+        current = create_timestamp()
+        new_path = f"{output_path}/tldr.{current}"
 
         # Check if exists
         os.makedirs(new_path, exist_ok=True)
+
+        if verbose == True:
+            print("Output files being written to:", new_path)
 
         return new_path
 

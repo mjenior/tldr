@@ -176,7 +176,7 @@ def save_response_text(
         filepath = os.path.join(output_dir, filename)
 
         try:
-            with open(filename, "w", encoding="utf-8", errors=errors) as f:
+            with open(filepath, "w", encoding="utf-8", errors=errors) as f:
                 # Write in chunks to avoid excessive memory usage for very large strings
                 for i in range(0, len(current_data), chunk_size):
                     f.write(current_data[i : i + chunk_size])
