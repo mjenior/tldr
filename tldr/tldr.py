@@ -69,13 +69,6 @@ def parse_user_arguments():
         help="Final executive summary response tone",
     )
     parser.add_argument(
-        "-g",
-        "--glyphs",
-        type=bool,
-        default=False,
-        help="Utilize associative glyphs during executive summary synthesis",
-    )
-    parser.add_argument(
         "-t",
         "--token_scale",
         type=str,
@@ -110,18 +103,21 @@ def main():
         sys.exit(1)
 
     # Extend user query
-    tldr.user_query = (
-        tldr.refine_user_query(args.query) if args.refine_query == True else args.query
-    )
+    if len(args.query) > 0:
+        tldr.user_query = (
+            tldr.refine_user_query(args.query)
+            if args.refine_query == True
+            else args.query
+        )
 
     # Summarize documents
     tldr.all_summaries = asyncio.run(tldr.summarize_resources())
 
     # Synthesize content
     if len(tldr.all_summaries) >= 2:
-        tldr.integrate_summaries(args.glyphs)
+        tldr.integrate_summaries()
     else:
-        tldr.content_synthesis = self.all_summaries[0]
+        tldr.content_synthesis = tldr.all_summaries[0]
 
     # Use research agent to fill gaps
     if args.research:

@@ -22,7 +22,6 @@ Version = 0.3.0"""
 - **Cross-document synthesis**: Integrates information across multiple sources
 - **Knowledge gap research**: Automatically identifies and researches missing information
 - **Customizable output**: Supports different output formats and tones
-- **Glyph-based synthesis**: Optional advanced synthesis mode using symbolic representation
 - **Objective summary evaluation**: More objectively evaluate the quality of individual output summaries
 
 ## Installation
@@ -62,7 +61,6 @@ pip install -e .
 *   `-u, --recursive_search <True|False>`: Recursively search input directories. (Default: `False`)
 *   `-x, --research <True|False>`: Use research agent for knowledge gaps. (Default: `True`)
 *   `-n, --tone <tone>`: Final summary tone. (Choices: `default`, `modified`; Default: `default`)
-*   `-g, --glyphs <True|False>`: Utilize associative glyphs in summary. (Default: `False`)
 *   `-t, --token_scale <scale>`: Scale for max output tokens. (Choices: `low`, `medium`, `high`; Default: `medium`)
 *   `-s, --context_size <scale>`: Context window size for research agent web search. (Choices: `low`, `medium`, `high`; Default: `medium`)
 *   `-v, --verbose <True|False>`: Verbose stdout reporting. (Default: `True`)
@@ -96,9 +94,6 @@ tldr -x False
 
 # Use modified output tone
 tldr -n modified
-
-# Enable glyph-based synthesis
-tldr -g True
 
 # Increase the scale of max tokens allowed per response
 tldr -t high

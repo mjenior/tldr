@@ -34,6 +34,12 @@ class TldrClass(CompletionHandler):
         self.user_query = ""
         self.added_context = ""
 
+        # Read in system instructions
+        self.instructions = read_system_instructions()
+
+        # Establish output directory
+        self.output_directory = self._handle_output_path(output_directory, verbose)
+
         # Set API key
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         if not self.api_key:
@@ -52,7 +58,7 @@ class TldrClass(CompletionHandler):
         # Fetch additional context if provided
         if context_directory is not None:
             raw_context = fetch_content(
-                search_directory, combine=True, recursive=self.recursive_search
+                context_directory, combine=True, recursive=self.recursive_search
             )
             context_report = f", and {len(raw_context)} context documents"
             added_context = self.single_completion(
@@ -70,12 +76,6 @@ class TldrClass(CompletionHandler):
 
         if self.verbose == True:
             print(f"Identified {self.sources} reference documents{context_report}.\n")
-
-        # Read in system instructions
-        self.instructions = read_system_instructions()
-
-        # Establish output directory
-        self.output_directory = self._handle_output_path(output_directory, verbose)
 
     def __call__(self, query=None):
         """
