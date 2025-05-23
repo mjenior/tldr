@@ -54,7 +54,7 @@ class TldrClass(CompletionHandler):
             raw_context = fetch_content(
                 search_directory, combine=True, recursive=self.recursive_search
             )
-            add_context = f", and {len(raw_context)} context documents"
+            context_report = f", and {len(raw_context)} context documents"
             added_context = self.single_completion(
                 message="\n".join(raw_context), prompt_type="format_context"
             )
@@ -65,9 +65,11 @@ class TldrClass(CompletionHandler):
                 verbose=self.verbose,
             )
             self.added_context += f"\nBelow is additional context for reference during response generation:\n{added_context}"
+        else:
+            context_report = ""
 
         if self.verbose == True:
-            print(f"Identified {self.sources} reference documents{add_context}.\n")
+            print(f"Identified {self.sources} reference documents{context_report}.\n")
 
         # Read in system instructions
         self.instructions = read_system_instructions()
@@ -158,7 +160,7 @@ class TldrClass(CompletionHandler):
             print("Refining user query...")
 
         # Check text formatting
-        user_query = _lint_user_query(query)
+        user_query = self._lint_user_query(query)
 
         # Generate new query text
         new_query = self.single_completion(
@@ -166,7 +168,7 @@ class TldrClass(CompletionHandler):
         )
 
         # Handle output text
-        new_query = "Ensure that addressing the following user query is the key consideration in you response:\n{new_query}\n\n"
+        full_query = f"Ensure that addressing the following user query is the key consideration in you response:\n{new_query}\n"
         save_response_text(
             new_query,
             label="new_query",
@@ -174,9 +176,9 @@ class TldrClass(CompletionHandler):
             verbose=self.verbose,
         )
         if self.verbose == True:
-            print("Refined query:\n{new_query}\n")
+            print(f"Refined query:\n{new_query}\n")
 
-        return new_query
+        return full_query
 
     async def summarize_resources(self):
         """Generate component and synthesis summary text"""

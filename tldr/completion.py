@@ -13,7 +13,7 @@ class CompletionHandler:
         factor = scaling[self.token_scale]
         return int(tokens * factor)
 
-    async def _async_single_completion(self, prompt, prompt_type, **kwargs):
+    async def _async_single_completion(self, message, prompt_type, **kwargs):
         """Initialize and submit a single chat completion request"""
 
         # Fetch params
@@ -25,7 +25,7 @@ class CompletionHandler:
         # Assemble messages object, adding query and context information
         messages = [
             {"role": "system", "content": instructions + self.user_query},
-            {"role": "user", "content": prompt + self.context},
+            {"role": "user", "content": message + self.added_context},
         ]
 
         # Rescale max tokens
@@ -107,12 +107,11 @@ class CompletionHandler:
         instructions = instructions_dict["system_instruction"]
         model = instructions_dict["model"]
         output_tokens = instructions_dict["max_output_tokens"]
-        context_query = self.user_query
 
         # Assemble messages object
         messages = [
-            {"role": "user", "content": context_query + message},
-            {"role": "system", "content": instructions},
+            {"role": "system", "content": instructions + self.user_query},
+            {"role": "user", "content": message + self.added_context},
         ]
 
         # Rescale max tokens
