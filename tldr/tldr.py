@@ -40,6 +40,13 @@ def parse_user_arguments():
         help="Directory for additional context documents",
     )
     parser.add_argument(
+        "-u",
+        "--recursive_search",
+        type=bool,
+        default=False,
+        help="Recursively search input directories",
+    )
+    parser.add_argument(
         "-x",
         "--research",
         type=bool,
@@ -93,6 +100,7 @@ def main():
         search_directory=args.input_directory,
         output_directory=args.output_directory,
         context_directory=args.context_directory,
+        recursive_search=args.recursive_search,
         verbose=args.verbose,
         token_scale=args.token_scale,
     )

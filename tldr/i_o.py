@@ -12,7 +12,7 @@ def create_timestamp():
     return datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
-def fetch_content(search_dir, combine=False):
+def fetch_content(search_dir, combine=False, recursive=False):
     """
     Find files and read in thier contents.
     Returns a dictionary with file extensions as keys by default.
@@ -20,7 +20,7 @@ def fetch_content(search_dir, combine=False):
     """
 
     # Collect readable text
-    files = _find_readable_files(search_dir)
+    files = _find_readable_files(search_dir, recursive)
 
     # Extract text from found files
     content = [] if combine == True else {}
@@ -34,7 +34,7 @@ def fetch_content(search_dir, combine=False):
     return content
 
 
-def _find_readable_files(directory: str = ".") -> dict:
+def _find_readable_files(directory: str = ".", recursive=False) -> dict:
     """
     Recursively scan the given directory for readable text files.
     Includes: .pdf, .docx, and .html files, and generic text files.
@@ -43,7 +43,7 @@ def _find_readable_files(directory: str = ".") -> dict:
     Returns:
         A dictionary with file extensions as keys and lists of file paths as values.
     """
-    if not os.path.isdir(directory, recursive=False):
+    if not os.path.isdir(directory):
         print(f"Error: Directory '{directory}' does not exist.")
 
     readable_files_by_type = {"pdf": [], "docx": [], "html": [], "txt": [], "md": []}

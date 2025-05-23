@@ -59,6 +59,7 @@ pip install -e .
 *   `-o, --output_directory <path>`: Directory for output files. (Default: `.`)
 *   `-r, --refine_query <True|False>`: Automatically refine user query. (Default: `True`)
 *   `-c, --context_directory <path>`: Directory for additional context documents. (Default: None)
+*   `-u, --recursive_search <True|False>`: Recursively search input directories. (Default: `False`)
 *   `-x, --research <True|False>`: Use research agent for knowledge gaps. (Default: `True`)
 *   `-n, --tone <tone>`: Final summary tone. (Choices: `default`, `modified`; Default: `default`)
 *   `-g, --glyphs <True|False>`: Utilize associative glyphs in summary. (Default: `False`)
@@ -84,8 +85,11 @@ tldr -i ./my_papers -o ./summaries
 # Add greater context to eaach summary generation
 tldr -c ./context_files
 
-# Enable query prompt refinement
-tldr -r True
+# Enable recursive file search
+tldr -u True
+
+# Disable query prompt refinement
+tldr -r False
 
 # Disable research agent
 tldr -x False

@@ -22,6 +22,7 @@ class TldrClass(CompletionHandler):
         search_directory=".",
         output_directory=".",
         context_directory=None,
+        recursive_search=False,
         verbose=True,
         api_key=None,
         token_scale="medium",
@@ -29,6 +30,7 @@ class TldrClass(CompletionHandler):
         # Set basic attr
         self.verbose = verbose
         self.token_scale = token_scale
+        self.recursive_search = recursive_search
         self.user_query = ""
         self.added_context = ""
 
@@ -44,12 +46,14 @@ class TldrClass(CompletionHandler):
         # Read in files and contents
         if self.verbose == True:
             print("Searching for input files...")
-        self.content = fetch_content(search_directory)
+        self.content = fetch_content(search_directory, recursive=self.recursive_search)
         self.sources = sum([len(self.content[x]) for x in self.content.keys()])
 
         # Fetch additional context if provided
         if context_directory is not None:
-            raw_context = fetch_content(search_directory, combine=True)
+            raw_context = fetch_content(
+                search_directory, combine=True, recursive=self.recursive_search
+            )
             add_context = f", and {len(raw_context)} context documents"
             added_context = self.single_completion(
                 message="\n".join(raw_context), prompt_type="format_context"
