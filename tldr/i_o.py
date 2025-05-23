@@ -12,19 +12,24 @@ def create_timestamp():
     return datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
-def fetch_content(search_dir):
+def fetch_content(search_dir, combine=False):
     """
     Find files and read in thier contents.
-    Returns a dictionary with file extensions as keys.
+    Returns a dictionary with file extensions as keys by default.
+    Also able to return all content in a single list.
     """
 
     # Collect readable text
     files = _find_readable_files(search_dir)
 
     # Extract text from found files
-    content = {}
+    content = [] if combine == True else {}
     for ext in files.keys():
-        content[ext] = read_file_content(files[ext], ext)
+        current = read_file_content(files[ext], ext)
+        if combine == True:
+            content += current
+        else:
+            content[ext] = current
 
     return content
 
@@ -38,47 +43,72 @@ def _find_readable_files(directory: str = ".") -> dict:
     Returns:
         A dictionary with file extensions as keys and lists of file paths as values.
     """
+    if not os.path.isdir(directory, recursive=False):
+        print(f"Error: Directory '{directory}' does not exist.")
+
     readable_files_by_type = {"pdf": [], "docx": [], "html": [], "txt": [], "md": []}
 
-    for root, _, files in os.walk(directory):
-        for filename in files:
+    if recursive == False:
+        for filename in os.listdir(directory):
             if filename.startswith("tldr.") == True:
                 continue
+            else:
+                filepath = os.path.join(directory, filename)
+                ext = os.path.splitext(filename)[1].lower()
 
-            filepath = os.path.join(root, filename)
-            ext = os.path.splitext(filename)[1].lower()
+            readable_files_by_type = _update_file_dictionary(
+                readable_files_by_type, filepath, ext
+            )
 
-            try:
-                if ext in [".pdf"]:
-                    reader = PdfReader(filepath)
-                    # Check if any page seems to contain text
-                    if any(page.extract_text() for page in reader.pages):
-                        readable_files_by_type["pdf"].append(filepath)
+    else:
+        for root, _, files in os.walk(directory):
+            for filename in files:
+                if filename.startswith("tldr.") == True:
+                    continue
+                else:
+                    filepath = os.path.join(root, filename)
+                    ext = os.path.splitext(filename)[1].lower()
 
-                elif ext in [".docx"]:
-                    doc = Document(filepath)
-                    if any(para.text.strip() for para in doc.paragraphs):
-                        readable_files_by_type["docx"].append(filepath)
-
-                elif ext in [".html", ".htm"]:
-                    with open(filepath, "r", encoding="utf-8") as f:
-                        f.read(1024)
-                    readable_files_by_type["html"].append(filepath)
-
-                elif ext in [".md"]:
-                    with open(filepath, "r", encoding="utf-8") as f:
-                        f.read(1024)
-                    readable_files_by_type["md"].append(filepath)
-
-                elif ext in [".txt"]:
-                    with open(filepath, "r", encoding="utf-8") as f:
-                        f.read(1024)
-                    readable_files_by_type["txt"].append(filepath)
-
-            except Exception as e:
-                continue
+                readable_files_by_type = _update_file_dictionary(
+                    readable_files_by_type, filepath, ext
+                )
 
     return {k: v for k, v in readable_files_by_type.items() if v}
+
+
+def _update_file_dictionary(file_dict, file_path, file_ext):
+    """Add file content entries to content dictionary"""
+    try:
+        if file_ext in [".pdf"]:
+            reader = PdfReader(file_path)
+            # Check if any page seems to contain text
+            if any(page.extract_text() for page in reader.pages):
+                file_dict["pdf"].append(file_path)
+
+        elif file_ext in [".docx"]:
+            doc = Document(file_path)
+            if any(para.text.strip() for para in doc.paragraphs):
+                file_dict["docx"].append(file_path)
+
+        elif file_ext in [".html", ".htm"]:
+            with open(file_path, "r", encoding="utf-8") as f:
+                f.read(1024)
+            readable_files_by_type["html"].append(file_path)
+
+        elif file_ext in [".md"]:
+            with open(file_path, "r", encoding="utf-8") as f:
+                f.read(1024)
+            file_dict["md"].append(file_path)
+
+        elif file_ext in [".txt"]:
+            with open(file_path, "r", encoding="utf-8") as f:
+                f.read(1024)
+            file_dict["txt"].append(file_path)
+
+    except Exception as e:
+        pass
+
+    return file_dict
 
 
 def read_file_content(filelist, ext=None):

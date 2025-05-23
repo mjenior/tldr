@@ -30,21 +30,24 @@ def parse_user_arguments():
         "-r",
         "--refine_query",
         type=bool,
-        default=False,
+        default=True,
         help="Automatically refine and improve the user query",
     )
     parser.add_argument(
-        "-v", "--verbose", type=bool, default=True, help="Verbose stdout reporting"
+        "-c",
+        "--context_directory",
+        default=None,
+        help="Directory for additional context documents",
     )
     parser.add_argument(
-        "-s",
+        "-x",
         "--research",
         type=bool,
         default=True,
         help="Additional research agent to find and fill knowledge gaps",
     )
     parser.add_argument(
-        "-c",
+        "-s",
         "--context_size",
         type=str,
         default="medium",
@@ -73,6 +76,9 @@ def parse_user_arguments():
         default="medium",
         help="Modifier for scale of maximum output tokens window",
     )
+    parser.add_argument(
+        "-v", "--verbose", type=bool, default=True, help="Verbose stdout reporting"
+    )
 
     return parser.parse_args()
 
@@ -86,6 +92,7 @@ def main():
     tldr = TldrClass(
         search_directory=args.input_directory,
         output_directory=args.output_directory,
+        context_directory=args.context_directory,
         verbose=args.verbose,
         token_scale=args.token_scale,
     )
@@ -95,10 +102,9 @@ def main():
         sys.exit(1)
 
     # Extend user query
-    if args.refine_query == True and args.query is not None:
-        tldr.user_query = tldr.refine_user_query(args.query)
-    else:
-        tldr.user_query = ""
+    tldr.user_query = (
+        tldr.refine_user_query(args.query) if args.refine_query == True else args.query
+    )
 
     # Summarize documents
     tldr.all_summaries = asyncio.run(tldr.summarize_resources())

@@ -21,6 +21,7 @@ class TldrClass(CompletionHandler):
         self,
         search_directory=".",
         output_directory=".",
+        context_directory=None,
         verbose=True,
         api_key=None,
         token_scale="medium",
@@ -28,6 +29,8 @@ class TldrClass(CompletionHandler):
         # Set basic attr
         self.verbose = verbose
         self.token_scale = token_scale
+        self.user_query = "\n"
+        self.context = "\n"
 
         # Set API key
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
@@ -40,11 +43,21 @@ class TldrClass(CompletionHandler):
 
         # Read in files and contents
         if self.verbose == True:
-            print("Searching input directory...")
+            print("Searching for input files...")
         self.content = fetch_content(search_directory)
         self.sources = sum([len(self.content[x]) for x in self.content.keys()])
+
+        # Fetch additional context if provided
+        if context_directory is not None:
+            raw_context = fetch_content(search_directory, combine=True)
+            add_context = f", and {len(raw_context)} context documents"
+            self.context = self.single_completion(
+                message="\n".join(raw_context), prompt_type="format_context"
+            )
+        else:
+            add_context = ""
         if self.verbose == True:
-            print(f"Identified {self.sources} references to include in synthesis.\n")
+            print(f"Identified {self.sources} reference documents{add_context}.\n")
 
         # Read in system instructions
         self.instructions = read_system_instructions()
@@ -65,8 +78,6 @@ class TldrClass(CompletionHandler):
             # Update user query
             if query is not None:
                 self.user_query = self.refine_user_query(query)
-            else:
-                self.user_query = ""
 
             # Generate async summaries
             self.all_summaries = await self.summarize_resources()
@@ -123,7 +134,7 @@ class TldrClass(CompletionHandler):
             processed_query = processed_query[0].upper() + processed_query[1:]
 
         # Ensure the query ends with a question mark (if the string is not empty)
-        if processed_query and not processed_query.endswith("?"):
+        if processed_query and not processed_query[-1] not in [".", "!", "?"]:
             processed_query += "?"
         elif not processed_query:
             pass
@@ -137,13 +148,15 @@ class TldrClass(CompletionHandler):
             print("Refining user query...")
 
         # Check text formatting
-        user_query = self._lint_user_query(query)
+        user_query = _lint_user_query(query)
 
         # Generate new query text
-        new_query = self.completion(message=user_query, prompt_type="refine_prompt")
+        new_query = self.single_completion(
+            message=user_query, prompt_type="refine_prompt"
+        )
 
         # Handle output text
-        new_query = "Ensure that addressing the following user query is the central theme of your output text:\n{new_query}\n\n"
+        new_query = "Ensure that addressing the following user query is the key consideration in you response:\n{new_query}\n\n"
         save_response_text(
             new_query,
             label="new_query",
@@ -161,7 +174,7 @@ class TldrClass(CompletionHandler):
         # Asynchronously summarize documents
         if self.verbose == True:
             print("Generating summaries for selected resources...")
-        summaries = await self.async_multi_completions(self.content)
+        summaries = await self.async_multi_completions()
         await self.async_client.close()
 
         # Join response strings
@@ -188,7 +201,7 @@ class TldrClass(CompletionHandler):
         if glyph_synthesis == True:
 
             # Generate glyph-formatted prompt
-            glyph_synthesis = self.completion(
+            glyph_synthesis = self.single_completion(
                 message=user_prompt, prompt_type="glyph_prompt"
             )
             save_response_text(
@@ -199,12 +212,12 @@ class TldrClass(CompletionHandler):
             )
 
             # Summarize documents based on glyph summary
-            synthesis = self.completion(
+            synthesis = self.single_completion(
                 message=glyph_synthesis, prompt_type="interpret_glyphs"
             )
         else:
             # Otherwise, use standard synthesis system instructions prompt
-            synthesis = self.completion(
+            synthesis = self.single_completion(
                 message=user_prompt, prompt_type="executive_summary"
             )
 
@@ -223,21 +236,21 @@ class TldrClass(CompletionHandler):
         # Identify gaps in understanding
         if self.verbose == True:
             print("\rIdentifying technical gaps in summary...")
-        gap_questions = self.completion(
+        gap_questions = self.single_completion(
             message=self.content_synthesis, prompt_type="research_instructions"
         )
 
         # Search web for to fill gaps
         if self.verbose == True:
             print("\rResearching gaps in important background...")
-        filling_text = self.search_web(gap_questions, context_size=context_size)
+        research_results = self.search_web(gap_questions, context_size=context_size)
 
         # Handle output
         research_text = f"""Gap questions:
 {gap_questions}
 
 Answers:
-{filling_text}
+{research_results}
 """
         save_response_text(
             research_text,
@@ -246,7 +259,8 @@ Answers:
             verbose=self.verbose,
         )
 
-        self.content_synthesis += research_text
+        # Add to extra context
+        self.context += research_results
 
     def polish_response(self, tone: str = "default"):
         """Refine final response text"""
@@ -260,7 +274,9 @@ Answers:
         response_text = self.user_query + self.content_synthesis
 
         # Run completion and save final response text
-        polished = self.completion(message=response_text, prompt_type=tone_instructions)
+        polished = self.single_completion(
+            message=response_text, prompt_type=tone_instructions
+        )
         save_response_text(
             polished,
             label="final",

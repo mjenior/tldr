@@ -2,7 +2,7 @@
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-Version = 0.2.5""
+Version = 0.3.0"""
 
 ## Overview
 
@@ -56,14 +56,15 @@ pip install -e .
 
 *   `query` (Positional): Optional user query. (Default: None)
 *   `-i, --input_directory <path>`: Directory for input text files. (Default: `.`)
-*   `-o, --output_directory <path>`: Directory for output files. (Default: `tldr.[timestamp]`)
-*   `-r, --refine_query <True|False>`: Automatically refine user query. (Default: `False`)
-*   `-v, --verbose <True|False>`: Verbose stdout reporting. (Default: `True`)
-*   `-s, --research <True|False>`: Use research agent for knowledge gaps. (Default: `True`)
+*   `-o, --output_directory <path>`: Directory for output files. (Default: `.`)
+*   `-r, --refine_query <True|False>`: Automatically refine user query. (Default: `True`)
+*   `-c, --context_directory <path>`: Directory for additional context documents. (Default: None)
+*   `-x, --research <True|False>`: Use research agent for knowledge gaps. (Default: `True`)
 *   `-n, --tone <tone>`: Final summary tone. (Choices: `default`, `modified`; Default: `default`)
 *   `-g, --glyphs <True|False>`: Utilize associative glyphs in summary. (Default: `False`)
 *   `-t, --token_scale <scale>`: Scale for max output tokens. (Choices: `low`, `medium`, `high`; Default: `medium`)
-*   `-c, --context_size <scale>`: Context window size for research agent web search. (Choices: `low`, `medium`, `high`; Default: `medium`)
+*   `-s, --context_size <scale>`: Context window size for research agent web search. (Choices: `low`, `medium`, `high`; Default: `medium`)
+*   `-v, --verbose <True|False>`: Verbose stdout reporting. (Default: `True`)
 
 ### Command Line
 
@@ -80,11 +81,14 @@ tldr "CRISPR advances" -r True
 # Specify input directory and output directory
 tldr -i ./my_papers -o ./summaries
 
+# Add greater context to eaach summary generation
+tldr -c ./context_files
+
 # Enable query prompt refinement
 tldr -r True
 
 # Disable research agent
-tldr -s False
+tldr -x False
 
 # Use modified output tone
 tldr -n modified
@@ -96,7 +100,7 @@ tldr -g True
 tldr -t high
 
 # Increase context window size for gap-filling web search
-tldr -c high
+tldr -s high
 ```
 
 ### Python API

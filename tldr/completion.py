@@ -22,10 +22,10 @@ class CompletionHandler:
         model = instructions_dict["model"]
         output_tokens = instructions_dict["max_output_tokens"]
 
-        # Assemble messages object
+        # Assemble messages object, adding query and context information
         messages = [
-            {"role": "system", "content": instructions},
-            {"role": "user", "content": prompt},
+            {"role": "system", "content": instructions + self.user_query},
+            {"role": "user", "content": prompt + self.context},
         ]
 
         # Rescale max tokens
@@ -43,15 +43,12 @@ class CompletionHandler:
             # Handle hitting the rate limit silently
             pass
 
-    async def async_multi_completions(self, prompt_dict):
+    async def async_multi_completions(self):
         """
         Runs multiple _async_single_completion calls concurrently using asyncio.gather, with retry on 429.
         """
-        prompt_dict = self.content
-        context_query = self.user_query
-
         coroutine_tasks = []
-        for ext, prompts in prompt_dict.items():
+        for ext, prompts in self.content.items():
 
             # Define correct summary to generate
             if ext == "pdf":
@@ -65,7 +62,7 @@ class CompletionHandler:
             for prompt in prompts:
                 task = self._retry_on_429(
                     self._async_single_completion,
-                    prompt=context_query + prompt,
+                    prompt=prompt,
                     prompt_type=prompt_type,
                 )
                 coroutine_tasks.append(task)
@@ -102,7 +99,7 @@ class CompletionHandler:
 
         return response.output_text
 
-    def completion(self, message, prompt_type, **kwargs):
+    def single_completion(self, message, prompt_type, **kwargs):
         """Single synchronous chat completion"""
 
         # Fetch params

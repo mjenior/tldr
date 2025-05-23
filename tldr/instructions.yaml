@@ -10,6 +10,16 @@ refine_prompt:
   Return only the newly generated question text.
 
 
+format_context:
+ description: "Clean up context source text."
+ model: "gpt-4o-mini"
+ max_output_tokens: 1024
+ system_instruction: |
+  You will receive raw text. Your objective is to extract the core information, simplify complex sentences, and remove any irrelevant or redundant content. 
+  Reformat the text into a concise and easily digestible format, suitable for providing essential context in a chat completion. 
+  Prioritize clarity and brevity.
+
+
 summarize_publication:
  description: "Scientific Publication Summarizer"
  model: "gpt-4o"
