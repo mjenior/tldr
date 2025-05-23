@@ -137,7 +137,7 @@ class TldrClass(CompletionHandler):
             print("Refining user query...")
 
         # Check text formatting
-        user_query = _lint_user_query(query)
+        user_query = self._lint_user_query(query)
 
         # Generate new query text
         new_query = self.completion(message=user_query, prompt_type="refine_prompt")
