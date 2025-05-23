@@ -30,7 +30,7 @@ class TldrClass(CompletionHandler):
         self.verbose = verbose
         self.token_scale = token_scale
         self.user_query = "\n"
-        self.context = "\n"
+        self.added_context = "\n"
 
         # Set API key
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
@@ -51,7 +51,7 @@ class TldrClass(CompletionHandler):
         if context_directory is not None:
             raw_context = fetch_content(search_directory, combine=True)
             add_context = f", and {len(raw_context)} context documents"
-            self.context = self.single_completion(
+            self.added_context = self.single_completion(
                 message="\n".join(raw_context), prompt_type="format_context"
             )
         else:
@@ -260,7 +260,7 @@ Answers:
         )
 
         # Add to extra context
-        self.context += research_results
+        self.added_context += research_results
 
     def polish_response(self, tone: str = "default"):
         """Refine final response text"""
