@@ -29,8 +29,8 @@ class TldrClass(CompletionHandler):
         # Set basic attr
         self.verbose = verbose
         self.token_scale = token_scale
-        self.user_query = "\n"
-        self.added_context = "\n"
+        self.user_query = ""
+        self.added_context = ""
 
         # Set API key
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
@@ -51,11 +51,17 @@ class TldrClass(CompletionHandler):
         if context_directory is not None:
             raw_context = fetch_content(search_directory, combine=True)
             add_context = f", and {len(raw_context)} context documents"
-            self.added_context = self.single_completion(
+            added_context = self.single_completion(
                 message="\n".join(raw_context), prompt_type="format_context"
             )
-        else:
-            add_context = ""
+            save_response_text(
+                added_context,
+                label="added_context",
+                output_dir=self.output_directory,
+                verbose=self.verbose,
+            )
+            self.added_context += f"\nBelow is additional context for reference during response generation:\n{added_context}"
+
         if self.verbose == True:
             print(f"Identified {self.sources} reference documents{add_context}.\n")
 
