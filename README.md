@@ -2,7 +2,7 @@
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-Version = 0.3.0"""
+Version = 0.3.17""""""""""""""""""""
 
 ## Overview
 
@@ -84,7 +84,7 @@ tldr -i ./my_papers -o ./summaries
 tldr -c ./context_files
 
 # Enable recursive file search
-tldr -u True
+tldr -s True
 
 # Disable query prompt refinement
 tldr -r False
@@ -95,11 +95,8 @@ tldr -x False
 # Use modified output tone
 tldr -n modified
 
-# Increase the scale of max tokens allowed per response
+# Increase the scale of max tokens allowed
 tldr -t high
-
-# Increase context window size for gap-filling web search
-tldr -s high
 ```
 
 ### Python API
@@ -154,10 +151,10 @@ print('\nFinal Evaluation:\n', judge.evaluations)
 
 The tool generates several output files during processing:
 
-- `tldr.summaries.[file_count].[timestamp].txt`: Individual document summaries
-- `tldr.synthesis.[timestamp].txt`: Integrated summary across documents
-- `tldr.research.[timestamp].txt`: Additional research information
-- `tldr.final.[timestamp].txt`: Final polished response
+- `intermediate/tldr.summary.[file_count].[timestamp].txt`: Individual document summaries
+- `intermediate/tldr.synthesis.[timestamp].txt`: Integrated summary across documents
+- `intermediate/tldr.research.[timestamp].txt`: Additional research information
+- `[content_based_name].tldr.pdf`: Final polished response
 
 ## Configuration
 

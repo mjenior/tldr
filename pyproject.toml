@@ -1,6 +1,6 @@
 [project]
 name = "tldr"
-version = "0.3.0"
+version = "0.3.17"
 description = "Reads and summarizes top points from a provided series of articles using the OpenAI API."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -12,6 +12,7 @@ dependencies = [
     "pillow>=10.2.0",
     "pyyaml>=6.0.1",
     "jsonschema>=4.21.1",
+    "reportlab",
     "black",
 ]
 
@@ -23,4 +24,4 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project.scripts]
-tldr = "tldr.tldr:main"
+tldr = "tldr.tldr:cli_main"

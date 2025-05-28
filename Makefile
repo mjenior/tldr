@@ -1,4 +1,4 @@
-VERSION = "0.3.0"
+VERSION = "0.3.17"
 
 # Default target
 .DEFAULT_GOAL := help
@@ -18,6 +18,9 @@ minor:
 major:
 	bumpversion --current-version ${VERSION} major --allow-dirty --no-tag --no-commit
 
+format:
+	pixi run black tldr/*.py
+
 build: format
 	pixi lock
 	pixi run python -m build
@@ -26,9 +29,7 @@ install:
 	pixi install
 	python3.11 -m pip install -e .
 
-format:
-	pixi run black tldr/*.py
-
 clean: 
 	rm -rf build *.egg-info
 
+update: build install clean
