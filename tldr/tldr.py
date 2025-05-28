@@ -3,7 +3,9 @@
 import sys
 import argparse
 import asyncio
-from tldr.core import TldrClass
+
+from .core import TldrClass
+from .logging import setup_logging
 
 
 def parse_user_arguments():
@@ -40,26 +42,18 @@ def parse_user_arguments():
         help="Directory for additional context documents",
     )
     parser.add_argument(
-        "-u",
+        "-r",
         "--recursive_search",
         type=bool,
         default=False,
         help="Recursively search input directories",
     )
     parser.add_argument(
-        "-x",
-        "--research",
+        "-w",
+        "--web_search",
         type=bool,
         default=True,
         help="Additional research agent to find and fill knowledge gaps",
-    )
-    parser.add_argument(
-        "-s",
-        "--context_size",
-        type=str,
-        default="medium",
-        choices=["low", "medium", "high"],
-        help="Context window size for research agent web search",
     )
     parser.add_argument(
         "-n",
@@ -69,63 +63,86 @@ def parse_user_arguments():
         help="Final executive summary response tone",
     )
     parser.add_argument(
-        "-t",
-        "--token_scale",
+        "-s",
+        "--context_size",
         type=str,
         choices=["low", "medium", "high"],
         default="medium",
-        help="Modifier for scale of maximum output tokens window",
+        help="Modifier for scale of maximum output tokens and context window size for research agent web search",
     )
     parser.add_argument(
         "-v", "--verbose", type=bool, default=True, help="Verbose stdout reporting"
     )
 
+    parser.add_argument(
+        "-t", "--testing", type=bool, default=False, help="Uses only gpt-4o-mini for cheaper+faster testing runs."
+    )
+
     return parser.parse_args()
 
 
-def main():
+async def main():
     """Main entry point for the tldr command"""
+
     # Read in command line arguments
     args = parse_user_arguments()
 
+    # Set up logger
+    setup_logging(args.verbose)
+    main_logger = logging.getLogger() 
+
     # Read in content and extend user query
+    main_logger.info("Searching for input files...")
     tldr = TldrClass(
         search_directory=args.input_directory,
         output_directory=args.output_directory,
         context_directory=args.context_directory,
         recursive_search=args.recursive_search,
+        context_size=args.context_size,
         verbose=args.verbose,
-        token_scale=args.token_scale,
+        testing=args.testing,
     )
 
     # Check if no resources were found
     if tldr.sources == 0:
+        main_logger.error("No resources found in current search directory. Exiting.")
         sys.exit(1)
 
     # Extend user query
-    if len(args.query) > 0:
-        tldr.user_query = (
-            tldr.refine_user_query(args.query)
-            if args.refine_query == True
-            else args.query
-        )
+    if len(args.query) > 0 and args.refine_query == True:
+        main_logger.info("Refining user query...")
+        await tldr.refine_user_query(args.query)
+
+    # Condense any context docs provided
+    if tldr.raw_context is not None:
+        main_logger.info("Refining background context...")
+        await tldr.format_context_references()
 
     # Summarize documents
-    tldr.all_summaries = asyncio.run(tldr.summarize_resources())
+    main_logger.info("Generating summaries for selected resources...")
+    await tldr.summarize_resources()
 
     # Synthesize content
     if len(tldr.all_summaries) >= 2:
-        tldr.integrate_summaries()
+        main_logger.info("Generating integrated summary text...")
+        await tldr.integrate_summaries()
     else:
         tldr.content_synthesis = tldr.all_summaries[0]
 
     # Use research agent to fill gaps
-    if args.research:
-        tldr.apply_research(context_size=args.context_size)
+    if args.web_search:
+        main_logger.info("Applying research agent to knowledge gaps...")
+        await tldr.apply_research()
 
     # Rewrite for response type and tone
-    tldr.polish_response(args.tone)
+    main_logger.info("Finalizing response text...")
+    await tldr.polish_response(args.tone)
+
+
+def cli_main():
+    """Command line utility function call"""
+    asyncio.run(main())
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

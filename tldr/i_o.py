@@ -1,10 +1,16 @@
 import os
+import re
 import yaml
 from datetime import datetime
 
 from docx import Document
 from PyPDF2 import PdfReader, PdfMerger
 from bs4 import BeautifulSoup
+
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
 
 
 def create_timestamp():
@@ -173,22 +179,18 @@ def read_system_instructions(file_path: str = "instructions.yaml") -> dict:
 
 
 def save_response_text(
-    out_data: list, label: str = "response", output_dir: str = ".", verbose: bool = True
+    out_data: list,
+    label: str = "response",
+    output_dir: str = ".",
+    intermediate=True,
+    verbose: bool = True,
 ) -> str:
     """
     Saves a large string variable to a text file with a dynamic filename
     based on a timestamp and a user-provided label.
     """
-    errors = "strict"
-    chunk_size = 1024 * 1024
-
     # Get current timestamp
     timestamp = create_timestamp()
-
-    # Sanitize the label to create a valid filename part
-    sanitized_label = "".join(
-        c if c.isalnum() or c in ("_", "-") else "_" for c in label
-    ).strip("_")
 
     # Format text just in case
     if isinstance(out_data, str):
@@ -200,22 +202,184 @@ def save_response_text(
 
         # Construct the dynamic filename
         if label == "summary":
-            filename = f"tldr.{sanitized_label}.{idx+1}.{timestamp}.txt"
+            filename = f"tldr.{label}.{idx+1}.{timestamp}.txt"
         else:
-            filename = f"tldr.{sanitized_label}.{timestamp}.txt"
-        filepath = os.path.join(output_dir, filename)
+            filename = f"tldr.{label}.{timestamp}.txt"
 
-        try:
-            with open(filepath, "w", encoding="utf-8", errors=errors) as f:
-                # Write in chunks to avoid excessive memory usage for very large strings
-                for i in range(0, len(current_data), chunk_size):
-                    f.write(current_data[i : i + chunk_size])
-            if verbose == True:
-                print(f"\tResponse text saved to {filename}")
+        if intermediate == True:
+            filepath = os.path.join(output_dir, "intermediate", filename)
+        else:
+            filepath = os.path.join(output_dir, filename)
 
-        except IOError as e:
-            print(f"Error writing to file {filename}: {e}")
-            raise  # Re-raise the exception after printing
-        except Exception as e:
-            print(f"An unexpected error occurred while saving {filename}: {e}")
-            raise  # Re-raise the exception
+        _save_summary_txt(current_data, filepath, verbose)
+
+
+def _save_summary_txt(
+    text_data, outpath, verbose, errors="strict", chunk_size=1024 * 1024
+):
+    """Save response text to .txt file"""
+    try:
+        with open(outpath, "w", encoding="utf-8", errors=errors) as f:
+            # Write in chunks to avoid excessive memory usage for very large strings
+            for i in range(0, len(text_data), chunk_size):
+                f.write(text_data[i : i + chunk_size])
+        if verbose == True:
+            print(f"\tResponse text saved to {outpath}")
+    except Exception as e:
+        print(f"An unexpected error occurred while saving {outpath}: {e}")
+        raise
+
+
+def generate_tldr_pdf(summary_text, doc_title, outpath):
+    """Saves polished summary string to formatted PDF document."""
+
+    # Create file path with linted name
+    file_name = _create_filename(doc_title)
+    file_path = os.path.join(outpath, file_name)
+
+    # Format content
+    styles = getSampleStyleSheet()
+    body = [Paragraph(doc_title, styles["h1"])]
+    body.append(Spacer(1, 0.2 * inch))
+    paragraphs = summary_text.split("\n\n")
+    for paragraph_text in paragraphs:
+        txt = Paragraph(paragraph_text, styles["normal"])
+        body.append(txt)
+        body.append(Spacer(1, 0.1 * inch))
+
+    # Create document
+    doc = SimpleDocTemplate(file_path, pagesize=letter)
+    try:
+        doc.build(body)
+    except Exception as e:
+        print(f"An unexpected error occurred while saving {file_path}: {e}")
+        raise
+
+    print(f"\nFinal summary saved to {file_path}\n")
+
+
+def _create_filename(title: str, max_length: int = 50) -> str:
+    """
+    Accepts a string that is a document title, removes uninformative words,
+    and reformats the string to be used as a file name.
+    """
+    # Convert to lowercase
+    filename = title.lower()
+
+    # Define uninformative words (can be extended)
+    uninformative_words = [
+        "a",
+        "an",
+        "the",
+        "of",
+        "in",
+        "on",
+        "at",
+        "for",
+        "with",
+        "and",
+        "or",
+        "but",
+        "is",
+        "are",
+        "was",
+        "were",
+        "be",
+        "been",
+        "being",
+        "to",
+        "from",
+        "by",
+        "as",
+        "that",
+        "which",
+        "this",
+        "these",
+        "those",
+        "it",
+        "its",
+        "about",
+        "through",
+        "beyond",
+        "up",
+        "down",
+        "out",
+        "into",
+        "over",
+        "under",
+        "from",
+        "around",
+        "about",
+        "via",
+        "re",
+        "regarding",
+        "concerning",
+        "document",
+        "report",
+        "summary",
+        "technical",
+        "overview",
+        "introduction",
+        "analysis",
+        "study",
+        "research",
+        "paper",
+        "article",
+        "draft",
+        "final",
+        "version",
+        "update",
+        "notes",
+        "memo",
+        "brief",
+        "presentation",
+        "review",
+        "whitepaper",
+        "guide",
+        "manual",
+        "spec",
+        "specification",
+        "appendix",
+        "chapter",
+        "section",
+        "part",
+        "volume",
+        "issue",
+        "release",
+        "plan",
+        "project",
+        "initiative",
+        "program",
+        "system",
+        "process",
+        "procedure",
+        "framework",
+        "methodology",
+        "approach",
+        "solution",
+        "strategy",
+        "tbd",
+        "for review",
+        "confidential",
+    ]
+
+    # Remove uninformative words
+    for word in uninformative_words:
+        filename = re.sub(r"\b" + re.escape(word) + r"\b", "", filename)
+
+    # Replace non-alphanumeric characters (except spaces and underscores)
+    filename = re.sub(r"[^a-z0-9\s_]", " ", filename)
+
+    # Replace white space with underscore
+    filename = "_".join(filename.split()).strip("_")
+
+    # 8. Truncate if too long (optional, but good practice for filenames)
+    if len(filename) > max_length:
+        filename = filename[:max_length]
+        # Try to avoid cutting off in the middle of a word if possible
+        last = filename.rfind("_")
+        if last_hyphen != -1 and last_hyphen > max_length - 20:
+            filename = filename[:last]
+
+    # Assemble final name
+    return filename.strip("_") + ".tldr.pdf"

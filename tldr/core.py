@@ -1,15 +1,12 @@
 import os
+import re
+import logging
+
 import asyncio
+from openai import AsyncOpenAI
 
-from openai import OpenAI, AsyncOpenAI
-
-from tldr.i_o import (
-    create_timestamp,
-    fetch_content,
-    read_system_instructions,
-    save_response_text,
-)
-from tldr.completion import CompletionHandler
+from .i_o import *
+from .completion import CompletionHandler
 
 
 class TldrClass(CompletionHandler):
@@ -25,11 +22,16 @@ class TldrClass(CompletionHandler):
         recursive_search=False,
         verbose=True,
         api_key=None,
-        token_scale="medium",
+        context_size="medium",
+        testing=False,
     ):
+        # Pull in logger
+        self.logger = logging.getLogger(__name__)
+
         # Set basic attr
         self.verbose = verbose
-        self.token_scale = token_scale
+        self.testing = testing
+        self.context_size = context_size
         self.recursive_search = recursive_search
         self.user_query = ""
         self.added_context = ""
@@ -46,124 +48,95 @@ class TldrClass(CompletionHandler):
             raise ValueError("OpenAI API key not provided.")
 
         # Initialize OpenAI clients
-        self.client = OpenAI(api_key=self.api_key)
-        self.async_client = AsyncOpenAI(api_key=self.api_key)
+        self.client = AsyncOpenAI(api_key=self.api_key)
 
         # Read in files and contents
-        if self.verbose == True:
-            print("Searching for input files...")
         self.content = fetch_content(search_directory, recursive=self.recursive_search)
         self.sources = sum([len(self.content[x]) for x in self.content.keys()])
+        if self.verbose == True:
+            print(f"Identified {self.sources} reference documents for summarization.\n")
 
         # Fetch additional context if provided
         if context_directory is not None:
-            raw_context = fetch_content(
+            all_context = fetch_content(
                 context_directory, combine=True, recursive=self.recursive_search
             )
-            context_report = f", and {len(raw_context)} context documents"
-            added_context = self.single_completion(
-                message="\n".join(raw_context), prompt_type="format_context"
-            )
-            save_response_text(
-                added_context,
-                label="added_context",
-                output_dir=self.output_directory,
-                verbose=self.verbose,
-            )
-            self.added_context += f"\nBelow is additional context for reference during response generation:\n{added_context}"
+            if len(all_context) >= 1 and self.verbose == True:
+                print(
+                    f"Also identified {self.sources} reference documents for added context.\n"
+                )
+
+            self.raw_context = "\n".join(all_context)
         else:
-            context_report = ""
+            self.raw_context = None
 
-        if self.verbose == True:
-            print(f"Identified {self.sources} reference documents{context_report}.\n")
+    async def format_context_references(self):
+        """Creates more concise, less repetative context message."""
 
-    def __call__(self, query=None):
-        """
-        More streamlined, callable interface to run the main TLDR pipeline.
-
-        Arguments:
-        - query: user query for focused summary context
-        """
-
-        async def _pipeline():
-
-            # Update user query
-            if query is not None:
-                self.user_query = self.refine_user_query(query)
-
-            # Generate async summaries
-            self.all_summaries = await self.summarize_resources()
-
-            # Integrate summaries
-            if len(self.all_summaries) >= 2:
-                self.integrate_summaries()
-            else:
-                self.content_synthesis = self.all_summaries[0]
-
-            # Apply research if needed
-            self.apply_research()
-
-            # Polish the final result
-            self.polish_response()
-
-        # Run the async pipeline
-        asyncio.run(_pipeline())
+        added_context = await self.single_completion(
+            message="\n".join(self.raw_context), prompt_type="format_context"
+        )
+        save_response_text(
+            added_context,
+            label="added_context",
+            output_dir=self.output_directory,
+            verbose=self.verbose,
+        )
+        self.added_context += f"\nBelow is additional context for reference during response generation:\n{added_context}"
 
     @staticmethod
     def _handle_output_path(output_path, verbose=True) -> str:
         """Set up where to write output summaries"""
 
-        # Create new path string
-        current = create_timestamp()
-        new_path = f"{output_path}/tldr.{current}"
+        # Create full path for intermediate files
+        temp_path = os.path.join(
+            output_path, f"tldr.{create_timestamp()}", "intermediate"
+        )
+        os.makedirs(temp_path, exist_ok=True)
 
-        # Check if exists
-        os.makedirs(new_path, exist_ok=True)
+        # Return top level new directory
+        new_path = os.path.join(output_path, f"tldr.{create_timestamp()}")
 
         if verbose == True:
-            print("Output files being written to:", new_path)
+            print("\nOutput files being written to:", new_path)
 
         return new_path
 
     @staticmethod
-    def _lint_user_query(current_query) -> None:
+    def _lint_user_query(current_query) -> str:
         """
-        Normalizes `self.user_query` to ensure it's a well-formed string query.
+        Normalizes a user query to ensure it's a well-formed, AI-friendly string.
         """
 
-        # 1. Handle list input or convert to string
+        # Normalize input to string
         if isinstance(current_query, list):
             processed_query = " ".join(map(str, current_query))
-        elif isinstance(current_query, str):
-            processed_query = current_query
         elif current_query is None:
             processed_query = ""
         else:
             processed_query = str(current_query)
 
-        # Capitalize the first letter (if the string is not empty)
-        if processed_query:  # Check if the string is not empty
+        # Strip leading/trailing whitespace and normalize internal whitespace
+        processed_query = re.sub(r'\s+', ' ', processed_query.strip())
+
+        if processed_query:
+            # Capitalize first letter if not already
             processed_query = processed_query[0].upper() + processed_query[1:]
 
-        # Ensure the query ends with a question mark (if the string is not empty)
-        if processed_query and not processed_query[-1] not in [".", "!", "?"]:
-            processed_query += "?"
-        elif not processed_query:
-            pass
+            # Ensure it ends with a suitable punctuation mark
+            if processed_query[-1] not in ".!?":
+                processed_query += "?"
 
         return processed_query
 
-    def refine_user_query(self, query):
+    async def refine_user_query(self, query):
         """Attempt to automatically improve user query for greater specificity"""
-
-        if self.verbose == True:
-            print("Refining user query...")
 
         # Check text formatting
         user_query = self._lint_user_query(query)
 
         # Generate new query text
-        new_query = self.single_completion(
+        new_query = await self.single_completion(
             message=user_query, prompt_type="refine_prompt"
         )
 
@@ -178,16 +151,13 @@ class TldrClass(CompletionHandler):
         if self.verbose == True:
             print(f"Refined query:\n{new_query}\n")
 
-        return full_query
+        self.user_query = full_query
 
     async def summarize_resources(self):
         """Generate component and synthesis summary text"""
 
         # Asynchronously summarize documents
-        if self.verbose == True:
-            print("Generating summaries for selected resources...")
-        summaries = await self.async_multi_completions()
-        await self.async_client.close()
+        summaries = await self.multi_completions()
 
         # Join response strings
         all_summaries = []
@@ -200,38 +170,16 @@ class TldrClass(CompletionHandler):
             verbose=self.verbose,
         )
 
-        return all_summaries
+        self.all_summaries = all_summaries
 
-    def integrate_summaries(self, glyph_synthesis=False):
+    async def integrate_summaries(self):
         """Generate integrated executive summaries combine all current summary text"""
-        if self.verbose == True:
-            print("Synthesizing integrated summary...")
 
         # Join all summaries for one large submission
-        user_prompt = "\n\n".join(self.all_summaries)
-
-        if glyph_synthesis == True:
-
-            # Generate glyph-formatted prompt
-            glyph_synthesis = self.single_completion(
-                message=user_prompt, prompt_type="glyph_prompt"
-            )
-            save_response_text(
-                glyph_synthesis,
-                label="glyph_synthesis",
-                output_dir=self.output_directory,
-                verbose=self.verbose,
-            )
-
-            # Summarize documents based on glyph summary
-            synthesis = self.single_completion(
-                message=glyph_synthesis, prompt_type="interpret_glyphs"
-            )
-        else:
-            # Otherwise, use standard synthesis system instructions prompt
-            synthesis = self.single_completion(
-                message=user_prompt, prompt_type="executive_summary"
-            )
+        summaries = "\n\n".join(self.all_summaries)
+        synthesis = await self.single_completion(
+            message=summaries, prompt_type="executive_summary"
+        )
 
         # Handle output
         save_response_text(
@@ -242,42 +190,28 @@ class TldrClass(CompletionHandler):
         )
         self.content_synthesis = synthesis
 
-    def apply_research(self, context_size="medium"):
+    async def apply_research(self):
         """Identify knowledge gaps and use web search to fill them. Integrating new info into summary."""
 
         # Identify gaps in understanding
-        if self.verbose == True:
-            print("\rIdentifying technical gaps in summary...")
-        gap_questions = self.single_completion(
+        gap_questions = await self.single_completion(
             message=self.content_synthesis, prompt_type="research_instructions"
         )
 
         # Search web for to fill gaps
-        if self.verbose == True:
-            print("\rResearching gaps in important background...")
-        research_results = self.search_web(gap_questions, context_size=context_size)
+        research_results = self.search_web(gap_questions, context_size=self.context_size)
 
         # Handle output
-        research_text = f"""Gap questions:
-{gap_questions}
-
-Answers:
-{research_results}
-"""
         save_response_text(
-            research_text,
+            f"Gap questions:\n{gap_questions}\n\nAnswers:\n{research_results}",
             label="research",
             output_dir=self.output_directory,
             verbose=self.verbose,
         )
-
-        # Add to extra context
         self.added_context += research_results
 
-    def polish_response(self, tone: str = "default"):
+    async def polish_response(self, tone: str = "default"):
         """Refine final response text"""
-        if self.verbose == True:
-            print("Finalizing response text...")
 
         # Select tone
         tone_instructions = (
@@ -286,16 +220,15 @@ Answers:
         response_text = self.user_query + self.content_synthesis
 
         # Run completion and save final response text
-        polished = self.single_completion(
-            message=response_text, prompt_type=tone_instructions
+        polished_text = await self.single_completion(
+            message=self.content_synthesis, prompt_type=tone_instructions
         )
-        save_response_text(
-            polished,
-            label="final",
-            output_dir=self.output_directory,
-            verbose=self.verbose,
+        polished_title = await self.single_completion(
+            message=polished_text, prompt_type="title_instructions"
         )
 
-        # Print final answer to terminal
-        if self.verbose == True:
-            print(f"\n\n{polished}\n")
+        # Save formatted PDF
+        output_file = generate_tldr_pdf(
+            polished_text, polished_title, self.output_directory
+        )
+        self.polished_summary = polished_text

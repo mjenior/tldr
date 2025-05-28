@@ -52,9 +52,14 @@ class CompletionHandler(ExpenseTracker):
                 **kwargs,
             )
 
-        # TODO: Update tokens
+        # Update usage
+        self.model_tokens[model]["input"] += response.usage.input_tokens
+        self.update_spending(direction="input")
+        self.model_tokens[model]["output"] += response.usage.input_tokens
+        self.update_spending(direction="output")
+        self.update_session_totals()
 
-
+        # Return only the response text
         return response.output_text
 
     async def single_completion(self, message, prompt_type, **kwargs):
