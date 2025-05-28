@@ -1,26 +1,30 @@
 import os
 import asyncio
+from functools import partial
+
+from .logging import ExpenseTracker
 
 
-class CompletionHandler:
+class CompletionHandler(ExpenseTracker):
 
     def __init__(self):
-        pass
+        self.testing = False
+        self.context_size = "medium"
 
     def _scale_token(self, tokens):
         """Multiply the size of maximum output tokens allowed."""
         scaling = {"low": 0.5, "medium": 1.0, "high": 1.5}
-        factor = scaling[self.token_scale]
+        factor = scaling[self.context_size]
         return int(tokens * factor)
 
-    async def _async_single_completion(self, message, prompt_type, **kwargs):
-        """Initialize and submit a single chat completion request"""
-
-        # Fetch params
+    async def _perform_api_call(self, message, prompt_type, **kwargs):
+        """
+        Helper function to encapsulate the actual API call logic.
+        """
         instructions_dict = self.instructions[prompt_type]
         instructions = instructions_dict["system_instruction"]
-        model = instructions_dict["model"]
         output_tokens = instructions_dict["max_output_tokens"]
+        model = instructions_dict["model"] if self.testing == False else "gpt-4o-mini"
 
         # Assemble messages object, adding query and context information
         messages = [
@@ -32,20 +36,40 @@ class CompletionHandler:
         max_output_tokens = self._scale_token(output_tokens)
 
         # Run completion query
-        try:
-            completion = await self.async_client.chat.completions.create(
-                messages=messages, model=model, max_tokens=max_output_tokens, **kwargs
+        if model == 'o4-mini':
+            response = await self.client.responses.create(
+                input=messages,
+                model=model,
+                max_output_tokens=max_output_tokens,
+                reasoning={"effort": self.context_size, "summary": concise},
+                **kwargs,
             )
-            # Extract and return text
-            return completion.choices[0].message.content.strip()
+        else:
+            response = await self.client.responses.create(
+                input=messages,
+                model=model,
+                max_output_tokens=max_output_tokens,
+                **kwargs,
+            )
 
-        except openai.RateLimitError as e:
-            # Handle hitting the rate limit silently
-            pass
+        # TODO: Update tokens
 
-    async def async_multi_completions(self):
+
+        return response.output_text
+
+    async def single_completion(self, message, prompt_type, **kwargs):
         """
-        Runs multiple _async_single_completion calls concurrently using asyncio.gather, with retry on 429.
+        Initialize and submit a single chat completion request with built-in retry logic.
+        """
+        return await self._retry_on_429(
+            partial(self._perform_api_call, **kwargs),
+            message=message,
+            prompt_type=prompt_type,
+        )
+
+    async def multi_completions(self):
+        """
+        Runs multiple single_completion calls concurrently using asyncio.gather, with retry on 429.
         """
         coroutine_tasks = []
         for ext, prompts in self.content.items():
@@ -59,28 +83,26 @@ class CompletionHandler:
                 prompt_type = "summarize_document"
 
             # Generate summaries for each prompt, handling rate limit errors
-            for prompt in prompts:
+            for message in prompts:
                 task = self._retry_on_429(
-                    self._async_single_completion,
-                    prompt=prompt,
+                    self.single_completion,
+                    message=message,
                     prompt_type=prompt_type,
                 )
                 coroutine_tasks.append(task)
 
         return await asyncio.gather(*coroutine_tasks, return_exceptions=True)
 
-    async def _retry_on_429(self, coro_fn, prompt, prompt_type, max_retries=5):
+    async def _retry_on_429(self, coro_fn, message, prompt_type, max_retries=5):
         """Retry summary generation on token rate limit per hour exceeded errors."""
 
         for attempt in range(1, max_retries + 1):
             try:
-                return await coro_fn(prompt, prompt_type)
+                return await coro_fn(message, prompt_type)
             except Exception as e:
                 if hasattr(e, "status") and e.status == 429:
                     wait_time = random.uniform(*(1, 3)) * attempt
-                    print(
-                        f"Rate limit hit. Retrying in {wait_time:.2f}s (attempt {attempt})..."
-                    )
+                    self.logger.info(f"Rate limit hit. Retrying in {wait_time:.2f}s (attempt {attempt})...")
                     await asyncio.sleep(wait_time)
                 else:
                     raise  # Not a 429 error, re-raise
@@ -95,31 +117,6 @@ class CompletionHandler:
             model="gpt-4o",
             tools=[{"type": "web_search_preview", "search_context_size": context_size}],
             input=instruction + questions,
-        )
-
-        return response.output_text
-
-    def single_completion(self, message, prompt_type, **kwargs):
-        """Single synchronous chat completion"""
-
-        # Fetch params
-        instructions_dict = self.instructions[prompt_type]
-        instructions = instructions_dict["system_instruction"]
-        model = instructions_dict["model"]
-        output_tokens = instructions_dict["max_output_tokens"]
-
-        # Assemble messages object
-        messages = [
-            {"role": "system", "content": instructions + self.user_query},
-            {"role": "user", "content": message + self.added_context},
-        ]
-
-        # Rescale max tokens
-        max_output_tokens = self._scale_token(output_tokens)
-
-        # Get single chat response
-        response = self.client.responses.create(
-            input=messages, model=model, max_output_tokens=max_output_tokens, **kwargs
         )
 
         return response.output_text
