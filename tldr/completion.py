@@ -8,6 +8,8 @@ from .logging import ExpenseTracker
 class CompletionHandler(ExpenseTracker):
 
     def __init__(self):
+        super().__init__()
+
         self.testing = False
         self.context_size = "medium"
 
@@ -36,7 +38,7 @@ class CompletionHandler(ExpenseTracker):
         max_output_tokens = self._scale_token(output_tokens)
 
         # Run completion query
-        if model == 'o4-mini':
+        if model == "o4-mini":
             response = await self.client.responses.create(
                 input=messages,
                 model=model,
@@ -107,18 +109,20 @@ class CompletionHandler(ExpenseTracker):
             except Exception as e:
                 if hasattr(e, "status") and e.status == 429:
                     wait_time = random.uniform(*(1, 3)) * attempt
-                    self.logger.info(f"Rate limit hit. Retrying in {wait_time:.2f}s (attempt {attempt})...")
+                    self.logger.info(
+                        f"Rate limit hit. Retrying in {wait_time:.2f}s (attempt {attempt})..."
+                    )
                     await asyncio.sleep(wait_time)
                 else:
                     raise  # Not a 429 error, re-raise
 
         raise RuntimeError("Max retries exceeded for task")
 
-    def search_web(self, questions: str, context_size: str = "medium"):
+    async def search_web(self, questions: str, context_size: str = "medium"):
         """Use web search tool to fill holes in current reading set"""
 
         instruction = "Use web search to answer the following questions as thoroughly as possible. Cite all sources.\n"
-        response = self.client.responses.create(
+        response = await self.client.responses.create(
             model="gpt-4o",
             tools=[{"type": "web_search_preview", "search_context_size": context_size}],
             input=instruction + questions,

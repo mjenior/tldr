@@ -25,6 +25,8 @@ class TldrClass(CompletionHandler):
         context_size="medium",
         testing=False,
     ):
+        super().__init__()
+
         # Pull in logger
         self.logger = logging.getLogger(__name__)
 
@@ -51,6 +53,7 @@ class TldrClass(CompletionHandler):
         self.client = AsyncOpenAI(api_key=self.api_key)
 
         # Read in files and contents
+        self.logger.info("Searching for input files...")
         self.content = fetch_content(search_directory, recursive=self.recursive_search)
         self.sources = sum([len(self.content[x]) for x in self.content.keys()])
         if self.verbose == True:
@@ -117,7 +120,7 @@ class TldrClass(CompletionHandler):
             processed_query = str(current_query)
 
         # Strip leading/trailing whitespace and normalize internal whitespace
-        processed_query = re.sub(r'\s+', ' ', processed_query.strip())
+        processed_query = re.sub(r"\s+", " ", processed_query.strip())
 
         if processed_query:
             # Capitalize first letter if not already
@@ -148,9 +151,6 @@ class TldrClass(CompletionHandler):
             output_dir=self.output_directory,
             verbose=self.verbose,
         )
-        if self.verbose == True:
-            print(f"Refined query:\n{new_query}\n")
-
         self.user_query = full_query
 
     async def summarize_resources(self):
@@ -199,7 +199,9 @@ class TldrClass(CompletionHandler):
         )
 
         # Search web for to fill gaps
-        research_results = self.search_web(gap_questions, context_size=self.context_size)
+        research_results = await self.search_web(
+            gap_questions, context_size=self.context_size
+        )
 
         # Handle output
         save_response_text(

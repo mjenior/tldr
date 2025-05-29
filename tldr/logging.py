@@ -1,57 +1,74 @@
-
+import sys
 import logging
 
+
 class ExpenseTracker:
-	"""
-	Tracker for token useage and session cost
-	"""
+    """
+    Tracker for token useage and session cost
+    """
 
-	def __init__(self):
-		self.model = "gpt-4o-mini"
+    def __init__(self):
+        self.model = "gpt-4o-mini"
 
-		# Define spending dictionaries
-		self.model_rates_perM = {"gpt-4o-mini": {"input": 0.15, "output": 0.6}, "gpt-4o": {"input": 2.5, "output": 10.0}, "o4-mini": {"input": 1.1, "output": 4.4}}
-		self.model_tokens = {"gpt-4o-mini": {"input": 0, "output": 0}, "gpt-4o": {"input": 0, "output": 0}, "o4-mini": {"input": 0, "output": 0}}
-		self.model_spend = {"gpt-4o-mini": {"input": 0.0, "output": 0.0}, "gpt-4o": {"input": 0.0, "output": 0.0}, "o4-mini": {"input": 0.0, "output": 0.0}}
-		
-	def update_spending(self, direction="input"):
-		"""Calculates approximate cost (USD) of LLM tokens generated to a given decimal place"""
+        # Define spending dictionaries
+        self.model_rates_perM = {
+            "gpt-4o-mini": {"input": 0.15, "output": 0.6},
+            "gpt-4o": {"input": 2.5, "output": 10.0},
+            "o4-mini": {"input": 1.1, "output": 4.4},
+        }
+        self.model_tokens = {
+            "gpt-4o-mini": {"input": 0, "output": 0},
+            "gpt-4o": {"input": 0, "output": 0},
+            "o4-mini": {"input": 0, "output": 0},
+        }
+        self.model_spend = {
+            "gpt-4o-mini": {"input": 0.0, "output": 0.0},
+            "gpt-4o": {"input": 0.0, "output": 0.0},
+            "o4-mini": {"input": 0.0, "output": 0.0},
+        }
 
-		# Fetch correct model dictionary
-		rate_dict = self.model_rates_perM.get(self.model)
-		useage_dict = self.model_tokens.get(self.model)
+    def update_spending(self, direction="input"):
+        """Calculates approximate cost (USD) of LLM tokens generated to a given decimal place"""
 
-		# Calculate current spending
-		spend = (useage_dict[direction] * rate_dict[direction]) / 1e6
+        # Fetch correct model dictionary
+        rate_dict = self.model_rates_perM.get(self.model)
+        useage_dict = self.model_tokens.get(self.model)
 
-		# Update record keeping dictionaries
-		self.model_spend[self.model][direction] = spend
+        # Calculate current spending
+        spend = (useage_dict[direction] * rate_dict[direction]) / 1e6
 
-	def update_session_totals(self):
-		"""Calculate current seesion totals for token use and spending"""
+        # Update record keeping dictionaries
+        self.model_spend[self.model][direction] = spend
 
-		self.session_tokens = {"input": 0, "output": 0}
-		self.session_spend = {"input": 0.0, "output": 0.0}
+    def update_session_totals(self):
+        """Calculate current seesion totals for token use and spending"""
 
-		for model in self.model_spend.keys():
-			self.session_spend["input"] += model_spend[model]["input"]
-			self.session_spend["output"] += model_spend[model]["output"]
+        self.session_tokens = {"input": 0, "output": 0}
+        self.session_spend = {"input": 0.0, "output": 0.0}
 
-		self.total_spend = self.session_spend["input"] + self.session_spend["output"]
+        for model in self.model_spend.keys():
+            self.session_spend["input"] += self.model_spend[model]["input"]
+            self.session_spend["output"] += self.model_spend[model]["output"]
 
-	def format_spending(self):
-		self.session_spend["input"] = _simplify_usd_str(self.session_spend["input"])
-		self.session_spend["output"] = _simplify_usd_str(self.session_spend["output"])
-		self.total_spend = _simplify_usd_str(self.total_spend)
+        self.total_spend = self.session_spend["input"] + self.session_spend["output"]
 
-		for model in self.model_spend.keys():
-			self.model_spend[model]["input"] = _simplify_usd_str(self.model_spend[model]["input"])
-			self.model_spend[model]["output"] = _simplify_usd_str(self.model_spend[model]["output"])
+    def format_spending(self):
+        self.session_spend["input"] = _simplify_usd_str(self.session_spend["input"])
+        self.session_spend["output"] = _simplify_usd_str(self.session_spend["output"])
+        self.total_spend = _simplify_usd_str(self.total_spend)
 
-	@staticmethod
-	def _simplify_usd_str(usd: float, dec: int = 2) -> str:
-		"""Returns slightly more human readable version"""
-		return f"${round(usd, dec)}"
+        for model in self.model_spend.keys():
+            self.model_spend[model]["input"] = _simplify_usd_str(
+                self.model_spend[model]["input"]
+            )
+            self.model_spend[model]["output"] = _simplify_usd_str(
+                self.model_spend[model]["output"]
+            )
+
+    @staticmethod
+    def _simplify_usd_str(usd: float, dec: int = 2) -> str:
+        """Returns slightly more human readable version"""
+        return f"${round(usd, dec)}"
 
 
 def setup_logging(verbose: bool):

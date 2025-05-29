@@ -243,7 +243,7 @@ def generate_tldr_pdf(summary_text, doc_title, outpath):
     body.append(Spacer(1, 0.2 * inch))
     paragraphs = summary_text.split("\n\n")
     for paragraph_text in paragraphs:
-        txt = Paragraph(paragraph_text, styles["normal"])
+        txt = Paragraph(paragraph_text, styles["Normal"])
         body.append(txt)
         body.append(Spacer(1, 0.1 * inch))
 
@@ -377,9 +377,9 @@ def _create_filename(title: str, max_length: int = 50) -> str:
     if len(filename) > max_length:
         filename = filename[:max_length]
         # Try to avoid cutting off in the middle of a word if possible
-        last = filename.rfind("_")
-        if last_hyphen != -1 and last_hyphen > max_length - 20:
-            filename = filename[:last]
+        last_underscore = filename.rfind("_")
+        if last_underscore != -1 and last_underscore > max_length - 20:
+            filename = filename[:last_underscore]
 
     # Assemble final name
     return filename.strip("_") + ".tldr.pdf"

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import logging
 import argparse
 import asyncio
 
@@ -29,7 +30,7 @@ def parse_user_arguments():
         help="Directory for output files (Default is working directory)",
     )
     parser.add_argument(
-        "-r",
+        "-q",
         "--refine_query",
         type=bool,
         default=True,
@@ -71,11 +72,15 @@ def parse_user_arguments():
         help="Modifier for scale of maximum output tokens and context window size for research agent web search",
     )
     parser.add_argument(
-        "-v", "--verbose", type=bool, default=True, help="Verbose stdout reporting"
+        "-v", "--verbose", type=bool, default=False, help="Verbose stdout reporting"
     )
 
     parser.add_argument(
-        "-t", "--testing", type=bool, default=False, help="Uses only gpt-4o-mini for cheaper+faster testing runs."
+        "-t",
+        "--testing",
+        type=bool,
+        default=False,
+        help="Uses only gpt-4o-mini for cheaper+faster testing runs.",
     )
 
     return parser.parse_args()
@@ -89,10 +94,9 @@ async def main():
 
     # Set up logger
     setup_logging(args.verbose)
-    main_logger = logging.getLogger() 
+    main_logger = logging.getLogger()
 
     # Read in content and extend user query
-    main_logger.info("Searching for input files...")
     tldr = TldrClass(
         search_directory=args.input_directory,
         output_directory=args.output_directory,
@@ -137,6 +141,12 @@ async def main():
     # Rewrite for response type and tone
     main_logger.info("Finalizing response text...")
     await tldr.polish_response(args.tone)
+
+    # Complete run
+    tldr.format_spending()
+    main_logger.info(f"Current session cost: {tldr.total_spend}")
+    if args.verbose == True:
+        print(f"\n\n{tldr.polished_summary}")
 
 
 def cli_main():
