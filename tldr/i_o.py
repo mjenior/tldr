@@ -270,7 +270,7 @@ def _interpret_markdown(text: str) -> list:
             story.append(Spacer(1, 0.1 * inch))
             continue
         if line.startswith("# "):
-            contnue
+            continue
         elif line == "###":
             continue
 
