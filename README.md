@@ -2,7 +2,7 @@
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-Version = 0.4.0"""""""""""""""""""""
+Version = 0.4.11""""""""""""""""""""""""""""""""
 
 ## Overview
 
@@ -56,14 +56,13 @@ pip install -e .
 *   `query` (Positional): Optional user query. (Default: None)
 *   `-i, --input_directory <path>`: Directory for input text files. (Default: `.`)
 *   `-o, --output_directory <path>`: Directory for output files. (Default: `.`)
-*   `-r, --refine_query <True|False>`: Automatically refine user query. (Default: `True`)
+*   `-q, --refine_query <True|False>`: Automatically refine user query. (Default: `True`)
 *   `-c, --context_directory <path>`: Directory for additional context documents. (Default: None)
-*   `-u, --recursive_search <True|False>`: Recursively search input directories. (Default: `False`)
-*   `-x, --research <True|False>`: Use research agent for knowledge gaps. (Default: `True`)
-*   `-n, --tone <tone>`: Final summary tone. (Choices: `default`, `modified`; Default: `default`)
-*   `-t, --token_scale <scale>`: Scale for max output tokens. (Choices: `low`, `medium`, `high`; Default: `medium`)
+*   `-r, --recursive_search <True|False>`: Recursively search input directories. (Default: `False`)
+*   `-w, --web_search <True|False>`: Use research agent for knowledge gaps. (Default: `True`)
+*   `-t, --tone <tone>`: Final summary tone. (Choices: `default`, `modified`; Default: `default`)
 *   `-s, --context_size <scale>`: Context window size for research agent web search. (Choices: `low`, `medium`, `high`; Default: `medium`)
-*   `-v, --verbose <True|False>`: Verbose stdout reporting. (Default: `True`)
+*   `-v, --verbose <True|False>`: Verbose stdout reporting. (Default: `False`)
 
 ### Command Line
 
@@ -84,47 +83,22 @@ tldr -i ./my_papers -o ./summaries
 tldr -c ./context_files
 
 # Enable recursive file search
-tldr -s True
+tldr -r True
 
 # Disable query prompt refinement
-tldr -r False
+tldr -q False
 
 # Disable research agent
-tldr -x False
+tldr -w False
 
 # Use modified output tone
-tldr -n modified
+tldr -t modified
 
 # Increase the scale of max tokens allowed
-tldr -t high
+tldr -s high
 ```
 
-### Python API
-
-```python
-import asyncio
-from tldr import TldrClass
-
-# Initialize with a user query
-tldr = TldrClass(search_directory="./my_papers", output_directory="./summaries")
-
-# Refine the user query
-tldr.refine_user_query("What are the latest advancements in CRISPR gene editing?")
-
-# Generate document summaries
-tldr.all_summaries = asyncio.run(tldr.summarize_resources())
-
-# Integrate summaries across documents
-tldr.integrate_summaries()
-
-# Research additional information
-tldr.apply_research()
-
-# Polish the final response
-tldr.polish_response()
-```
-
-### Summary Quality Evaluator
+### Summary Quality Evaluator - Python API
 
 ```python
 from tldr.summary_judge import SummaryJudge

@@ -42,7 +42,7 @@ class TldrClass(CompletionHandler):
         self.instructions = read_system_instructions()
 
         # Establish output directory
-        self.output_directory = self._handle_output_path(output_directory, verbose)
+        self.output_directory = self._handle_output_path(output_directory)
 
         # Set API key
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
@@ -57,7 +57,7 @@ class TldrClass(CompletionHandler):
         self.content = fetch_content(search_directory, recursive=self.recursive_search)
         self.sources = sum([len(self.content[x]) for x in self.content.keys()])
         if self.verbose == True:
-            print(f"Identified {self.sources} reference documents for summarization.\n")
+            print(f"Identified {self.sources} reference documents for summarization.")
 
         # Fetch additional context if provided
         if context_directory is not None:
@@ -66,12 +66,14 @@ class TldrClass(CompletionHandler):
             )
             if len(all_context) >= 1 and self.verbose == True:
                 print(
-                    f"Also identified {self.sources} reference documents for added context.\n"
+                    f"Also identified {self.sources} reference documents for added context."
                 )
 
             self.raw_context = "\n".join(all_context)
         else:
             self.raw_context = None
+
+        self.logger.info(f"Output files being written to: {self.output_directory}")
 
     async def format_context_references(self):
         """Creates more concise, less repetative context message."""
@@ -79,16 +81,16 @@ class TldrClass(CompletionHandler):
         added_context = await self.single_completion(
             message="\n".join(self.raw_context), prompt_type="format_context"
         )
-        save_response_text(
+        result = save_response_text(
             added_context,
             label="added_context",
             output_dir=self.output_directory,
-            verbose=self.verbose,
         )
+        self.logger.info(result)
         self.added_context += f"\nBelow is additional context for reference during response generation:\n{added_context}"
 
     @staticmethod
-    def _handle_output_path(output_path, verbose=True) -> str:
+    def _handle_output_path(output_path) -> str:
         """Set up where to write output summaries"""
 
         # Create full path for intermediate files
@@ -99,9 +101,6 @@ class TldrClass(CompletionHandler):
 
         # Return top level new directory
         new_path = os.path.join(output_path, f"tldr.{create_timestamp()}")
-
-        if verbose == True:
-            print("\nOutput files being written to:", new_path)
 
         return new_path
 
@@ -145,12 +144,12 @@ class TldrClass(CompletionHandler):
 
         # Handle output text
         full_query = f"Ensure that addressing the following user query is the key consideration in you response:\n{new_query}\n"
-        save_response_text(
+        result = save_response_text(
             new_query,
             label="new_query",
             output_dir=self.output_directory,
-            verbose=self.verbose,
         )
+        self.logger.info(result)
         self.user_query = full_query
 
     async def summarize_resources(self):
@@ -159,17 +158,17 @@ class TldrClass(CompletionHandler):
         # Asynchronously summarize documents
         summaries = await self.multi_completions()
 
-        # Join response strings
-        all_summaries = []
-        for i in range(0, len(summaries)):
-            all_summaries.append(f"Reference {i+1} Summary\n{summaries[i]}\n")
-        save_response_text(
+        # Annotate response strings
+        all_summaries = [
+            f"Reference {i+1} Summary\n{summaries[i]}\n"
+            for i in range(0, len(summaries))
+        ]
+        result = save_response_text(
             all_summaries,
             label="summary",
             output_dir=self.output_directory,
-            verbose=self.verbose,
         )
-
+        self.logger.info(result)
         self.all_summaries = all_summaries
 
     async def integrate_summaries(self):
@@ -182,12 +181,12 @@ class TldrClass(CompletionHandler):
         )
 
         # Handle output
-        save_response_text(
+        result = save_response_text(
             synthesis,
             label="synthesis",
             output_dir=self.output_directory,
-            verbose=self.verbose,
         )
+        self.logger.info(result)
         self.content_synthesis = synthesis
 
     async def apply_research(self):
@@ -204,12 +203,12 @@ class TldrClass(CompletionHandler):
         )
 
         # Handle output
-        save_response_text(
+        result = save_response_text(
             f"Gap questions:\n{gap_questions}\n\nAnswers:\n{research_results}",
             label="research",
             output_dir=self.output_directory,
-            verbose=self.verbose,
         )
+        self.logger.info(result)
         self.added_context += research_results
 
     async def polish_response(self, tone: str = "default"):
@@ -219,7 +218,6 @@ class TldrClass(CompletionHandler):
         tone_instructions = (
             "polishing_instructions" if tone == "default" else "modified_polishing"
         )
-        response_text = self.user_query + self.content_synthesis
 
         # Run completion and save final response text
         polished_text = await self.single_completion(
@@ -230,7 +228,9 @@ class TldrClass(CompletionHandler):
         )
 
         # Save formatted PDF
-        output_file = generate_tldr_pdf(
+        pdf_path = generate_tldr_pdf(
             polished_text, polished_title, self.output_directory
         )
         self.polished_summary = polished_text
+
+        return f"Final summary saved to {pdf_path}\n"

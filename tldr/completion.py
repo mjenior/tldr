@@ -43,7 +43,7 @@ class CompletionHandler(ExpenseTracker):
                 input=messages,
                 model=model,
                 max_output_tokens=max_output_tokens,
-                reasoning={"effort": self.context_size, "summary": concise},
+                reasoning={"effort": self.context_size},
                 **kwargs,
             )
         else:
@@ -113,8 +113,6 @@ class CompletionHandler(ExpenseTracker):
                         f"Rate limit hit. Retrying in {wait_time:.2f}s (attempt {attempt})..."
                     )
                     await asyncio.sleep(wait_time)
-                else:
-                    raise  # Not a 429 error, re-raise
 
         raise RuntimeError("Max retries exceeded for task")
 

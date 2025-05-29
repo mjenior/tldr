@@ -1,4 +1,5 @@
 import sys
+import math
 import logging
 
 
@@ -53,22 +54,40 @@ class ExpenseTracker:
         self.total_spend = self.session_spend["input"] + self.session_spend["output"]
 
     def format_spending(self):
-        self.session_spend["input"] = _simplify_usd_str(self.session_spend["input"])
-        self.session_spend["output"] = _simplify_usd_str(self.session_spend["output"])
-        self.total_spend = _simplify_usd_str(self.total_spend)
+        self.session_spend["input"] = self._simplify_usd_str(
+            self.session_spend["input"]
+        )
+        self.session_spend["output"] = self._simplify_usd_str(
+            self.session_spend["output"]
+        )
+        self.total_spend = self._simplify_usd_str(self.total_spend)
 
         for model in self.model_spend.keys():
-            self.model_spend[model]["input"] = _simplify_usd_str(
+            self.model_spend[model]["input"] = self._simplify_usd_str(
                 self.model_spend[model]["input"]
             )
-            self.model_spend[model]["output"] = _simplify_usd_str(
+            self.model_spend[model]["output"] = self._simplify_usd_str(
                 self.model_spend[model]["output"]
             )
 
+    def generate_token_report(self) -> str:
+        """
+        Generates a report string showing input/output tokens per model.
+        """
+        report = []
+        for model, tokens in self.model_tokens.items():
+            input_tokens = tokens.get("input", 0)
+            output_tokens = tokens.get("output", 0)
+            report.append(f"{model} i:{input_tokens}, o:{output_tokens}")
+
+        self.token_report = ", ".join(report)
+
     @staticmethod
     def _simplify_usd_str(usd: float, dec: int = 2) -> str:
-        """Returns slightly more human readable version"""
-        return f"${round(usd, dec)}"
+        """Returns a slightly more human-readable USD string, always rounding UP."""
+        factor = 10**dec
+        rounded = math.ceil(usd * factor) / factor
+        return f"${rounded:.{dec}f}"
 
 
 def setup_logging(verbose: bool):
@@ -89,8 +108,14 @@ def setup_logging(verbose: bool):
     else:
         logger.setLevel(logging.WARNING)
 
-    # Set output format
+    # Console handler
     handler = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+
+    # File handler
+    # log_file = "tldr.log_file.txt"
+    # file_handler = logging.FileHandler(log_file)
+    # file_handler.setFormatter(formatter)
+    # logger.addHandler(file_handler)

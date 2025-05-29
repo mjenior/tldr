@@ -22,7 +22,7 @@ format_context:
 
 summarize_publication:
  description: "Scientific Publication Summarizer"
- model: "gpt-4o"
+ model: "gpt-4o-mini"
  max_output_tokens: 2048
  system_instruction: |
   Role: You are an expert AI assistant specializing in synthesizing complex scientific information into clear, structured summaries for a general scientific audience.
@@ -71,7 +71,7 @@ summarize_publication:
 
 summarize_document:
  description: "Internal Document Summarizer"
- model: "gpt-4o"
+ model: "gpt-4o-mini"
  max_output_tokens: 2048
  system_instruction: |
   Role: Summarize internal technical documents to support efficient information sharing among internal technical staff (e.g., scientists, engineers, analysts).
@@ -150,7 +150,7 @@ summarize_document:
 
 summarize_readme:
  description: "Repository Documentation Summarizer"
- model: "gpt-4o"
+ model: "gpt-4o-mini"
  max_output_tokens: 2048
  system_instruction: |
   Role: You are an expert AI assistant specializing in analyzing and summarizing software packages, libraries, or repositories for scientific and technical audiences.
@@ -201,7 +201,7 @@ summarize_readme:
 
 executive_summary:
  description: "A role for reformatting and expanding user prompts using glyph-based instructions."
- model: "o4-mini"
+ model: "gpt-4o"
  max_output_tokens: 2560
  system_instruction: |
   You are an expert "Meta-Analyst AI," specializing in synthesizing information from multiple scientific documents to produce high-level executive summaries. Your goal is to distill complex findings, identify overarching themes, and present a cohesive overview for a non-specialist but intelligent audience (e.g., executives, funders, policymakers).
@@ -302,7 +302,7 @@ research_instructions:
 
 polishing_instructions:
  description: "A role for analyzing and reorganizing poorly structured text."
- model: "gpt-4o"
+ model: "gpt-4o-mini"
  max_output_tokens: 2048
  system_instruction: |
   System Instructions:
@@ -315,7 +315,7 @@ polishing_instructions:
   You will receive the complete text of a highly technical document from the user.
 
   Output:
-  Your output must be the entire reorganized technical document. Present the reorganized content with a clear, hierarchical structure using appropriate headings and subheadings (e.g., Markdown #, ##, ###).
+  Your output must be the entire reorganized technical document. Present the reorganized content with a clear, hierarchical structure using appropriate headings and subheadings (e.g., Markdown #, ##, ###; Species names indicated in italics ~).
 
   Strict Constraints & Guidelines:
   Absolute Completeness (No Omission): You MUST include every single topic, concept, fact, data point, and piece of information discussed in the original text. No omissions, deletions, or summarizations of original content are allowed. If information seems out of place, it must be relocated to its most logical position within the new structure, not discarded.
@@ -348,7 +348,7 @@ polishing_instructions:
 
 modified_polishing:
  description: "A specialized writing assistant that combines the styles of expert authors to rewrite user provided text."
- model: "gpt-4o"
+ model: "gpt-4o-mini"
  max_output_tokens: 2048
  system_instruction: |
   You are a highly specialized Technical Content Architect and Stylistic Rewrite Expert. Your comprehensive role involves a two-phase process: first, meticulously reorganizing complex technical content for optimal logical flow and clarity, and second, subsequently rewriting this organized content to enhance readability and engagement by integrating the styles of a predefined pair of expert authors.

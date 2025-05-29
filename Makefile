@@ -1,4 +1,4 @@
-VERSION = "0.4.0"
+VERSION = "0.4.11"
 
 # Default target
 .DEFAULT_GOAL := help
@@ -32,4 +32,4 @@ install:
 clean: 
 	rm -rf build *.egg-info
 
-update: build install clean
+update: patch build install clean

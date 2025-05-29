@@ -11,6 +11,7 @@ from .logging import setup_logging
 
 def parse_user_arguments():
     """Parses command-line arguments"""
+    print("")
     parser = argparse.ArgumentParser(
         description="TLDR: Summarize text files based on user arguments."
     )
@@ -57,7 +58,7 @@ def parse_user_arguments():
         help="Additional research agent to find and fill knowledge gaps",
     )
     parser.add_argument(
-        "-n",
+        "-t",
         "--tone",
         choices=["default", "modified"],
         default="default",
@@ -76,7 +77,6 @@ def parse_user_arguments():
     )
 
     parser.add_argument(
-        "-t",
         "--testing",
         type=bool,
         default=False,
@@ -112,6 +112,10 @@ async def main():
         main_logger.error("No resources found in current search directory. Exiting.")
         sys.exit(1)
 
+    # Report something if verbose is False
+    if args.verbose == False:
+        print("TLDR is working, this may take a minute...")
+
     # Extend user query
     if len(args.query) > 0 and args.refine_query == True:
         main_logger.info("Refining user query...")
@@ -140,13 +144,14 @@ async def main():
 
     # Rewrite for response type and tone
     main_logger.info("Finalizing response text...")
-    await tldr.polish_response(args.tone)
+    polishing_result = await tldr.polish_response(args.tone)
 
     # Complete run
     tldr.format_spending()
-    main_logger.info(f"Current session cost: {tldr.total_spend}")
-    if args.verbose == True:
-        print(f"\n\n{tldr.polished_summary}")
+    main_logger.info(f"Session Cost: {tldr.total_spend}")
+    tldr.generate_token_report()
+    main_logger.info(f"Session Token Usage: {tldr.token_report}")
+    print(polishing_result)
 
 
 def cli_main():

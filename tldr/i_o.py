@@ -165,13 +165,7 @@ def read_system_instructions(file_path: str = "instructions.yaml") -> dict:
     instructions_path = os.path.join(tldr_path, file_path)
     try:
         with open(instructions_path, "r") as file:
-            data = yaml.safe_load(file)
-            if isinstance(data, dict):
-                instructions = data
-            else:
-                print(
-                    f"Error: Content in '{instructions_path}' is not a dictionary (YAML root is type: {type(data)})."
-                )
+            instructions = yaml.safe_load(file)
     except Exception as e:
         print(f"An unexpected error occurred while reading '{instructions_path}': {e}")
 
@@ -183,7 +177,6 @@ def save_response_text(
     label: str = "response",
     output_dir: str = ".",
     intermediate=True,
-    verbose: bool = True,
 ) -> str:
     """
     Saves a large string variable to a text file with a dynamic filename
@@ -211,23 +204,21 @@ def save_response_text(
         else:
             filepath = os.path.join(output_dir, filename)
 
-        _save_summary_txt(current_data, filepath, verbose)
+        outcome = _save_summary_txt(current_data, filepath)
+
+        return outcome
 
 
-def _save_summary_txt(
-    text_data, outpath, verbose, errors="strict", chunk_size=1024 * 1024
-):
+def _save_summary_txt(text_data, outpath, errors="strict", chunk_size=1024 * 1024):
     """Save response text to .txt file"""
     try:
         with open(outpath, "w", encoding="utf-8", errors=errors) as f:
             # Write in chunks to avoid excessive memory usage for very large strings
             for i in range(0, len(text_data), chunk_size):
                 f.write(text_data[i : i + chunk_size])
-        if verbose == True:
-            print(f"\tResponse text saved to {outpath}")
+        return f"Intermediate text saved to {outpath}"
     except Exception as e:
-        print(f"An unexpected error occurred while saving {outpath}: {e}")
-        raise
+        return f"An unexpected error occurred while saving {outpath}: {e}"
 
 
 def generate_tldr_pdf(summary_text, doc_title, outpath):
@@ -239,13 +230,8 @@ def generate_tldr_pdf(summary_text, doc_title, outpath):
 
     # Format content
     styles = getSampleStyleSheet()
-    body = [Paragraph(doc_title, styles["h1"])]
-    body.append(Spacer(1, 0.2 * inch))
-    paragraphs = summary_text.split("\n\n")
-    for paragraph_text in paragraphs:
-        txt = Paragraph(paragraph_text, styles["Normal"])
-        body.append(txt)
-        body.append(Spacer(1, 0.1 * inch))
+    body = [Paragraph(doc_title, styles["h1"]), Spacer(1, 0.15 * inch)]
+    body += _interpret_markdown(summary_text)
 
     # Create document
     doc = SimpleDocTemplate(file_path, pagesize=letter)
@@ -255,7 +241,61 @@ def generate_tldr_pdf(summary_text, doc_title, outpath):
         print(f"An unexpected error occurred while saving {file_path}: {e}")
         raise
 
-    print(f"\nFinal summary saved to {file_path}\n")
+    return file_path
+
+
+def _interpret_markdown(text: str) -> list:
+    """
+    Converts custom markdown-like syntax to ReportLab-friendly HTML.
+    - # Header 1      → <font size=18>
+    - ## Header 2    → <font size=16>
+    - ### Header 3  → <font size=14>
+    - #### Header 4   → <font size=12>
+    - *bold*          → <b>
+    - ~italic~    → <i>
+    Returns a list of Paragraph and Spacer elements.
+    """
+    styles = getSampleStyleSheet()
+    normal = styles["Normal"]
+    story = []
+
+    # Header sizes mapping
+    header_sizes = {1: 16, 2: 14, 3: 12, 4: 11}
+
+    lines = text.strip().splitlines()
+
+    for line in lines:
+        line = line.strip()
+        if not line:
+            story.append(Spacer(1, 0.1 * inch))
+            continue
+        if line.startswith("# "):
+            contnue
+        elif line == "###":
+            continue
+
+        # Convert *bold*
+        line = re.sub(r"\*(.*?)\*", r"<b>\1</b>", line)
+
+        # Convert ~italic~
+        line = re.sub(r"~(.*?)~", r"<i>\1</i>", line)
+
+        # Header detection: one or more '#' followed by a space
+        header_match = re.match(r"^(#{1,6})\s+(.*)", line)
+        if header_match:
+            level = len(header_match.group(1))
+            content = header_match.group(2).strip()
+            font_size = header_sizes.get(level, 11)  # default to 11 for > 4 #
+            html_line = f'<b><font size="{font_size}">{content}</font></b>'
+        elif line.startswith("- "):
+            bullet_content = line[2:].strip()
+            html_line = f"• {bullet_content}"
+        else:
+            html_line = line
+
+        story.append(Paragraph(html_line, normal))
+
+    return story
 
 
 def _create_filename(title: str, max_length: int = 50) -> str:
@@ -373,7 +413,7 @@ def _create_filename(title: str, max_length: int = 50) -> str:
     # Replace white space with underscore
     filename = "_".join(filename.split()).strip("_")
 
-    # 8. Truncate if too long (optional, but good practice for filenames)
+    # Truncate if too long
     if len(filename) > max_length:
         filename = filename[:max_length]
         # Try to avoid cutting off in the middle of a word if possible
