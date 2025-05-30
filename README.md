@@ -56,12 +56,12 @@ pip install -e .
 
 *   `query` (Positional): Optional user query. (Default: None)
 *   `-q, --refine_query <True|False>`: Automatically refine user query. (Default: `True`)
-*   `-i, --input_files <path>`: Directory for input text files. (Default: `.`)
-*   `-c, --context_files <path>`: Directory for additional context documents. (Default: None)
+*   `-i, --input_files <path>`: Optional: List of input text files. (Default: None)
+*   `-c, --context_files <path>`: Optional: List of added context documents. (Default: None)
 *   `-r, --recursive_search <True|False>`: Recursively search input directories. (Default: `False`)
 *   `-w, --web_search <True|False>`: Use research agent for knowledge gaps. (Default: `True`)
 *   `-t, --tone <tone>`: Final summary tone. (Choices: `default`, `modified`; Default: `default`)
-*   `-s, --context_size <scale>`: Context window size for research agent web search. (Choices: `low`, `medium`, `high`; Default: `medium`)
+*   `-s, --context_size <scale>`: Max output token multiplier and context window size for research agent web search. (Choices: `low`, `medium`, `high`; Default: `medium`)
 *   `-v, --verbose <True|False>`: Verbose stdout reporting. (Default: `True`)
 
 ### Command Line
@@ -100,6 +100,8 @@ tldr -s high
 
 ### Summary Quality Evaluator - Python API
 
+Tooling is also provided to attempt objective scoring of generated summary text to guage quality of output text.
+
 ```python
 from tldr.summary_judge import SummaryJudge
 
@@ -125,10 +127,11 @@ print('\nFinal Evaluation:\n', judge.evaluations)
 
 The tool generates several output files during processing:
 
-- `intermediate/tldr.summary.[file_count].[timestamp].txt`: Individual document summaries
-- `intermediate/tldr.synthesis.[timestamp].txt`: Integrated summary across documents
-- `intermediate/tldr.research.[timestamp].txt`: Additional research information
+- `tldr.[timestamp]_files/summary.[file_count].tldr.[timestamp].txt`: Individual document summaries
+- `tldr.[timestamp]_files/synthesis.tldr.[timestamp].txt`: Integrated summary across documents
+- `tldr.[timestamp]_files/research.tldr.[timestamp].txt`: Additional research information
 - `[content_based_name].tldr.pdf`: Final polished response
+- `tldr.[timestamp].log`: Logfile of summary generation process
 
 ## Configuration
 

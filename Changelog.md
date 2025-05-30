@@ -1,5 +1,6 @@
 # Changelog
 
+* 69bbc12 - Added intelligent file type determination and logging. (Matt Jenior)
 * e02681f - Added context file search and automated refinement. (Matt Jenior)
 * d14f224 - New output directory handling. (Matt Jenior)
 * 113149b - Added research context and applied user queries correctly. (Matt Jenior)
