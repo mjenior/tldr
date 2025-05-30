@@ -35,7 +35,6 @@ file_type:
   Return only one of these keywords: publication, document, readme, other.
 
 
-
 title_instructions:
  description: "Names the polished output summary file."
  model: "gpt-4o-mini"

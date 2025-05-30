@@ -21,7 +21,7 @@ def parse_user_arguments():
     parser.add_argument(
         "-i",
         "--input_files",
-        default=[],
+        default=None,
         nargs="+",
         help="Optional: Input files to summarize (Default is scan for text files in working directory)",
     )
@@ -35,8 +35,8 @@ def parse_user_arguments():
     parser.add_argument(
         "-c",
         "--context_files",
-        default=[],
-        nargs="?",
+        default=None,
+        nargs="+",
         help="Optional: Additional context documents to include in the system instructions",
     )
     parser.add_argument(
@@ -103,7 +103,7 @@ async def main():
     )
 
     # Check if no resources were found
-    if tldr.sources == 0:
+    if len(tldr.content) == 0:
         main_logger.error("No resources found in current search directory. Exiting.")
         sys.exit(1)
 

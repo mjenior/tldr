@@ -1,4 +1,4 @@
-VERSION = "0.4.20"
+VERSION = "0.4.29"
 
 # Default target
 .DEFAULT_GOAL := help
@@ -30,6 +30,7 @@ install:
 	python3.11 -m pip install -e .
 
 clean: 
-	rm -rf build *.egg-info
+	rm -rf dist
 
-update: patch build install clean
+update: clean patch build install
+	rm -rf build *.egg-info

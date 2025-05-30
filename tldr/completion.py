@@ -56,9 +56,8 @@ class CompletionHandler(ExpenseTracker):
 
         # Update usage
         self.model_tokens[model]["input"] += response.usage.input_tokens
-        self.update_spending(direction="input")
-        self.model_tokens[model]["output"] += response.usage.input_tokens
-        self.update_spending(direction="output")
+        self.model_tokens[model]["output"] += response.usage.output_tokens
+        self.update_spending()
         self.update_session_totals()
 
         # Return only the response text
@@ -74,29 +73,28 @@ class CompletionHandler(ExpenseTracker):
             prompt_type=prompt_type,
         )
 
-    async def multi_completions(self):
+    async def multi_completions(self, **kwargs):
         """
         Runs multiple single_completion calls concurrently using asyncio.gather, with retry on 429.
         """
+        # Parse all of the content found
         coroutine_tasks = []
-        for ext, prompts in self.content.items():
+        for content in self.content:
 
-            # Define correct summary to generate
-            if ext == "pdf":
-                prompt_type = "publication"
-            elif ext == "md":
-                prompt_type = "readme"
-            else:
-                prompt_type = "document"
+            # Determine type of resource
+            source_type = await self._retry_on_429(
+                partial(self._perform_api_call, **kwargs),
+                message=content,
+                prompt_type="file_type",
+            )
 
-            # Generate summaries for each prompt, handling rate limit errors
-            for message in prompts:
-                task = self._retry_on_429(
-                    self.single_completion,
-                    message=message,
-                    prompt_type=prompt_type,
-                )
-                coroutine_tasks.append(task)
+            # Generate summary
+            task = self._retry_on_429(
+                self.single_completion,
+                message=content,
+                prompt_type=source_type,
+            )
+            coroutine_tasks.append(task)
 
         return await asyncio.gather(*coroutine_tasks, return_exceptions=False)
 

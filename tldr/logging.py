@@ -31,23 +31,22 @@ class ExpenseTracker:
             "o4-mini": {"input": 0.0, "output": 0.0},
         }
 
-    def update_spending(self, direction="input"):
+    def update_spending(self):
         """Calculates approximate cost (USD) of LLM tokens generated to a given decimal place"""
 
         # Fetch correct model dictionary
         rate_dict = self.model_rates_perM.get(self.model)
         useage_dict = self.model_tokens.get(self.model)
 
-        # Calculate current spending
-        spend = (useage_dict[direction] * rate_dict[direction]) / 1e6
-
         # Update record keeping dictionaries
-        self.model_spend[self.model][direction] += spend
+        for direction in ["input", "output"]:
+            self.model_spend[self.model][direction] += (
+                useage_dict[direction] * rate_dict[direction]
+            ) / 1e6
 
     def update_session_totals(self):
         """Calculate current seesion totals for token use and spending"""
 
-        self.session_tokens = {"input": 0, "output": 0}
         self.session_spend = {"input": 0.0, "output": 0.0}
 
         for model in self.model_spend.keys():

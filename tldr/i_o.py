@@ -19,8 +19,7 @@ def create_timestamp():
 
 
 def fetch_content(
-    user_files: list = [],
-    combine: bool = False,
+    user_files: list = None,
     search_dir: str = ".",
     recursive: bool = False,
 ):
@@ -36,19 +35,15 @@ def fetch_content(
     )
 
     # Extract text from found files
-    content = [] if combine == True else {}
+    content = []
     for ext in files.keys():
-        current = read_file_content(files[ext], ext)
-        if combine == True:
-            content += current
-        else:
-            content[ext] = current
+        content += read_file_content(files[ext], ext)
 
     return content
 
 
 def _find_readable_files(
-    infiles: list = [], directory: str = ".", recursive=False
+    infiles: list = None, directory: str = ".", recursive=False
 ) -> dict:
     """
     Recursively scan the given directory for readable text files.
@@ -61,13 +56,12 @@ def _find_readable_files(
 
     readable_files_by_type = {"pdf": [], "docx": [], "html": [], "txt": [], "md": []}
 
-    if len(infiles) > 0:
+    if infiles is not None:
         for file in infiles:
             ext = os.path.splitext(file)[1].lower()
             readable_files_by_type = _update_file_dictionary(
                 readable_files_by_type, file, ext
             )
-        return readable_files_by_type
     else:
         if recursive == False:
             for filename in os.listdir(directory):
@@ -269,8 +263,9 @@ def _interpret_markdown(text: str) -> list:
         elif line == "###":
             continue
 
-        # Convert bold
+        # Convert/fix bold
         line = re.sub(r"\*(.*?)\*", r"<b>\1</b>", line)
+        line = r"<b>Executive Summary</b>" if line == "Executive Summary" else line
 
         # Convert italic
         line = re.sub(r"\*\*(.*?)\*\*", r"<i>\1</i>", line)

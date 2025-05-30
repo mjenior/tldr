@@ -16,13 +16,13 @@ class TldrClass(CompletionHandler):
 
     def __init__(
         self,
-        input_files=[],
-        context_files=[],
+        input_files=None,
+        context_files=None,
         recursive_search=False,
         verbose=True,
         api_key=None,
         context_size="medium",
-        tag='tldr_run'
+        tag="tldr_run",
         testing=False,
     ):
         super().__init__()
@@ -54,22 +54,20 @@ class TldrClass(CompletionHandler):
 
         # Read in files and contents
         self.logger.info("Searching for input files...")
-        if len(input_files) > 0:
+        if input_files is not None:
             self.content = fetch_content(user_files=input_files)
         else:
             self.content = fetch_content(recursive=self.recursive_search)
-        self.sources = sum([len(self.content[x]) for x in self.content.keys()])
-        if self.verbose == True:
-            print(f"Identified {self.sources} reference documents for summarization.")
+        self.logger.info(
+            f"Identified {len(self.content)} reference documents for summarization."
+        )
 
         # Fetch additional context if provided
-        if len(context_files) > 0:
-            all_context = fetch_content(user_files=context_files, combine=True)
-            if len(all_context) >= 1 and self.verbose == True:
-                print(
-                    f"Also identified {self.sources} reference documents for added context."
-                )
-
+        if context_files is not None:
+            all_context = fetch_content(user_files=context_files)
+            self.logger.info(
+                f"Also identified {len(all_context)} reference documents for added context."
+            )
             self.raw_context = "\n".join(all_context)
         else:
             self.raw_context = None
