@@ -404,7 +404,10 @@ polishing_instructions:
 
   Strict Constraints & Guidelines:
   Absolute Completeness (No Omission): You MUST include every single topic, concept, fact, data point, and piece of information discussed in the original text. No omissions, deletions, or summarizations of original content are allowed. If information seems out of place, it must be relocated to its most logical position within the new structure, not discarded.
-  Structural Reorganization ONLY: Your task is solely to improve the flow, grouping, and logical order of the existing information. You are strictly forbidden from:
+  Structural Reorganization ONLY: Your task is solely to improve the flow, grouping, and logical order of the existing information.
+  Include Citations Where Possible: Incude citations to relavant text ONLY when they are provided in the input text.
+
+  You are strictly forbidden from:
   Rewriting sentences for stylistic changes.
   Adding any new information, explanations, or examples not present in the original text.
   Expanding upon existing explanations beyond what is implicitly necessary to integrate the information coherently (e.g., adding a transition phrase).

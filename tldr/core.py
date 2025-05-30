@@ -202,13 +202,14 @@ class TldrClass(CompletionHandler):
         )
 
         # Handle output
+        gap_gilling = f"Gap questions:\n{gap_questions}\n\nAnswers:\n{research_results}"
         result = save_response_text(
-            f"Gap questions:\n{gap_questions}\n\nAnswers:\n{research_results}",
+            gap_gilling,
             label="research",
             output_dir=self.output_directory,
         )
         self.logger.info(result)
-        self.added_context += research_results
+        self.research_results = research_results
 
     async def polish_response(self, tone: str = "default"):
         """Refine final response text"""
@@ -220,7 +221,8 @@ class TldrClass(CompletionHandler):
 
         # Run completion and save final response text
         polished_text = await self.single_completion(
-            message=self.content_synthesis, prompt_type=tone_instructions
+            message=self.content_synthesis + self.research_results,
+            prompt_type=tone_instructions,
         )
         polished_title = await self.single_completion(
             message=polished_text, prompt_type="title_instructions"
