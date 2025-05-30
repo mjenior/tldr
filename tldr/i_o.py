@@ -268,8 +268,8 @@ def _interpret_markdown(text: str) -> list:
         elif line == "###":
             continue
 
-        # Convert italic & bold
-        line = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", line)
+        # Convert italic
+        # line = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", line)
         line = re.sub(r"\*(.*?)\*", r"<i>\1</i>", line)
 
         # Header detection: one or more '#' followed by a space
