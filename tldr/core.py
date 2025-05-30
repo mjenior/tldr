@@ -209,7 +209,7 @@ class TldrClass(CompletionHandler):
             output_dir=self.output_directory,
         )
         self.logger.info(result)
-        self.research_results = gap_gilling
+        self.research_results = research_results
 
     async def polish_response(self, tone: str = "default"):
         """Refine final response text"""
