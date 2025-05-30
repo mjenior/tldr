@@ -265,12 +265,12 @@ def _interpret_markdown(text: str) -> list:
             continue
         elif line.startswith("# "):
             continue
-        elif line == "###":
+        elif line in ["###", "---"]:
             continue
 
-        # Convert italic
-        # line = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", line)
+        # Convert italic (model uses *, shrugs) and subscripts
         line = re.sub(r"\*(.*?)\*", r"<i>\1</i>", line)
+        line = re.sub(r"_(.*?)_", r"<sub>\1</sub>", line)
 
         # Header detection: one or more '#' followed by a space
         header_match = re.match(r"^(#{1,6})\s+(.*)", line)
@@ -279,13 +279,15 @@ def _interpret_markdown(text: str) -> list:
             content = header_match.group(2).strip()
             font_size = header_sizes.get(level, 11)  # default to 11 for > 4 #
             html_line = f'<b><font size="{font_size}">{content}</font></b>'
+            story.append(Paragraph(html_line, normal))
+            story.append(Spacer(1, 0.2 * inch))
         elif line.startswith("- "):
             bullet_content = line[2:].strip()
             html_line = f"• {bullet_content}"
+            story.append(Paragraph(html_line, normal))
         else:
             html_line = line
-
-        story.append(Paragraph(html_line, normal))
+            story.append(Paragraph(html_line, normal))
 
     return story
 

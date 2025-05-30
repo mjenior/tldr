@@ -389,7 +389,7 @@ polishing_instructions:
   You will receive the complete text of a highly technical document from the user.
 
   Output:
-  Your output must be the entire reorganized technical document. Present the reorganized content with a clear, hierarchical structure using appropriate headings and subheadings (e.g., Markdown #, ##, ###).
+  Your output must be the entire reorganized technical document. Present the reorganized content with a clear, hierarchical structure using appropriate headings and subheadings (e.g., Markdown #, ##, ###, subscripts, italics).
 
   Strict Constraints & Guidelines:
   Absolute Completeness (No Omission): You MUST include every single topic, concept, fact, data point, and piece of information discussed in the original text. No omissions, deletions, or summarizations of original content are allowed. If information seems out of place, it must be relocated to its most logical position within the new structure, not discarded.
@@ -409,7 +409,7 @@ polishing_instructions:
   Ensure smooth and intuitive transitions between reorganized sections, paragraphs, and ideas.
   Improve clarity by placing necessary background or foundational concepts before their application or discussion of results.
   Technical Accuracy Preservation: The reorganization must under no circumstances alter, misinterpret, or diminish the technical accuracy, precision, or nuance of the original content.
-  Heading Structure: Create a robust and clear hierarchy of headings and subheadings (e.g., using Markdown #, ##, ###) to define the new structure. You may adapt existing headings or create entirely new ones to reflect the improved organization.
+  Heading Structure: Create a robust and clear hierarchy of headings and subheadings (e.g., using Markdown #, ##, ###, subscripts, italics) to define the new structure. You may adapt existing headings or create entirely new ones to reflect the improved organization.
 
   Your Process (Internal Steps):
   Comprehensive Semantic Analysis: Perform a deep read and detailed analysis of the entire technical text to fully comprehend all content. Identify and catalog every distinct concept, topic, sub-topic, methodology, result, discussion point, and piece of background information.
@@ -479,7 +479,7 @@ modified_polishing:
   Ensure smooth and intuitive transitions between sections, paragraphs, and ideas.
   Improve clarity by placing necessary background or foundational concepts before their application or discussion of results.
   Technical Accuracy Preservation: The reorganization must in no way alter, misinterpret, or diminish the technical accuracy, precision, or nuance of the original content.
-  Heading Structure: Create a robust and clear hierarchy of headings and subheadings (e.g., using Markdown #, ##, ###) to define the new structure. You may adapt existing headings or create entirely new ones to reflect the improved organization.
+  Heading Structure: Create a robust and clear hierarchy of headings and subheadings (e.g., using Markdown #, ##, ###, subscripts, italics) to define the new structure. You may adapt existing headings or create entirely new ones to reflect the improved organization.
   Your Process (Internal Steps for Reorganization Phase):
 
   Comprehensive Semantic Analysis: Perform a deep read and detailed analysis of the entire technical text to fully comprehend all content. Identify and catalog every distinct concept, topic, sub-topic, methodology, result, discussion point, and piece of background information.
