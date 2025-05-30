@@ -318,31 +318,20 @@ executive_summary:
 
   Output Requirements (Executive Summary):
 
-     Audience: Non-specialist but intelligent (avoid overly technical jargon where possible, or explain it briefly if essential).
+     Audience: Non-specialist but intelligent (Explain necessary technical terms briefly).
      Tone: Objective, balanced, and authoritative.
-     Length: Concise. Aim for [Specify desired length, e.g., "250-500 words," or "approximately 3-5 paragraphs"].
      Structure:
          Clear introduction.
          Logically organized body paragraphs focusing on synthesized themes and findings.
          Strong conclusion.
      Clarity and Cohesion: The summary must flow smoothly and be easy to understand. Avoid simply listing points from individual summaries; instead, weave them into a coherent narrative.
-     Accuracy: Faithfully represent the core information from the provided summaries. Do not introduce outside information or personal opinions.
-     Attribution (Implicit): While you don't need to cite "Summary 1 says X," the synthesis should make it clear that the information is drawn from the provided set of documents.
+     Accuracy: Faithfully represent all core information from the provided summaries. Do not introduce outside information or personal opinions.
 
   Critical Instructions:
      Focus on synthesis, not just aggregation. The value is in how you connect the dots between the different summaries.
      Prioritize the most impactful and relevant information for an executive overview.
-     If the input summaries are highly technical, make an effort to translate the core concepts into more accessible language without losing critical meaning.
+     Sections with bullet points should have no fewer than 2 entries each.
      Your output should be only the executive summary. Do not include any conversational preambles or postscripts.
-
-  Example Input Scenario (Conceptual):
-  You will receive:
-  Summary 1: Details findings on Drug X's efficacy in treating Condition A in early trials.
-  Summary 2: Discusses a new diagnostic tool for Condition A and its improved accuracy.
-  Summary 3: Explores the long-term patient outcomes for Condition A with current standard treatments.
-
-  Expected Output (Conceptual - a well-written paragraph or two from the executive summary):
-  "Recent advancements in addressing Condition A highlight both therapeutic progress and enhanced diagnostic capabilities. Early trials for Drug X show promising efficacy in initial treatment phases. Concurrently, a novel diagnostic tool offers significantly improved accuracy in identifying Condition A, potentially enabling earlier intervention. While these developments are encouraging, research into long-term patient outcomes with existing standard treatments underscores the ongoing need for more durable solutions and provides a benchmark against which new therapies like Drug X will be measured..."
 
 
 research_instructions:
@@ -387,7 +376,7 @@ research_instructions:
 
 polishing_instructions:
  description: "A role for analyzing and reorganizing poorly structured text."
- model: "gpt-4o"
+ model: "o4-mini"
  max_output_tokens: 4096
  system_instruction: |
   System Instructions:
@@ -416,6 +405,7 @@ polishing_instructions:
   Enhanced Coherence & Cohesion:
   Establish a clear and intuitive logical progression of topics, moving from general to specific, foundational to advanced, or problem to solution, as appropriate for the technical content.
   Group all related information consistently into logical sections and subsections.
+  Sections with bullet points should have no fewer than 2 entries each.
   Ensure smooth and intuitive transitions between reorganized sections, paragraphs, and ideas.
   Improve clarity by placing necessary background or foundational concepts before their application or discussion of results.
   Technical Accuracy Preservation: The reorganization must under no circumstances alter, misinterpret, or diminish the technical accuracy, precision, or nuance of the original content.
