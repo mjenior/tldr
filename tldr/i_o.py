@@ -219,7 +219,12 @@ def generate_tldr_pdf(summary_text, doc_title):
 
     # Format content
     styles = getSampleStyleSheet()
-    body = [Paragraph(doc_title, styles["h1"]), Spacer(1, 0.15 * inch)]
+    h1_style = styles["h1"]
+    h1_style.alignment = 1
+    body = [
+        Paragraph(doc_title, h1_style),
+        Spacer(1, 0.15 * inch),
+    ]
     body += _interpret_markdown(summary_text)
 
     # Create document
@@ -258,17 +263,12 @@ def _interpret_markdown(text: str) -> list:
         if not line:
             story.append(Spacer(1, 0.1 * inch))
             continue
-        if line.startswith("# "):
-            continue
         elif line == "###":
             continue
 
-        # Convert/fix bold
-        line = re.sub(r"\*(.*?)\*", r"<b>\1</b>", line)
-        line = r"<b>Executive Summary</b>" if line == "Executive Summary" else line
-
-        # Convert italic
-        line = re.sub(r"\*\*(.*?)\*\*", r"<i>\1</i>", line)
+        # Convert italic & bold
+        line = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", line)
+        line = re.sub(r"\*(.*?)\*", r"<i>\1</i>", line)
 
         # Header detection: one or more '#' followed by a space
         header_match = re.match(r"^(#{1,6})\s+(.*)", line)
@@ -347,9 +347,11 @@ def _create_filename(title: str, max_length: int = 50) -> str:
         "document",
         "report",
         "summary",
+        "efficient",
         "technical",
         "overview",
         "introduction",
+        "advancements",
         "analysis",
         "study",
         "research",
