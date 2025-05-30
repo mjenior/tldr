@@ -83,11 +83,11 @@ class CompletionHandler(ExpenseTracker):
 
             # Define correct summary to generate
             if ext == "pdf":
-                prompt_type = "summarize_publication"
+                prompt_type = "publication"
             elif ext == "md":
-                prompt_type = "summarize_readme"
+                prompt_type = "readme"
             else:
-                prompt_type = "summarize_document"
+                prompt_type = "document"
 
             # Generate summaries for each prompt, handling rate limit errors
             for message in prompts:
@@ -98,7 +98,7 @@ class CompletionHandler(ExpenseTracker):
                 )
                 coroutine_tasks.append(task)
 
-        return await asyncio.gather(*coroutine_tasks, return_exceptions=True)
+        return await asyncio.gather(*coroutine_tasks, return_exceptions=False)
 
     async def _retry_on_429(self, coro_fn, message, prompt_type, max_retries=5):
         """Retry summary generation on token rate limit per hour exceeded errors."""
@@ -108,7 +108,7 @@ class CompletionHandler(ExpenseTracker):
                 return await coro_fn(message, prompt_type)
             except Exception as e:
                 if hasattr(e, "status") and e.status == 429:
-                    wait_time = random.uniform(*(1, 3)) * attempt
+                    wait_time = random.uniform(*(1, 3)) * attempt * 2
                     self.logger.info(
                         f"Rate limit hit. Retrying in {wait_time:.2f}s (attempt {attempt})..."
                     )

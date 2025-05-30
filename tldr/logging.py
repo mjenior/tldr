@@ -1,6 +1,9 @@
+import os
 import sys
 import math
 import logging
+
+from .i_o import create_timestamp
 
 
 class ExpenseTracker:
@@ -39,7 +42,7 @@ class ExpenseTracker:
         spend = (useage_dict[direction] * rate_dict[direction]) / 1e6
 
         # Update record keeping dictionaries
-        self.model_spend[self.model][direction] = spend
+        self.model_spend[self.model][direction] += spend
 
     def update_session_totals(self):
         """Calculate current seesion totals for token use and spending"""
@@ -103,10 +106,11 @@ def setup_logging(verbose: bool):
             logger.removeHandler(handler)
 
     # Set the verbosity
-    if verbose == True:
+    (
         logger.setLevel(logging.INFO)
-    else:
-        logger.setLevel(logging.WARNING)
+        if verbose == True
+        else logger.setLevel(logging.WARNING)
+    )
 
     # Console handler
     handler = logging.StreamHandler(sys.stdout)
@@ -115,7 +119,24 @@ def setup_logging(verbose: bool):
     logger.addHandler(handler)
 
     # File handler
-    # log_file = "tldr.log_file.txt"
-    # file_handler = logging.FileHandler(log_file)
-    # file_handler.setFormatter(formatter)
-    # logger.addHandler(file_handler)
+    run_tag = f"tldr.{create_timestamp()}"
+    log_file = os.path.join(f"{run_tag}.log")
+    file_handler = logging.FileHandler(log_file)
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+
+    return run_tag
+
+
+def get_logfile_path(logger_instance: logging.Logger = None) -> str | None:
+    """
+    Retrieves the filename of the first FileHandler attached to the given logger.
+    """
+    if logger_instance is None:
+        logger_instance = logging.getLogger()
+
+    for handler in logger_instance.handlers:
+        if isinstance(handler, logging.FileHandler):
+            return handler.baseFilename
+    return None

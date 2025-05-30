@@ -18,7 +18,12 @@ def create_timestamp():
     return datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
-def fetch_content(search_dir, combine=False, recursive=False):
+def fetch_content(
+    user_files: list = [],
+    combine: bool = False,
+    search_dir: str = ".",
+    recursive: bool = False,
+):
     """
     Find files and read in thier contents.
     Returns a dictionary with file extensions as keys by default.
@@ -26,7 +31,9 @@ def fetch_content(search_dir, combine=False, recursive=False):
     """
 
     # Collect readable text
-    files = _find_readable_files(search_dir, recursive)
+    files = _find_readable_files(
+        infiles=user_files, directory=search_dir, recursive=recursive
+    )
 
     # Extract text from found files
     content = [] if combine == True else {}
@@ -40,7 +47,9 @@ def fetch_content(search_dir, combine=False, recursive=False):
     return content
 
 
-def _find_readable_files(directory: str = ".", recursive=False) -> dict:
+def _find_readable_files(
+    infiles: list = [], directory: str = ".", recursive=False
+) -> dict:
     """
     Recursively scan the given directory for readable text files.
     Includes: .pdf, .docx, and .html files, and generic text files.
@@ -49,35 +58,41 @@ def _find_readable_files(directory: str = ".", recursive=False) -> dict:
     Returns:
         A dictionary with file extensions as keys and lists of file paths as values.
     """
-    if not os.path.isdir(directory):
-        print(f"Error: Directory '{directory}' does not exist.")
 
     readable_files_by_type = {"pdf": [], "docx": [], "html": [], "txt": [], "md": []}
 
-    if recursive == False:
-        for filename in os.listdir(directory):
-            if filename.startswith("tldr.") == True:
-                continue
-            else:
-                filepath = os.path.join(directory, filename)
-                ext = os.path.splitext(filename)[1].lower()
-
+    if len(infiles) > 0:
+        for file in infiles:
+            ext = os.path.splitext(file)[1].lower()
             readable_files_by_type = _update_file_dictionary(
-                readable_files_by_type, filepath, ext
+                readable_files_by_type, file, ext
             )
-
+        return readable_files_by_type
     else:
-        for root, _, files in os.walk(directory):
-            for filename in files:
-                if filename.startswith("tldr.") == True:
+        if recursive == False:
+            for filename in os.listdir(directory):
+                if ".tldr." in filename:
                     continue
                 else:
-                    filepath = os.path.join(root, filename)
+                    filepath = os.path.join(directory, filename)
                     ext = os.path.splitext(filename)[1].lower()
 
                 readable_files_by_type = _update_file_dictionary(
                     readable_files_by_type, filepath, ext
                 )
+
+        else:
+            for root, _, files in os.walk(directory):
+                for filename in files:
+                    if ".tldr." in filename:
+                        continue
+                    else:
+                        filepath = os.path.join(root, filename)
+                        ext = os.path.splitext(filename)[1].lower()
+
+                    readable_files_by_type = _update_file_dictionary(
+                        readable_files_by_type, filepath, ext
+                    )
 
     return {k: v for k, v in readable_files_by_type.items() if v}
 
@@ -173,40 +188,21 @@ def read_system_instructions(file_path: str = "instructions.yaml") -> dict:
 
 
 def save_response_text(
-    out_data: list,
+    out_data: str,
     label: str = "response",
     output_dir: str = ".",
-    intermediate=True,
+    idx: int = 1,
 ) -> str:
     """
     Saves a large string variable to a text file with a dynamic filename
-    based on a timestamp and a user-provided label.
     """
-    # Get current timestamp
-    timestamp = create_timestamp()
+    if label == "summary":
+        filename = f"{label}.{idx}.tldr.{create_timestamp()}.txt"
+    else:
+        filename = f"{label}.tldr.{create_timestamp()}.txt"
+    filepath = os.path.join(output_dir, filename)
 
-    # Format text just in case
-    if isinstance(out_data, str):
-        out_data = [out_data]
-
-    # Save all strings individually
-    for idx in range(len(out_data)):
-        current_data = out_data[idx]
-
-        # Construct the dynamic filename
-        if label == "summary":
-            filename = f"tldr.{label}.{idx+1}.{timestamp}.txt"
-        else:
-            filename = f"tldr.{label}.{timestamp}.txt"
-
-        if intermediate == True:
-            filepath = os.path.join(output_dir, "intermediate", filename)
-        else:
-            filepath = os.path.join(output_dir, filename)
-
-        outcome = _save_summary_txt(current_data, filepath)
-
-        return outcome
+    return _save_summary_txt(out_data, filepath)
 
 
 def _save_summary_txt(text_data, outpath, errors="strict", chunk_size=1024 * 1024):
@@ -221,12 +217,11 @@ def _save_summary_txt(text_data, outpath, errors="strict", chunk_size=1024 * 102
         return f"An unexpected error occurred while saving {outpath}: {e}"
 
 
-def generate_tldr_pdf(summary_text, doc_title, outpath):
+def generate_tldr_pdf(summary_text, doc_title):
     """Saves polished summary string to formatted PDF document."""
 
     # Create file path with linted name
-    file_name = _create_filename(doc_title)
-    file_path = os.path.join(outpath, file_name)
+    file_path = _create_filename(doc_title)
 
     # Format content
     styles = getSampleStyleSheet()
@@ -274,11 +269,11 @@ def _interpret_markdown(text: str) -> list:
         elif line == "###":
             continue
 
-        # Convert *bold*
+        # Convert bold
         line = re.sub(r"\*(.*?)\*", r"<b>\1</b>", line)
 
-        # Convert ~italic~
-        line = re.sub(r"~(.*?)~", r"<i>\1</i>", line)
+        # Convert italic
+        line = re.sub(r"\*\*(.*?)\*\*", r"<i>\1</i>", line)
 
         # Header detection: one or more '#' followed by a space
         header_match = re.match(r"^(#{1,6})\s+(.*)", line)

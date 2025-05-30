@@ -20,18 +20,13 @@ def parse_user_arguments():
     parser.add_argument("query", nargs="?", default="", help="Optional user query")
     parser.add_argument(
         "-i",
-        "--input_directory",
-        default=".",
-        help="Directory to scan for text files (Default is working directory)",
+        "--input_files",
+        default=[],
+        nargs="+",
+        help="Optional: Input files to summarize (Default is scan for text files in working directory)",
     )
     parser.add_argument(
-        "-o",
-        "--output_directory",
-        default=".",
-        help="Directory for output files (Default is working directory)",
-    )
-    parser.add_argument(
-        "-q",
+        "-f",
         "--refine_query",
         type=bool,
         default=True,
@@ -39,9 +34,10 @@ def parse_user_arguments():
     )
     parser.add_argument(
         "-c",
-        "--context_directory",
-        default=None,
-        help="Directory for additional context documents",
+        "--context_files",
+        default=[],
+        nargs="?",
+        help="Optional: Additional context documents to include in the system instructions",
     )
     parser.add_argument(
         "-r",
@@ -73,9 +69,8 @@ def parse_user_arguments():
         help="Modifier for scale of maximum output tokens and context window size for research agent web search",
     )
     parser.add_argument(
-        "-v", "--verbose", type=bool, default=False, help="Verbose stdout reporting"
+        "-v", "--verbose", type=bool, default=True, help="Verbose stdout reporting"
     )
-
     parser.add_argument(
         "--testing",
         type=bool,
@@ -93,17 +88,17 @@ async def main():
     args = parse_user_arguments()
 
     # Set up logger
-    setup_logging(args.verbose)
+    run_tag = setup_logging(args.verbose)
     main_logger = logging.getLogger()
 
     # Read in content and extend user query
     tldr = TldrClass(
-        search_directory=args.input_directory,
-        output_directory=args.output_directory,
-        context_directory=args.context_directory,
+        input_files=args.input_files,
+        context_files=args.context_files,
         recursive_search=args.recursive_search,
         context_size=args.context_size,
         verbose=args.verbose,
+        tag=run_tag,
         testing=args.testing,
     )
 
@@ -146,7 +141,7 @@ async def main():
     main_logger.info("Finalizing response text...")
     polishing_result = await tldr.polish_response(args.tone)
 
-    # Complete run
+    # Complete run - Move logile and report usage
     tldr.format_spending()
     main_logger.info(f"Session Cost: {tldr.total_spend}")
     tldr.generate_token_report()

@@ -16,16 +16,19 @@ class TldrClass(CompletionHandler):
 
     def __init__(
         self,
-        search_directory=".",
-        output_directory=".",
-        context_directory=None,
+        input_files=[],
+        context_files=[],
         recursive_search=False,
         verbose=True,
         api_key=None,
         context_size="medium",
+        tag='tldr_run'
         testing=False,
     ):
         super().__init__()
+
+        # Establish output directory
+        self._create_output_path(tag)
 
         # Pull in logger
         self.logger = logging.getLogger(__name__)
@@ -41,9 +44,6 @@ class TldrClass(CompletionHandler):
         # Read in system instructions
         self.instructions = read_system_instructions()
 
-        # Establish output directory
-        self.output_directory = self._handle_output_path(output_directory)
-
         # Set API key
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         if not self.api_key:
@@ -54,16 +54,17 @@ class TldrClass(CompletionHandler):
 
         # Read in files and contents
         self.logger.info("Searching for input files...")
-        self.content = fetch_content(search_directory, recursive=self.recursive_search)
+        if len(input_files) > 0:
+            self.content = fetch_content(user_files=input_files)
+        else:
+            self.content = fetch_content(recursive=self.recursive_search)
         self.sources = sum([len(self.content[x]) for x in self.content.keys()])
         if self.verbose == True:
             print(f"Identified {self.sources} reference documents for summarization.")
 
         # Fetch additional context if provided
-        if context_directory is not None:
-            all_context = fetch_content(
-                context_directory, combine=True, recursive=self.recursive_search
-            )
+        if len(context_files) > 0:
+            all_context = fetch_content(user_files=context_files, combine=True)
             if len(all_context) >= 1 and self.verbose == True:
                 print(
                     f"Also identified {self.sources} reference documents for added context."
@@ -73,7 +74,9 @@ class TldrClass(CompletionHandler):
         else:
             self.raw_context = None
 
-        self.logger.info(f"Output files being written to: {self.output_directory}")
+        self.logger.info(
+            f"Intermediate files being written to: {self.output_directory}"
+        )
 
     async def format_context_references(self):
         """Creates more concise, less repetative context message."""
@@ -89,20 +92,16 @@ class TldrClass(CompletionHandler):
         self.logger.info(result)
         self.added_context += f"\nBelow is additional context for reference during response generation:\n{added_context}"
 
-    @staticmethod
-    def _handle_output_path(output_path) -> str:
+    def _create_output_path(self, run_tag=None):
         """Set up where to write output summaries"""
 
         # Create full path for intermediate files
-        temp_path = os.path.join(
-            output_path, f"tldr.{create_timestamp()}", "intermediate"
-        )
-        os.makedirs(temp_path, exist_ok=True)
-
-        # Return top level new directory
-        new_path = os.path.join(output_path, f"tldr.{create_timestamp()}")
-
-        return new_path
+        if run_tag is not None:
+            output_path = f"{run_tag}_files"
+        else:
+            output_path = f"tldr.{create_timestamp()}_files"
+        os.makedirs(output_path, exist_ok=True)
+        self.output_directory = output_path
 
     @staticmethod
     def _lint_user_query(current_query) -> str:
@@ -158,18 +157,20 @@ class TldrClass(CompletionHandler):
         # Asynchronously summarize documents
         summaries = await self.multi_completions()
 
-        # Annotate response strings
-        all_summaries = [
-            f"Reference {i+1} Summary\n{summaries[i]}\n"
-            for i in range(0, len(summaries))
-        ]
-        result = save_response_text(
-            all_summaries,
-            label="summary",
-            output_dir=self.output_directory,
-        )
-        self.logger.info(result)
-        self.all_summaries = all_summaries
+        # Annotate and save response strings
+        self.all_summaries = ""
+        i = 0
+        for summary in summaries:
+            i += 1
+            annotated = f"Reference {i} Summary\n{summary}\n"
+            result = save_response_text(
+                annotated,
+                label="summary",
+                output_dir=self.output_directory,
+                idx=i,
+            )
+            self.logger.info(result)
+            self.all_summaries += annotated
 
     async def integrate_summaries(self):
         """Generate integrated executive summaries combine all current summary text"""
@@ -228,9 +229,7 @@ class TldrClass(CompletionHandler):
         )
 
         # Save formatted PDF
-        pdf_path = generate_tldr_pdf(
-            polished_text, polished_title, self.output_directory
-        )
+        pdf_path = generate_tldr_pdf(polished_text, polished_title)
         self.polished_summary = polished_text
 
         return f"Final summary saved to {pdf_path}\n"

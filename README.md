@@ -2,7 +2,7 @@
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-Version = 0.4.13""""""""""""""""""""""""""""""""""
+Version = 0.4.20
 
 ## Overview
 
@@ -48,21 +48,21 @@ pip install -e .
 - pypdf2
 - beautifulsoup4
 - black
+- reportlab
 
 ## Usage
 
 ### Available Arguments
 
 *   `query` (Positional): Optional user query. (Default: None)
-*   `-i, --input_directory <path>`: Directory for input text files. (Default: `.`)
-*   `-o, --output_directory <path>`: Directory for output files. (Default: `.`)
 *   `-q, --refine_query <True|False>`: Automatically refine user query. (Default: `True`)
-*   `-c, --context_directory <path>`: Directory for additional context documents. (Default: None)
+*   `-i, --input_files <path>`: Directory for input text files. (Default: `.`)
+*   `-c, --context_files <path>`: Directory for additional context documents. (Default: None)
 *   `-r, --recursive_search <True|False>`: Recursively search input directories. (Default: `False`)
 *   `-w, --web_search <True|False>`: Use research agent for knowledge gaps. (Default: `True`)
 *   `-t, --tone <tone>`: Final summary tone. (Choices: `default`, `modified`; Default: `default`)
 *   `-s, --context_size <scale>`: Context window size for research agent web search. (Choices: `low`, `medium`, `high`; Default: `medium`)
-*   `-v, --verbose <True|False>`: Verbose stdout reporting. (Default: `False`)
+*   `-v, --verbose <True|False>`: Verbose stdout reporting. (Default: `True`)
 
 ### Command Line
 
@@ -76,11 +76,11 @@ tldr "What are the latest advancements in CRISPR gene editing?"
 # Enable automatic query refinement
 tldr "CRISPR advances" -r True
 
-# Specify input directory and output directory
-tldr -i ./my_papers -o ./summaries
+# Instead specify certain input files for summary
+tldr -i ./my_papers/*
 
-# Add greater context to eaach summary generation
-tldr -c ./context_files
+# Add greater context to each summary generation
+tldr -c ./context_files/*
 
 # Enable recursive file search
 tldr -r True
