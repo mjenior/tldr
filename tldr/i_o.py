@@ -222,7 +222,7 @@ def generate_tldr_pdf(summary_text, doc_title):
     h1_style = styles["h1"]
     h1_style.alignment = 1
     body = [
-        Paragraph(doc_title, h1_style),
+        Paragraph(doc_title.replace('"', ""), h1_style),
         Spacer(1, 0.15 * inch),
     ]
     body += _interpret_markdown(summary_text)
@@ -262,6 +262,8 @@ def _interpret_markdown(text: str) -> list:
         line = line.strip()
         if not line:
             story.append(Spacer(1, 0.1 * inch))
+            continue
+        elif line.startswith("# "):
             continue
         elif line == "###":
             continue
