@@ -11,7 +11,6 @@ from .logging import setup_logging
 
 def parse_user_arguments():
     """Parses command-line arguments"""
-    print("")
     parser = argparse.ArgumentParser(
         description="TLDR: Summarize text files based on user arguments."
     )
