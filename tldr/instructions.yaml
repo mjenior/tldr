@@ -2,7 +2,7 @@
 refine_prompt:
  description: "Attempt to automatically improve user prompt before responding."
  model: "gpt-4o-mini"
- max_output_tokens: 1024
+ max_output_tokens: 2048
  system_instruction: |
   Your objective is to analyze the user's provided question to clarify and expand it to elicit a more comprehensive answer.
   You should dissect the core components and underlying assumptions of the initial question to identify distinct areas for inquiry.
@@ -13,7 +13,7 @@ refine_prompt:
 format_context:
  description: "Clean up context source text."
  model: "gpt-4o-mini"
- max_output_tokens: 1024
+ max_output_tokens: 2048
  system_instruction: |
   You will receive raw text. Your objective is to extract the core information, simplify complex sentences, and remove any irrelevant or redundant content. 
   Reformat the text into a concise and easily digestible format, suitable for providing essential context in a chat completion. 
@@ -23,7 +23,7 @@ format_context:
 file_type:
  description: "Determines input file type."
  model: "gpt-4o-mini"
- max_output_tokens: 512
+ max_output_tokens: 2048
  system_instruction: |
   Read the provided text. Classify its type based on the following categories:
 
@@ -38,7 +38,7 @@ file_type:
 title_instructions:
  description: "Names the polished output summary file."
  model: "gpt-4o-mini"
- max_output_tokens: 512
+ max_output_tokens: 2048
  system_instruction: |
   Read the following technical summary and generate a concise, descriptive title that is no more than 10 words long. Return only the new title.
   
@@ -46,7 +46,7 @@ title_instructions:
 publication:
  description: "Scientific Publication Summarizer"
  model: "gpt-4o"
- max_output_tokens: 2048
+ max_output_tokens: 10240
  system_instruction: |
   Role: You are an expert AI assistant specializing in synthesizing complex scientific information into clear, structured summaries for a general scientific audience.
   Objective: 
@@ -98,7 +98,7 @@ publication:
 document:
  description: "Technical Document Summarizer"
  model: "gpt-4o"
- max_output_tokens: 2048
+ max_output_tokens: 10240
  system_instruction: |
   Role: 
   Summarize internal technical documents to support efficient information sharing among internal technical staff (e.g., scientists, engineers, analysts).
@@ -178,7 +178,7 @@ document:
 readme:
  description: "Repository Documentation Summarizer"
  model: "gpt-4o"
- max_output_tokens: 2048
+ max_output_tokens: 10240
  system_instruction: |
   Role: You are an expert AI assistant specializing in analyzing and summarizing software packages, libraries, or repositories for scientific and technical audiences.
   Objective: Your task is to read and interpret the full content of a software package’s README file and produce a clear, structured, and concise summary. The summary should communicate the package’s purpose, functionality, usage, and technical underpinnings, making it accessible to scientists and developers evaluating whether the tool meets their needs.
@@ -229,7 +229,7 @@ readme:
 other:
  description: "General Document Summarizer"
  model: "gpt-4o"
- max_output_tokens: 2048
+ max_output_tokens: 10240
  system_instruction: |
   Role:
   Summarize and extract key information from diverse documents to facilitate efficient understanding and information sharing among internal staff.
@@ -287,7 +287,7 @@ other:
 executive_summary:
  description: "A role for reformatting and expanding user prompts using glyph-based instructions."
  model: "gpt-4o"
- max_output_tokens: 4096
+ max_output_tokens: 16384
  system_instruction: |
   You are an expert "Meta-Analyst AI," specializing in synthesizing information from multiple scientific documents to produce high-level executive summaries. Your goal is to distill complex findings, identify overarching themes, and present a cohesive overview for a non-specialist but intelligent audience (e.g., executives, funders, policymakers).
 
@@ -337,7 +337,7 @@ executive_summary:
 research_instructions:
  description: "A role for identifying knowledge gaps and crafting lists of questions to address them."
  model: "o4-mini"
- max_output_tokens: 2560
+ max_output_tokens: 16384
  system_instruction: |
   You are an expert Scientific Research Assistant with strong analytical and knowledge-synthesis capabilities. Your primary goal is to help users deepen their understanding of scientific documents by identifying points of ambiguity, incomplete explanation, or missing foundational context that are not fully elucidated within the document itself but are likely to be established knowledge.
 
@@ -377,7 +377,7 @@ research_instructions:
 polishing_instructions:
  description: "A role for analyzing and reorganizing poorly structured text."
  model: "o4-mini"
- max_output_tokens: 4096
+ max_output_tokens: 8192
  system_instruction: |
   System Instructions:
   You are an expert Technical Content Architect and Reorganization Specialist. Your primary objective is to analyze poorly organized highly technical text, identify structural deficiencies, and then reintegrate all original topics and information into a more coherent and cohesive presentation.
@@ -427,7 +427,7 @@ polishing_instructions:
 modified_polishing:
  description: "A specialized writing assistant that combines the styles of expert authors to rewrite user provided text."
  model: "gpt-4o"
- max_output_tokens: 4096
+ max_output_tokens: 8192
  system_instruction: |
   You are a highly specialized Technical Content Architect and Stylistic Rewrite Expert. Your comprehensive role involves a two-phase process: first, meticulously reorganizing complex technical content for optimal logical flow and clarity, and second, subsequently rewriting this organized content to enhance readability and engagement by integrating the styles of a predefined pair of expert authors.
 
@@ -506,7 +506,7 @@ modified_polishing:
 rubric_instructions:
  description: "A Technical Summary Quality Assessor."
  model: "gpt-4o-mini"
- max_output_tokens: 2048
+ max_output_tokens: 4096
  system_instruction: |
   Your task is to parse the labeled original technical document (the target text for the summary) labeled under "The following content is the original target text of expert summary generating agent:", and generated summary as the generated summary you need to evaluate labeled "Below here is the generated summary you are to score:".
   
@@ -585,7 +585,7 @@ rubric_instructions:
 condense_instructions:
  description: "A Quality Assessment Report Consolidation Engine."
  model: "gpt-4o-mini"
- max_output_tokens: 2048
+ max_output_tokens: 4096
  system_instruction: |
   System Instructions:
   You are a highly specialized Quality Assessment Report Consolidation Engine. Your task is to synthesize multiple individual quality assessment reports, each pertaining to a technical summary, into a single, unified, and highly cohesive response.

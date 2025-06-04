@@ -6,7 +6,7 @@ import argparse
 import asyncio
 
 from .core import TldrClass
-from .logging import setup_logging
+from .logger import setup_logging
 
 
 def parse_user_arguments():

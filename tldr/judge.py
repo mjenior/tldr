@@ -1,9 +1,11 @@
 import os
 import sys
+import asyncio
+
 from openai import OpenAI
 
-from tldr.completion import CompletionHandler
-from tldr.i_o import read_system_instructions, read_file_content
+from .single_completion import CompletionHandler
+from .io import read_system_instructions, read_file_content
 
 
 class SummaryEvaluator(CompletionHandler):
@@ -14,8 +16,8 @@ class SummaryEvaluator(CompletionHandler):
         model="gpt-4o-mini",
         output_directory=".",
         verbose=True,
-        iters=3,
-        temp=0.6,
+        iters=5,
+        temp=0.9,
         rng=42,
         top_p=1.0,
         api_key=None,
@@ -29,12 +31,6 @@ class SummaryEvaluator(CompletionHandler):
         self.temperature = temp
         self.random_seed = rng
         self.top_p = top_p
-
-        # Fetch API key abd initialize client
-        api_key = api_key or os.environ.get("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("OpenAI API key not provided.")
-        self.client = OpenAI(api_key=api_key)
 
         # Read in system instructions
         self.instructions = read_system_instructions()
@@ -51,11 +47,11 @@ class SummaryEvaluator(CompletionHandler):
         self._generate_eval_iterations(message)
 
         # Condense all evals to single response
-        self.evaulation = self._condense_iterations()
+        self.evaluation = self._condense_iterations()
 
         # Report final evaulation
         save_response_text(
-            self.evaulation, label="evaluation", output_dir=self.output_directory
+            self.evaluation, label="evaluation", output_dir=self.output_directory
         )
 
     def _get_content_and_summary_text(self):
@@ -89,49 +85,59 @@ class SummaryEvaluator(CompletionHandler):
     def _create_request(self):
         """Form combined content and summary string"""
 
-        full_message = """The following content is the original target text of expert summary generating agent:
-{self.content}
+        full_message = """
+        The following content is the original target text of expert summary generating agent:
+        {self.content}
 
-Below here is the generated summary you are to score:
-{self.summary}
-"""
+        Below here is the generated summary you are to score:
+        {self.summary}
+        """
 
-        return full_message
+        return full_message.strip()
 
-    def _generate_eval_iterations(self, message):
+    async def _generate_eval_iterations(self, message):
         """Generate multiple scoring responses for the provided summary text"""
 
         # Ensure replication
         iters = int(self.iterations) if self.iterations >= 3 else 3
 
         # Request repeated scoring text
-        if self.verbose == True:
+        if self.verbose is True:
             print("Generating summary evaluation iterations...")
-        self.evaluation_iters = self.completion(
-            message=self.summary,
-            prompt_type="rubric_instructions",
-            n=iters,
-            seed=self.random_seed,
-            temperature=self.temperature,
-            top_p=self.top_p,
-        )
+        
+        # Create coroutines for each iteration
+        coroutines = [
+            self.single_completion(
+                message=self.summary,
+                prompt_type="rubric_instructions",
+                seed=self.random_seed + i,  # Add offset to seed for variation
+                temperature=self.temperature,
+                top_p=self.top_p,
+            )
+            for i in range(iters)
+        ]
+        
+        # Run all coroutines concurrently and gather results
+        self.evaluation_iters = await asyncio.gather(*coroutines)
+
 
     def _condense_iterations(self):
         """Condenses multiple API responses into a single coherent message."""
-        if self.verbose == True:
+        if self.verbose is True:
             print("Condensing final evaluation text...")
 
         # Combine strings into demarcated single message
         responses = self._gen_iteration_str(self.evaluation_iters)
 
         # Obtain final score text
-        condensed = self.completion(
-            message=responses,
-            prompt_type="rubric_instructions",
-            n=self.iterations,
-            seed=self.random_seed,
-            temperature=self.temperature,
-            top_p=self.top_p,
+        condensed = asyncio.run(
+            self.single_completion(
+                message=responses,
+                prompt_type="rubric_instructions",
+                seed=self.random_seed,
+                temperature=self.temperature,
+                top_p=self.top_p,
+            )
         )
 
         return condensed

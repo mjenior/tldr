@@ -3,7 +3,7 @@ import sys
 import math
 import logging
 
-from .i_o import create_timestamp
+from .io import create_timestamp
 
 
 class ExpenseTracker:

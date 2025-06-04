@@ -2,16 +2,24 @@ import os
 import asyncio
 from functools import partial
 
-from .logging import ExpenseTracker
+from .logger import ExpenseTracker
 
 
 class CompletionHandler(ExpenseTracker):
 
-    def __init__(self):
+    def __init__(self, testing=False, context_size = "medium", api_key=None):
         super().__init__()
 
-        self.testing = False
-        self.context_size = "medium"
+        self.testing = testing
+        self.context_size = context_size
+
+        # Set API key
+        self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        if not self.api_key:
+            raise ValueError("OpenAI API key not provided.")
+
+        # Initialize OpenAI clients
+        self.client = AsyncOpenAI(api_key=self.api_key)
 
     def _scale_token(self, tokens):
         """Multiply the size of maximum output tokens allowed."""

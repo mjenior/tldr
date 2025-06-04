@@ -5,7 +5,7 @@ import logging
 import asyncio
 from openai import AsyncOpenAI
 
-from .i_o import *
+from .io import *
 from .completion import CompletionHandler
 
 
@@ -43,14 +43,6 @@ class TldrClass(CompletionHandler):
 
         # Read in system instructions
         self.instructions = read_system_instructions()
-
-        # Set API key
-        self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
-        if not self.api_key:
-            raise ValueError("OpenAI API key not provided.")
-
-        # Initialize OpenAI clients
-        self.client = AsyncOpenAI(api_key=self.api_key)
 
         # Read in files and contents
         self.logger.info("Searching for input files...")
