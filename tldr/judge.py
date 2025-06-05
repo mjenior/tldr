@@ -104,7 +104,7 @@ class SummaryEvaluator(CompletionHandler):
         # Request repeated scoring text
         if self.verbose is True:
             print("Generating summary evaluation iterations...")
-        
+
         # Create coroutines for each iteration
         coroutines = [
             self.single_completion(
@@ -116,10 +116,9 @@ class SummaryEvaluator(CompletionHandler):
             )
             for i in range(iters)
         ]
-        
+
         # Run all coroutines concurrently and gather results
         self.evaluation_iters = await asyncio.gather(*coroutines)
-
 
     def _condense_iterations(self):
         """Condenses multiple API responses into a single coherent message."""

@@ -7,7 +7,7 @@ from .logger import ExpenseTracker
 
 class CompletionHandler(ExpenseTracker):
 
-    def __init__(self, testing=False, context_size = "medium", api_key=None):
+    def __init__(self, testing=False, context_size="medium", api_key=None):
         super().__init__()
 
         self.testing = testing
