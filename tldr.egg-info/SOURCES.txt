@@ -16,3 +16,9 @@ tldr.egg-info/dependency_links.txt
 tldr.egg-info/entry_points.txt
 tldr.egg-info/requires.txt
 tldr.egg-info/top_level.txt
+tldr/rag/__init.__.py
+tldr/rag/dartsearch.py
+tldr/rag/evalute_rag.py
+tldr/rag/helper_functions.py
+tldr/rag/metrics.py
+tldr/rag/rag.py

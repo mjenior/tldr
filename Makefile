@@ -27,10 +27,9 @@ build: format
 
 install:
 	pixi install
-	python3.11 -m pip install -e .
+	pip install -e .
 
 clean: 
-	rm -rf dist
+	rm -rf dist build *.egg-info
 
 update: clean patch build install
-	rm -rf build *.egg-info

@@ -2,8 +2,7 @@
 Evaluates the performance of a Retrieval-Augmented Generation (RAG) system
 """
 
-import json
-from typing import List, Tuple, Dict, Any
+from typing import List, Dict, Any
 
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate

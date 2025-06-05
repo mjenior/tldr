@@ -13,10 +13,8 @@ Custom modules:
 - helper_functions (for RAG-specific operations)
 """
 
-import json
-from typing import List, Tuple, Dict, Any
+from typing import List, Dict, Any
 
-from deepeval import evaluate
 from deepeval.metrics import GEval, FaithfulnessMetric, ContextualRelevancyMetric
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 from langchain_openai import ChatOpenAI
@@ -31,11 +29,6 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
-from helper_functions import (
-    create_question_answer_from_context_chain,
-    answer_question_from_context,
-    retrieve_context_per_question
-)
 
 def create_deep_eval_test_cases(
     questions: List[str],

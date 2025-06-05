@@ -1,8 +1,5 @@
-import os
 import sys
 import asyncio
-
-from openai import OpenAI
 
 from .single_completion import CompletionHandler
 from .io import read_system_instructions, read_file_content
