@@ -2,6 +2,9 @@ import os
 import asyncio
 from functools import partial
 
+import asyncio
+from openai import AsyncOpenAI
+
 from .logger import ExpenseTracker
 
 

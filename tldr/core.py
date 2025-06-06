@@ -3,7 +3,6 @@ import re
 import logging
 
 import asyncio
-from openai import AsyncOpenAI
 
 from .io import *
 from .completion import CompletionHandler
