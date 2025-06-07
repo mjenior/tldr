@@ -113,7 +113,7 @@ async def main():
     # Extend user query
     if len(args.query) > 0 and args.refine_query == True:
         main_logger.info("Refining user query...")
-        await tldr.refine_user_query(args.query)
+        tldr.user_query = await tldr.refine_query(args.query)
 
     # Condense any context docs provided
     if tldr.raw_context is not None:

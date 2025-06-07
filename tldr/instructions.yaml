@@ -353,7 +353,7 @@ research_instructions:
   You will receive the text content of a scientific document.
 
   Output Format:
-  Your output must be a bulleted list of questions.
+  Your output must be a bulleted list of questions. Only output the list of questions. Do not include any additional text or formatting, and each question should be on a new line.
 
   Guidelines for Formulating Questions:
   Origin: All questions must arise directly from content present (or implied as missing) in the provided document.

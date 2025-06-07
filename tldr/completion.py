@@ -2,7 +2,6 @@ import os
 import asyncio
 from functools import partial
 
-import asyncio
 from openai import AsyncOpenAI
 
 from .logger import ExpenseTracker
@@ -38,6 +37,10 @@ class CompletionHandler(ExpenseTracker):
         instructions = instructions_dict["system_instruction"]
         output_tokens = instructions_dict["max_output_tokens"]
         model = instructions_dict["model"] if self.testing == False else "gpt-4o-mini"
+
+        # Check message
+        if len(message.strip()) == 0:
+            raise ValueError("Message cannot be empty.")
 
         # Assemble messages object, adding query and context information
         messages = [

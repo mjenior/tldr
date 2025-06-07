@@ -4,8 +4,6 @@ from typing import Dict, List
 from scipy.special import logsumexp
 from langchain.vectorstores import FAISS
 
-from .embeddings import encode_text
-
 
 class DartboardRetriever:
     def __init__(self, 

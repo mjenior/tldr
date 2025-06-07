@@ -1,11 +1,12 @@
 import os
 import re
 import logging
-
 import asyncio
 
 from .io import *
 from .completion import CompletionHandler
+from .embeddings import encode_text
+from .dartboard import DartboardRetriever
 
 
 class TldrClass(CompletionHandler):
@@ -20,17 +21,21 @@ class TldrClass(CompletionHandler):
         recursive_search=False,
         verbose=True,
         api_key=None,
+        local_rag=True,
         context_size="medium",
         tag="tldr_run",
         testing=False,
     ):
         super().__init__()
 
-        # Establish output directory
-        self._create_output_path(tag)
-
         # Pull in logger
         self.logger = logging.getLogger(__name__)
+
+        # Establish output directory
+        self._create_output_path(tag)
+        self.logger.info(
+            f"Intermediate files being written to: {self.output_directory}"
+        )
 
         # Set basic attr
         self.verbose = verbose
@@ -63,9 +68,17 @@ class TldrClass(CompletionHandler):
         else:
             self.raw_context = None
 
-        self.logger.info(
-            f"Intermediate files being written to: {self.output_directory}"
-        )
+        # Create local embeddings
+        if local_rag:
+            self.logger.info(f"Generating embeddings for reference documents...")
+            self.dartboard = DartboardRetriever(
+                chunks=encode_text(self.content),
+                default_num_results=5,
+                default_oversampling_factor=3,
+                default_div_weight=1.0,
+                default_rel_weight=1.0,
+                default_sigma=0.1,
+            )
 
     async def format_context_references(self):
         """Creates more concise, less repetative context message."""
@@ -119,15 +132,15 @@ class TldrClass(CompletionHandler):
 
         return processed_query
 
-    async def refine_user_query(self, query):
+    async def refine_query(self, query):
         """Attempt to automatically improve user query for greater specificity"""
 
         # Check text formatting
-        user_query = self._lint_user_query(query)
+        #query = self._lint_user_query(query)
 
         # Generate new query text
         new_query = await self.single_completion(
-            message=user_query, prompt_type="refine_prompt"
+            message=query, prompt_type="refine_prompt"
         )
 
         # Handle output text
@@ -138,7 +151,8 @@ class TldrClass(CompletionHandler):
             output_dir=self.output_directory,
         )
         self.logger.info(result)
-        self.user_query = full_query
+
+        return full_query
 
     async def summarize_resources(self):
         """Generate component and synthesis summary text"""
