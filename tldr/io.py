@@ -6,6 +6,7 @@ from docx import Document
 from PyPDF2 import PdfReader
 from bs4 import BeautifulSoup
 
+
 class FileHandler:
     def create_timestamp(self):
         """Generate a timestamp string (e.g., 20231027_103000)"""
@@ -52,12 +53,20 @@ class FileHandler:
         Returns:
             A dictionary with file extensions as keys and lists of file paths as values.
         """
-        readable_files_by_type = {"pdf": [], "docx": [], "html": [], "txt": [], "md": []}
+        readable_files_by_type = {
+            "pdf": [],
+            "docx": [],
+            "html": [],
+            "txt": [],
+            "md": [],
+        }
 
         if infiles is not None:
             for file_path_item in infiles:
                 ext = os.path.splitext(file_path_item)[1].lower()
-                self._update_file_dictionary(readable_files_by_type, file_path_item, ext)
+                self._update_file_dictionary(
+                    readable_files_by_type, file_path_item, ext
+                )
         else:
             if not recursive:
                 for filename in os.listdir(directory):
@@ -66,7 +75,9 @@ class FileHandler:
                     filepath = os.path.join(directory, filename)
                     if os.path.isfile(filepath):
                         ext = os.path.splitext(filename)[1].lower()
-                        self._update_file_dictionary(readable_files_by_type, filepath, ext)
+                        self._update_file_dictionary(
+                            readable_files_by_type, filepath, ext
+                        )
             else:
                 for root, _, files_in_dir in os.walk(directory):
                     for filename in files_in_dir:
@@ -74,7 +85,9 @@ class FileHandler:
                             continue
                         filepath = os.path.join(root, filename)
                         ext = os.path.splitext(filename)[1].lower()
-                        self._update_file_dictionary(readable_files_by_type, filepath, ext)
+                        self._update_file_dictionary(
+                            readable_files_by_type, filepath, ext
+                        )
         return {k: v for k, v in readable_files_by_type.items() if v}
 
     def _update_file_dictionary(self, file_dict, file_path, file_ext):
@@ -82,7 +95,9 @@ class FileHandler:
         try:
             if file_ext == ".pdf":
                 reader = PdfReader(file_path)
-                if reader.pages and any(page.extract_text() for page in reader.pages if page.extract_text()): 
+                if reader.pages and any(
+                    page.extract_text() for page in reader.pages if page.extract_text()
+                ):
                     file_dict["pdf"].append(file_path)
             elif file_ext == ".docx":
                 doc = Document(file_path)
@@ -102,7 +117,7 @@ class FileHandler:
                 file_dict["txt"].append(file_path)
         except Exception as e:  # pylint: disable=broad-except
             # Silently ignore files that can't be processed or raise an error
-            pass 
+            pass
 
     def read_file_content(self, filelist, ext=None):
         """
@@ -115,14 +130,14 @@ class FileHandler:
         for filepath in filelist:
             current_ext = ext
             if current_ext is None:
-                current_ext = os.path.splitext(filepath)[1].lower().lstrip('.')
-            
+                current_ext = os.path.splitext(filepath)[1].lower().lstrip(".")
+
             try:
                 if current_ext == "pdf":
                     reader = PdfReader(filepath)
                     for page in reader.pages:
                         page_text = page.extract_text()
-                        if page_text: 
+                        if page_text:
                             text += page_text + "\n"
                 elif current_ext in ["doc", "docx"]:
                     doc = Document(filepath)
@@ -135,13 +150,13 @@ class FileHandler:
                 elif current_ext in ["txt", "md"]:
                     with open(filepath, "r", encoding="utf-8") as f:
                         text = f.read()
-                
+
                 content_list.append(text.strip())
 
-            except Exception as e: # pylint: disable=broad-except
+            except Exception as e:  # pylint: disable=broad-except
                 print(f"Error reading file '{filepath}': {e}")
                 continue
-            
+
         return content_list
 
     def read_system_instructions(self, file_path: str = "instructions.yaml") -> dict:
@@ -158,8 +173,10 @@ class FileHandler:
             print(f"Instructions file not found: '{instructions_path}'")
         except yaml.YAMLError as e:
             print(f"Error parsing YAML file '{instructions_path}': {e}")
-        except Exception as e: # pylint: disable=broad-except
-            print(f"An unexpected error occurred while reading '{instructions_path}': {e}")
+        except Exception as e:  # pylint: disable=broad-except
+            print(
+                f"An unexpected error occurred while reading '{instructions_path}': {e}"
+            )
         return instructions
 
     def save_response_text(
@@ -168,8 +185,8 @@ class FileHandler:
         label: str = "response",
         output_dir: str = ".",
         idx: int = 1,
-        chunk_size: int = 1024 * 1024, 
-        errors: str = "strict"
+        chunk_size: int = 1024 * 1024,
+        errors: str = "strict",
     ) -> str:
         """
         Saves a string variable to a text file with a dynamic filename.
@@ -187,8 +204,7 @@ class FileHandler:
         try:
             with open(filepath, "w", encoding="utf-8", errors=errors) as f:
                 for i in range(0, len(out_data), chunk_size):
-                    f.write(out_data[i:i + chunk_size])
+                    f.write(out_data[i : i + chunk_size])
             return filepath
         except IOError as e:
-            print(f"Error saving file '{filepath}': {e}")
-            return "" # Return empty string on error
+            return f"Error saving file '{filepath}': {e}"

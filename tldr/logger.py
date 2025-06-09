@@ -5,6 +5,7 @@ import logging
 
 from .io import FileHandler
 
+
 class ExpenseTracker(FileHandler):
     """
     Tracker for token useage and session cost
@@ -94,7 +95,7 @@ class ExpenseTracker(FileHandler):
         self.total_spend = self.session_spend["input"] + self.session_spend["output"]
 
     def format_spending(self):
-        
+
         self.session_spend["input"] = self._simplify_usd_str(
             self.session_spend["input"]
         )

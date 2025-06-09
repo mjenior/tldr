@@ -44,7 +44,9 @@ class CompletionHandler(ExpenseTracker):
 
         # Set tools
         if model == "gpt-4o":
-            tools=[{"type": "web_search_preview", "search_context_size": self.context_size}]
+            tools = [
+                {"type": "web_search_preview", "search_context_size": self.context_size}
+            ]
         else:
             tools = None
 
@@ -78,8 +80,8 @@ class CompletionHandler(ExpenseTracker):
         self.update_spending()
         self.update_session_totals()
 
-        # Return only the response text
-        return response.output_text
+        # Return prompt and response pair
+        return {"prompt": message, "response": response.output_text}
 
     async def single_completion(self, message, prompt_type, **kwargs):
         """
@@ -91,7 +93,7 @@ class CompletionHandler(ExpenseTracker):
             prompt_type=prompt_type,
         )
 
-    async def multi_completions(self, target_content, **kwargs):
+    async def multi_completions(self, target_content, prompt_type="default", **kwargs):
         """
         Runs multiple single_completion calls concurrently using asyncio.gather, with retry on 429.
         """
@@ -99,29 +101,35 @@ class CompletionHandler(ExpenseTracker):
         coroutine_tasks = []
         for content in target_content:
 
-            # Determine type of resource
-            source_type = await self._retry_on_429(
-                partial(self._perform_api_call, **kwargs),
-                message=content,
-                prompt_type="file_type",
-            )
+            # Determine type of submission
+            if prompt_type != "web_search":
+                # Determine type of resource
+                source_type = await self._retry_on_429(
+                    partial(self._perform_api_call, **kwargs),
+                    message=content,
+                    prompt_type="file_type",
+                )
+                prompt_type = source_type["response"]
 
             # Generate summary
             task = self._retry_on_429(
                 self.single_completion,
                 message=content,
-                prompt_type=source_type,
+                prompt_type=prompt_type,
+                **kwargs,
             )
             coroutine_tasks.append(task)
 
         return await asyncio.gather(*coroutine_tasks, return_exceptions=False)
 
-    async def _retry_on_429(self, coro_fn, message, prompt_type, max_retries=5):
+    async def _retry_on_429(
+        self, coro_fn, message, prompt_type, max_retries=5, **kwargs
+    ):
         """Retry summary generation on token rate limit per hour exceeded errors."""
 
         for attempt in range(1, max_retries + 1):
             try:
-                return await coro_fn(message, prompt_type)
+                return await coro_fn(message, prompt_type, **kwargs)
             except Exception as e:
                 if hasattr(e, "status") and e.status == 429:
                     wait_time = random.uniform(*(1, 3)) * attempt * 2

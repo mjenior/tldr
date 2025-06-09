@@ -1,4 +1,3 @@
-
 import pickle
 import argparse
 
@@ -78,7 +77,13 @@ def parse_user_arguments():
 
     return vars(parser.parse_args())
 
-def encode_text(content: str or list, file_label: str, chunk_size: int = 1000, chunk_overlap: int = 200) -> FAISS:
+
+def encode_text(
+    content: str or list,
+    file_label: str,
+    chunk_size: int = 1000,
+    chunk_overlap: int = 200,
+) -> FAISS:
     """
     Encodes a string into a FAISS vector store using OpenAI embeddings.
     """
@@ -87,7 +92,9 @@ def encode_text(content: str or list, file_label: str, chunk_size: int = 1000, c
     except Exception as e:
         content = content if isinstance(content, list) else content.split("\n")
         chunk_size = 1000 if chunk_size <= 0 else int(chunk_size)
-        chunk_overlap = 200 if chunk_overlap < 0 else int(chunk_overlap) # overlap can be 0
+        chunk_overlap = (
+            200 if chunk_overlap < 0 else int(chunk_overlap)
+        )  # overlap can be 0
 
         try:
             text_splitter = RecursiveCharacterTextSplitter(
@@ -97,14 +104,14 @@ def encode_text(content: str or list, file_label: str, chunk_size: int = 1000, c
                 is_separator_regex=False,
             )
             # create_documents expects a list of strings
-            docs = text_splitter.create_documents(content) 
+            docs = text_splitter.create_documents(content)
 
             # Assign metadata to each chunk (Langchain Document objects)
             for doc in docs:
-                if not hasattr(doc, 'metadata'):
+                if not hasattr(doc, "metadata"):
                     doc.metadata = {}
-                doc.metadata['relevance_score'] = 1.0
-            
+                doc.metadata["relevance_score"] = 1.0
+
             embeddings = OpenAIEmbeddings()
             vectorstore = FAISS.from_documents(docs, embeddings)
 
@@ -112,7 +119,9 @@ def encode_text(content: str or list, file_label: str, chunk_size: int = 1000, c
             save_embedding(vectorstore, file_label)
 
         except Exception as e:
-            raise RuntimeError(f"An error occurred during the encoding process: {str(e)}")
+            raise RuntimeError(
+                f"An error occurred during the encoding process: {str(e)}"
+            )
 
     return vectorstore
 

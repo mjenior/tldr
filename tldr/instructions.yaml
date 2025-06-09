@@ -334,7 +334,7 @@ executive_summary:
      Your output should be only the executive summary. Do not include any conversational preambles or postscripts.
 
 
-research_instructions:
+background_gaps:
  description: "A role for identifying knowledge gaps and crafting lists of questions to address them."
  model: "o4-mini"
  max_output_tokens: 16384

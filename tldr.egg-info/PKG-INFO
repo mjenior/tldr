@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: tldr
-Version: 0.4.42
+Version: 0.4.43
 Summary: Reads and summarizes top points from a provided series of articles using the OpenAI API.
 Project-URL: Homepage, https://github.com/mjenior/tldr
 Requires-Python: >=3.11
@@ -21,7 +21,7 @@ Dynamic: license-file
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-Version = 0.4.42
+Version = 0.4.43
 
 ## Overview
 
@@ -67,7 +67,7 @@ pip install -e .
 - pypdf2
 - beautifulsoup4
 - black
-- reportlab
+- langchain
 
 ## Usage
 

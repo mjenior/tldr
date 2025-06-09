@@ -9,10 +9,8 @@ from .utils import parse_user_arguments
 async def main():
     """Main entry point for the tldr command"""
 
-    # Read in command line arguments
-    engine_args = parse_user_arguments()
-
     # Read in content and extend user query
+    engine_args = parse_user_arguments()
     tldr = TldrEngine(**engine_args)
 
     # Report something if verbose is False
@@ -22,7 +20,7 @@ async def main():
     # Extend user query
     if len(tldr.query) > 0 and tldr.refine_query is True:
         tldr.logger.info("Refining user query...")
-        await tldr.query_refiner()
+        await tldr.refine_user_query()
 
     # Condense any context docs provided
     if tldr.raw_context is not None:
@@ -40,10 +38,12 @@ async def main():
         tldr.executive_summary = tldr.reference_summaries[0]
 
     # Use research agent to fill gaps
-    if args.web_search: await tldr.apply_research()
+    if tldr.web_search:
+        await tldr.apply_research()
 
     # Rewrite for response type and tone
-    await tldr.polish_response(args.tone)
+    await tldr.polish_response()
+    tldr.logger.info(tldr.polished_summary)
 
     # Complete run - Move logile and report usage
     tldr.format_spending()
