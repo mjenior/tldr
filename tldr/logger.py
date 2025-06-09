@@ -3,16 +3,19 @@ import sys
 import math
 import logging
 
-from .io import create_timestamp
+from .io import FileHandler
 
-
-class ExpenseTracker:
+class ExpenseTracker(FileHandler):
     """
     Tracker for token useage and session cost
     """
 
     def __init__(self):
+        super().__init__()
         self.model = "gpt-4o-mini"
+        self.run_tag = None
+        self.output_directory = None
+        self.verbose = True
 
         # Define spending dictionaries
         self.model_rates_perM = {
@@ -30,6 +33,41 @@ class ExpenseTracker:
             "gpt-4o": {"input": 0.0, "output": 0.0},
             "o4-mini": {"input": 0.0, "output": 0.0},
         }
+        self.session_spend = {"input": 0.0, "output": 0.0}
+        self.total_spend = 0.0
+
+    def setup_logging(self):
+        """
+        Configures the root logger for the application.
+        """
+        # Get root logger
+        self.logger = logging.getLogger()
+
+        # Prevent duplicate handlers
+        if self.logger.handlers:
+            for handler in self.logger.handlers:
+                self.logger.removeHandler(handler)
+
+        # Set the verbosity
+        (
+            self.logger.setLevel(logging.INFO)
+            if self.verbose == True
+            else self.logger.setLevel(logging.WARNING)
+        )
+
+        # Console handler
+        handler = logging.StreamHandler(sys.stdout)
+        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
+
+        # File handler
+        self.run_tag = f"tldr.{self.create_timestamp()}"
+        log_file = os.path.join(f"{self.run_tag}.log")
+        file_handler = logging.FileHandler(log_file)
+        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+        file_handler.setFormatter(formatter)
+        self.logger.addHandler(file_handler)
 
     def update_spending(self):
         """Calculates approximate cost (USD) of LLM tokens generated to a given decimal place"""
@@ -56,6 +94,7 @@ class ExpenseTracker:
         self.total_spend = self.session_spend["input"] + self.session_spend["output"]
 
     def format_spending(self):
+        
         self.session_spend["input"] = self._simplify_usd_str(
             self.session_spend["input"]
         )
@@ -72,6 +111,8 @@ class ExpenseTracker:
                 self.model_spend[model]["output"]
             )
 
+        self.logger.info(f"Session Cost: {self.total_spend}")
+
     def generate_token_report(self) -> str:
         """
         Generates a report string showing input/output tokens per model.
@@ -83,6 +124,7 @@ class ExpenseTracker:
             report.append(f"{model} i:{input_tokens}, o:{output_tokens}")
 
         self.token_report = ", ".join(report)
+        self.logger.info(f"Session Token Usage: {self.token_report}")
 
     @staticmethod
     def _simplify_usd_str(usd: float, dec: int = 2) -> str:
@@ -90,52 +132,3 @@ class ExpenseTracker:
         factor = 10**dec
         rounded = math.ceil(usd * factor) / factor
         return f"${rounded:.{dec}f}"
-
-
-def setup_logging(verbose: bool):
-    """
-    Configures the root logger for the application.
-    """
-    # Get root logger
-    logger = logging.getLogger()
-
-    # Prevent duplicate handlers
-    if logger.handlers:
-        for handler in logger.handlers:
-            logger.removeHandler(handler)
-
-    # Set the verbosity
-    (
-        logger.setLevel(logging.INFO)
-        if verbose == True
-        else logger.setLevel(logging.WARNING)
-    )
-
-    # Console handler
-    handler = logging.StreamHandler(sys.stdout)
-    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-
-    # File handler
-    run_tag = f"tldr.{create_timestamp()}"
-    log_file = os.path.join(f"{run_tag}.log")
-    file_handler = logging.FileHandler(log_file)
-    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
-
-    return run_tag
-
-
-def get_logfile_path(logger_instance: logging.Logger = None) -> str | None:
-    """
-    Retrieves the filename of the first FileHandler attached to the given logger.
-    """
-    if logger_instance is None:
-        logger_instance = logging.getLogger()
-
-    for handler in logger_instance.handlers:
-        if isinstance(handler, logging.FileHandler):
-            return handler.baseFilename
-    return None

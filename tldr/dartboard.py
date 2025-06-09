@@ -1,13 +1,11 @@
 import numpy as np
-from typing import Dict, List
-
+from typing import Dict, List, Any
 from scipy.special import logsumexp
-from langchain.vectorstores import FAISS
 
 
 class DartboardRetriever:
     def __init__(self, 
-                 chunks: FAISS, 
+                 chunks: Any, 
                  default_num_results: int = 5,
                  default_oversampling_factor: int = 3,
                  default_div_weight: float = 1.0,

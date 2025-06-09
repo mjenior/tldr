@@ -48,7 +48,7 @@ pip install -e .
 - pypdf2
 - beautifulsoup4
 - black
-- reportlab
+- langchain
 
 ## Usage
 
