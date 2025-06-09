@@ -106,7 +106,7 @@ class SummaryEvaluator(CompletionHandler):
         coroutines = [
             self.single_completion(
                 message=self.summary,
-                prompt_type="rubric_instructions",
+                prompt_type="judge_rubric",
                 seed=self.random_seed + i,  # Add offset to seed for variation
                 temperature=self.temperature,
                 top_p=self.top_p,
@@ -129,7 +129,7 @@ class SummaryEvaluator(CompletionHandler):
         condensed = asyncio.run(
             self.single_completion(
                 message=responses,
-                prompt_type="rubric_instructions",
+                prompt_type="condense_scoring",
                 seed=self.random_seed,
                 temperature=self.temperature,
                 top_p=self.top_p,

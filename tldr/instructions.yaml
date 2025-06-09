@@ -374,7 +374,24 @@ research_instructions:
   Present only the bulleted list as your final output.
 
 
-polishing_instructions:
+web_search:
+ description: "Research Assistant"
+ model: "gpt-4o"
+ max_output_tokens: 8192
+ system_instruction: |
+  You are a specialized Scientific Research Assistant expert at bridging knowledge gaps in scientific publications. 
+  
+  Your core function is to conduct targeted web searches to answer highly technical questions across diverse scientific fields.
+
+  When answering a question:
+  - Prioritize authoritative, peer-reviewed scientific sources (e.g., academic journals, university research, reputable scientific organizations).
+  - Synthesize information to provide a comprehensive and accurate answer.
+  - Cite all sources using a consistent format (e.g., direct links or clear references).
+
+  Your output must be the answer to the question, with all sources clearly cited. Do not include any conversational text or extraneous formatting.
+
+
+polishing:
  description: "A role for analyzing and reorganizing poorly structured text."
  model: "o4-mini"
  max_output_tokens: 8192
@@ -503,7 +520,7 @@ modified_polishing:
   Conclude with key insights or implications.
 
 
-rubric_instructions:
+judge_rubric:
  description: "A Technical Summary Quality Assessor."
  model: "gpt-4o-mini"
  max_output_tokens: 4096
@@ -582,7 +599,7 @@ rubric_instructions:
   Output the final score and justification in the specified format.
 
 
-condense_instructions:
+condense_scoring:
  description: "A Quality Assessment Report Consolidation Engine."
  model: "gpt-4o-mini"
  max_output_tokens: 4096

@@ -171,10 +171,10 @@ class TldrEngine(CompletionHandler):
         """Generate component and synthesis summary text"""
 
         # Asynchronously summarize documents
-        summaries = await self.multi_completions()
+        summaries = await self.multi_completions(self.content)
 
         # Annotate and save response strings
-        self.reference_summaries = ""
+        self.reference_summaries = []
         i = 0
         for summary in summaries:
             i += 1
@@ -186,7 +186,7 @@ class TldrEngine(CompletionHandler):
                 idx=i,
             )
             self.logger.info(result)
-            self.reference_summaries += annotated
+            self.reference_summaries.append(annotated)
 
     async def integrate_summaries(self):
         """Generate integrated executive summaries combine all current summary text"""
@@ -211,24 +211,23 @@ class TldrEngine(CompletionHandler):
         self.logger.info("Applying research agent to knowledge gaps...")
 
         # Identify gaps in understanding
-        gap_questions = await self.single_completion(
+        research_questions = await self.single_completion(
             message=self.executive_summary, prompt_type="research_instructions"
         )
+        self.research_questions = research_questions.split("\n")
 
         # Search web for to fill gaps
-        research_results = await self.search_web(
-            gap_questions, context_size=self.context_size
-        )
+        research_answers = await self.multi_completions(self.research_questions)
 
         # Handle output
-        gap_gilling = f"Gap questions:\n{gap_questions}\n\nAnswers:\n{research_results}"
+        gap_gilling = f"Gap questions:\n{research_questions}\n\nAnswers:\n{research_answers}"
         result = save_response_text(
             gap_gilling,
             label="research",
             output_dir=self.output_directory,
         )
         self.logger.info(result)
-        self.research_results = research_results
+        self.research_results = research_answers
 
     async def polish_response(self, tone: str = "default"):
         """Refine final response text"""
@@ -236,7 +235,7 @@ class TldrEngine(CompletionHandler):
 
         # Select tone
         tone_instructions = (
-            "polishing_instructions" if tone == "default" else "modified_polishing"
+            "polishing" if tone == "default" else "modified_polishing"
         )
 
         # Run completion and save final response text

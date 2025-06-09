@@ -42,21 +42,24 @@ class CompletionHandler(ExpenseTracker):
         if len(message.strip()) == 0:
             raise ValueError("Message cannot be empty.")
 
+        # Set tools
+        if model == "gpt-4o":
+            tools=[{"type": "web_search_preview", "search_context_size": self.context_size}]
+        else:
+            tools = None
+
         # Assemble messages object, adding query and context information
         messages = [
             {"role": "system", "content": instructions + self.user_query},
             {"role": "user", "content": message + self.added_context},
         ]
 
-        # Rescale max tokens
-        max_output_tokens = self._scale_token(output_tokens)
-
         # Run completion query
         if model == "o4-mini":
             response = await self.client.responses.create(
                 input=messages,
                 model=model,
-                max_output_tokens=max_output_tokens,
+                max_output_tokens=self._scale_token(output_tokens),
                 reasoning={"effort": self.context_size},
                 **kwargs,
             )
@@ -64,7 +67,8 @@ class CompletionHandler(ExpenseTracker):
             response = await self.client.responses.create(
                 input=messages,
                 model=model,
-                max_output_tokens=max_output_tokens,
+                tools=tools,
+                max_output_tokens=self._scale_token(output_tokens),
                 **kwargs,
             )
 
@@ -87,13 +91,13 @@ class CompletionHandler(ExpenseTracker):
             prompt_type=prompt_type,
         )
 
-    async def multi_completions(self, **kwargs):
+    async def multi_completions(self, target_content, **kwargs):
         """
         Runs multiple single_completion calls concurrently using asyncio.gather, with retry on 429.
         """
         # Parse all of the content found
         coroutine_tasks = []
-        for content in self.content:
+        for content in target_content:
 
             # Determine type of resource
             source_type = await self._retry_on_429(
@@ -127,54 +131,3 @@ class CompletionHandler(ExpenseTracker):
                     await asyncio.sleep(wait_time)
 
         raise RuntimeError("Max retries exceeded for task")
-
-    async def _search_single_question(self, question: str, context_size: str):
-        """Helper function to search for a single question using web_search_preview tool."""
-
-
-        # TODO: use instructions here to consolidate api cal function
-        instruction = "Use web search to answer the following question as thoroughly as possible. Cite all sources.\n"
-        response = await self.client.responses.create(
-            model="gpt-4o",
-            tools=[{"type": "web_search_preview", "search_context_size": context_size}],
-            input=instruction + question,
-        )
-        return response.output_text
-
-    async def search_web(self, questions: list[str], context_size: str = "medium"):
-        """
-        Use web search tool to answer a list of questions asynchronously.
-        Each question is processed individually.
-
-        Args:
-            questions (list[str]): A list of questions to search the web for.
-            context_size (str, optional): The context size for the web search. 
-                                         Defaults to "medium".
-
-        Returns:
-            list[tuple[str, str | None]]: A list of tuples, where each tuple contains 
-                                          the original question and its corresponding answer text.
-                                          If an error occurs for a question, the answer text will be None.
-        """
-        if not questions:
-            return []
-
-        tasks = [
-            self._search_single_question(question, context_size)
-            for question in questions
-        ]
-        
-        # Gather results, allowing exceptions to be returned
-        answers_or_exceptions = await asyncio.gather(*tasks, return_exceptions=True)
-        
-        results = []
-        for i, item in enumerate(answers_or_exceptions):
-            original_question = questions[i]
-            if isinstance(item, Exception):
-                error_message = f"Error searching web for question '{original_question}': {item}"
-                if hasattr(self, 'logger') and self.logger is not None:
-                    self.logger.error(error_message)
-            else:
-                results.append((original_question, item)) # item is the answer_text
-        
-        return results
