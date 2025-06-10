@@ -1,4 +1,5 @@
 import os
+import sys
 import yaml
 from datetime import datetime
 
@@ -8,23 +9,23 @@ from bs4 import BeautifulSoup
 
 
 class FileHandler:
+
     def create_timestamp(self):
         """Generate a timestamp string (e.g., 20231027_103000)"""
-        return datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.run_tag = f"tldr.{timestamp}"
 
     def _create_output_path(self):
-        """Set up where to write output summaries"""
-
-        # Create full path for intermediate files
-        if self.run_tag is not None:
-            output_path = f"{self.run_tag}_files"
-        else:
-            output_path = f"tldr.{self.create_timestamp()}_files"
-        os.makedirs(output_path, exist_ok=True)
-        self.output_directory = output_path
+        """Set up where to write intermediate files"""
+        self.output_directory = f"{self.run_tag}.files"
+        os.makedirs(self.output_directory, exist_ok=True)
+        self.logger.info(
+            f"Intermediate files being written to: {self.output_directory}"
+        )
 
     def fetch_content(
         self,
+        label: str = "input",
         user_files: list = None,
         search_dir: str = ".",
         recursive: bool = False,
@@ -33,13 +34,24 @@ class FileHandler:
         Find files and read in their contents.
         Returns a list of content strings.
         """
+        self.logger.info(f"Searching for {label} documents...")
         files = self._find_readable_files(
             infiles=user_files, directory=search_dir, recursive=recursive
         )
+
         content = []
         for ext in files.keys():
             content += self.read_file_content(files[ext], ext)
-        return content
+
+        # Check if no resources were found
+        if len(content) == 0:
+            self.logger.error(
+                "No resources found in current search directory. Exiting."
+            )
+            sys.exit(1)
+        else:
+            self.logger.info(f"Identified {len(content)} {label} documents.")
+            return content
 
     def _find_readable_files(
         self, infiles: list = None, directory: str = ".", recursive: bool = False
@@ -135,6 +147,7 @@ class FileHandler:
             try:
                 if current_ext == "pdf":
                     reader = PdfReader(filepath)
+                    text = ""
                     for page in reader.pages:
                         page_text = page.extract_text()
                         if page_text:
@@ -193,12 +206,10 @@ class FileHandler:
         This method now incorporates the logic of the former _save_summary_txt function.
         Returns the full path to the saved file, or an empty string on error.
         """
-        os.makedirs(output_dir, exist_ok=True)
-        timestamp = self.create_timestamp()
         if label == "summary":
-            filename = f"{label}.{idx}.tldr.{timestamp}.txt"
+            filename = f"{label}.{idx}.{self.run_tag}.txt"
         else:
-            filename = f"{label}.tldr.{timestamp}.txt"
+            filename = f"{label}.{self.run_tag}.txt"
         filepath = os.path.join(output_dir, filename)
 
         try:

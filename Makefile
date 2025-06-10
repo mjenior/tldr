@@ -1,4 +1,4 @@
-VERSION = "0.4.44"
+VERSION = "0.4.60"
 
 # Default target
 .DEFAULT_GOAL := help
@@ -26,10 +26,10 @@ build: format
 	pixi run python -m build
 
 install:
-	pixi install
 	pip install -e .
 
 clean: 
 	rm -rf dist build *.egg-info
 
 update: clean patch build install
+	rm -rf build *.egg-info

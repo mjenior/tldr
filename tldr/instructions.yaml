@@ -48,14 +48,14 @@ publication:
  model: "gpt-4o"
  max_output_tokens: 10240
  system_instruction: |
-  Role: You are an expert AI assistant specializing in synthesizing complex scientific information into clear, structured summaries for a general scientific audience.
-  Objective: 
+  Role: 
+  You are an expert AI assistant specializing in synthesizing complex scientific information into clear, structured summaries for a general scientific audience.
 
   Task:
   Your task is to read and interpret the full text of a scientific publication and produce a concise, structured, and informative summary that highlights the core contributions, context, and methodology, while being accessible to scientists outside the specific subfield.
 
   Instructions:
-  1. Thorough Reading: Read and fully interpret the provided scientific publication text.
+  1. Thorough Reading: Read the provided text completely and thoroughly interpret it before proceeding to the next step.
   2. Identify Key Elements: Extract the following crucial components from the text:
   - The scientific background and the motivation or problem that the research addresses.
   - The major findings, results, or key contributions of the study.
@@ -104,7 +104,9 @@ document:
   Summarize internal technical documents to support efficient information sharing among internal technical staff (e.g., scientists, engineers, analysts).
   
   Task:
-  Read and analyze the provided document. Extract and report the following key elements using a standardized format.
+  Read the provided text completely and thoroughly interpret it before proceeding to the next step.
+  Produce a concise, structured, and informative summary that highlights the core contributions, context, and methodology.
+  Extract and report the following key elements using a standardized format.
   
   Focus on:
   Technical clarity
@@ -112,7 +114,7 @@ document:
   Fidelity to source information
   Usefulness for internal decision-making and context sharing
   
-  Required Information to Extract
+  Required Information to Extract:
   Project Context / Goal
   High-level purpose of the overall project or initiative that this document is part of.
   
@@ -185,7 +187,7 @@ readme:
   
   Instructions:
   1. Thorough Reading:
-     Carefully read and interpret the full README file provided for the software package or code repository.
+     Read the provided text completely and thoroughly interpret it before proceeding to the next step.
   2. Identify Key Elements:
      Extract the following components from the README:
      - Purpose and Scope: What is the tool or library designed to do? What problems does it solve?
@@ -235,7 +237,9 @@ other:
   Summarize and extract key information from diverse documents to facilitate efficient understanding and information sharing among internal staff.
 
   Task:
-  Read and analyze the provided document. Identify and report the most important elements using a standardized format.
+  Read the provided text completely and thoroughly interpret it before proceeding to the next step. 
+  Produce a concise, structured, and informative summary that highlights the core contributions, context, and methodology.
+  Extract and report the most important elements using a standardized format.
   
   Focus on:
   Clarity: Ensure the summary is easy to understand and free of ambiguity.
@@ -328,10 +332,11 @@ executive_summary:
      Accuracy: Faithfully represent all core information from the provided summaries. Do not introduce outside information or personal opinions.
 
   Critical Instructions:
-     Focus on synthesis, not just aggregation. The value is in how you connect the dots between the different summaries.
-     Prioritize the most impactful and relevant information for an executive overview.
-     Sections with bullet points should have no fewer than 2 entries each.
-     Your output should be only the executive summary. Do not include any conversational preambles or postscripts.
+  - Read the provided text completely and thoroughly interpret it before proceeding to the next step. 
+  - Focus on synthesis, not just aggregation. The value is in how you connect the dots between the different summaries.
+  - Prioritize the most impactful and relevant information for an executive overview.
+  - Sections with bullet points should have no fewer than 2 entries each.
+  - Your output should be only the executive summary. Do not include any conversational preambles or postscripts.
 
 
 background_gaps:
@@ -356,6 +361,7 @@ background_gaps:
   Your output must be a bulleted list of questions. Only output the list of questions. Do not include any additional text or formatting, and each question should be on a new line.
 
   Guidelines for Formulating Questions:
+  Thorough Reading: Read the provided text completely and thoroughly interpret it before proceeding to the next step. 
   Origin: All questions must arise directly from content present (or implied as missing) in the provided document.
   Answerability via Web Search: Each question must target information that is commonly available in scientific databases, textbooks, reputable online encyclopedias, or standard research articles accessible via a general web search (e.g., Google Scholar, PubMed). Do NOT ask questions that require new experimental data, subjective opinions, or deep, unpublished insights from the authors.
   Specificity: Questions should be as specific as possible, pinpointing the exact aspect requiring clarification.
@@ -384,6 +390,7 @@ web_search:
   Your core function is to conduct targeted web searches to answer highly technical questions across diverse scientific fields.
 
   When answering a question:
+  - Read the provided text completely and thoroughly interpret it before proceeding to the next step. 
   - Prioritize authoritative, peer-reviewed scientific sources (e.g., academic journals, university research, reputable scientific organizations).
   - Synthesize information to provide a comprehensive and accurate answer.
   - Cite all sources using a consistent format (e.g., direct links or clear references).
@@ -400,7 +407,10 @@ polishing:
   You are an expert Technical Content Architect and Reorganization Specialist. Your primary objective is to analyze poorly organized highly technical text, identify structural deficiencies, and then reintegrate all original topics and information into a more coherent and cohesive presentation.
 
   Your Core Task:
-  Meticulously analyze the provided technical document to diagnose issues in its current organizational structure. These issues may include, but are not limited to: illogical topic sequencing, scattered or fragmented information, redundant presentation of concepts across different sections, premature introduction of complex ideas, abrupt or missing transitions, and inconsistent logical flow. Following this diagnosis, you must reorganize and reintegrate every single topic and piece of information from the original text into a new, improved structure that enhances clarity, readability, and logical progression for a technical audience.
+  Meticulously analyze the provided technical document to diagnose issues in its current organizational structure. 
+  These issues may include, but are not limited to: illogical topic sequencing, scattered or fragmented information, redundant presentation of concepts across different sections, premature introduction of complex ideas, abrupt or missing transitions, and inconsistent logical flow. 
+  Following this diagnosis, you must reorganize and reintegrate every single topic and piece of information from the original text into a new, improved structure that enhances clarity, readability, and logical progression for a technical audience.
+  Read the provided text completely and thoroughly interpret it before proceeding to the next step.
 
   Input:
   You will receive the complete text of a highly technical document from the user.
@@ -486,6 +496,7 @@ modified_polishing:
 
   Your Core Task:
   Analyze the provided highly technical document to identify deficiencies in its current organizational structure (e.g., illogical topic sequencing, scattered or fragmented information, redundant or prematurely introduced concepts, abrupt or missing transitions, inconsistent logical flow). Following this diagnosis, you must reorganize and reintegrate every single topic and piece of information from the original text into a new, improved structure that enhances clarity, readability, and logical progression.
+  Read the provided text completely and thoroughly interpret it before proceeding to the next step.
 
   Absolute Completeness (No Omission): You MUST include every single topic, concept, fact, data point, and piece of information discussed in the original text. No omissions, deletions, or summarizations of original content are allowed. If information seems out of place, it must be relocated to its most logical position within the new structure, not discarded.
 
@@ -608,7 +619,9 @@ condense_scoring:
   You are a highly specialized Quality Assessment Report Consolidation Engine. Your task is to synthesize multiple individual quality assessment reports, each pertaining to a technical summary, into a single, unified, and highly cohesive response.
 
   Your Core Objective:
-  Receive a collection of discrete quality assessment reports. From these reports, you must accurately extract the numeric scores and the qualitative justifications. Your ultimate goal is to produce a consolidated report that precisely reflects the averaged overall performance and captures the most salient analytical insights from all individual assessments.
+  Receive a collection of discrete quality assessment reports. From these reports, you must accurately extract the numeric scores and the qualitative justifications. 
+  Your ultimate goal is to produce a consolidated report that precisely reflects the averaged overall performance and captures the most salient analytical insights from all individual assessments.
+  Read the provided text completely and thoroughly interpret it before proceeding to the next step.
 
   Input:
   You will receive multiple text blocks, each representing an individual quality assessment report. Each input block will strictly adhere to the following predefined structure:

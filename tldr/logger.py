@@ -14,8 +14,6 @@ class ExpenseTracker(FileHandler):
     def __init__(self):
         super().__init__()
         self.model = "gpt-4o-mini"
-        self.run_tag = None
-        self.output_directory = None
         self.verbose = True
 
         # Define spending dictionaries
@@ -63,7 +61,7 @@ class ExpenseTracker(FileHandler):
         self.logger.addHandler(handler)
 
         # File handler
-        self.run_tag = f"tldr.{self.create_timestamp()}"
+        self.create_timestamp()
         log_file = os.path.join(f"{self.run_tag}.log")
         file_handler = logging.FileHandler(log_file)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")

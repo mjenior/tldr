@@ -52,7 +52,7 @@ class CompletionHandler(DartboardRetriever):
 
         # Assemble messages object, adding query and context information
         messages = [
-            {"role": "system", "content": instructions + self.user_query},
+            {"role": "system", "content": instructions + self.query},
             {"role": "user", "content": message + self.added_context},
         ]
 
@@ -93,13 +93,13 @@ class CompletionHandler(DartboardRetriever):
             prompt_type=prompt_type,
         )
 
-    async def multi_completions(self, target_content, prompt_type="default", **kwargs):
+    async def multi_completions(self, prompt_type="default", **kwargs):
         """
         Runs multiple single_completion calls concurrently using asyncio.gather, with retry on 429.
         """
         # Parse all of the content found
         coroutine_tasks = []
-        for content in target_content:
+        for content in self.content:
 
             # Determine type of submission
             if prompt_type != "web_search":
@@ -110,20 +110,21 @@ class CompletionHandler(DartboardRetriever):
                     prompt_type="file_type",
                 )
                 prompt_type = source_type["response"]
+                print(prompt_type)
+                print(content)
 
-            # Generate summary
+            # Generate summary task
             task = self._retry_on_429(
-                self.single_completion,
+                partial(self._perform_api_call, **kwargs),
                 message=content,
                 prompt_type=prompt_type,
-                **kwargs,
             )
             coroutine_tasks.append(task)
 
         return await asyncio.gather(*coroutine_tasks, return_exceptions=False)
 
     async def _retry_on_429(
-        self, coro_fn, message, prompt_type, max_retries=5, **kwargs
+        self, coro_fn, message, prompt_type, max_retries=9, **kwargs
     ):
         """Retry summary generation on token rate limit per hour exceeded errors."""
 
@@ -132,10 +133,12 @@ class CompletionHandler(DartboardRetriever):
                 return await coro_fn(message, prompt_type, **kwargs)
             except Exception as e:
                 if hasattr(e, "status") and e.status == 429:
-                    wait_time = random.uniform(*(1, 3)) * attempt * 2
+                    wait_time = random.uniform(*(1, 3)) * attempt * 5
                     self.logger.info(
                         f"Rate limit hit. Retrying in {wait_time:.2f}s (attempt {attempt})..."
                     )
                     await asyncio.sleep(wait_time)
+                else:
+                    raise e
 
-        raise RuntimeError("Max retries exceeded for task")
+        raise RuntimeError(f"Max retries ({max_retries}) exceeded for task.")
