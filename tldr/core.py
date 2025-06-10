@@ -85,13 +85,13 @@ class TldrEngine(CompletionHandler):
                 message="\n".join(self.raw_context), prompt_type="format_context"
             )
         )
+        self.added_context += f"\nBelow is additional context for reference during response generation:\n{added_context}"
         result = self.save_response_text(
             added_context,
             label="added_context",
             output_dir=self.output_directory,
         )
         self.logger.info(result)
-        self.added_context += f"\nBelow is additional context for reference during response generation:\n{added_context}"
 
     @staticmethod
     def _lint_query(current_query: str | list) -> str:
@@ -204,12 +204,17 @@ class TldrEngine(CompletionHandler):
         # Also search for additional context missed in references
         for question in research_questions:
             self.search_embedded_context(query=question, num_results=1)
+        final_context = await self.single_completion(
+            message="\n".join(self.added_context), prompt_type="format_context"
+        )
+        self.added_context = f"\nBelow is additional context for reference during response generation:\n{final_context}"
 
         # Handle output
+        divider = "#--------------------------------------------------------#"
         result = self.save_response_text(
             "\n".join(
                 [
-                    f'Question:{q_ans_pair["prompt"]}:\nAnswer:{q_ans_pair["response"]}'
+                    f'Question: {q_ans_pair["prompt"]}\nAnswer: {q_ans_pair["response"]}\n\n{divider}\n\n'
                     for q_ans_pair in self.research_results
                 ]
             ),

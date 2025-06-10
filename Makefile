@@ -1,4 +1,4 @@
-VERSION = "0.5.0"
+VERSION = "1.0.0"
 
 # Default target
 .DEFAULT_GOAL := help
@@ -21,9 +21,10 @@ major:
 format:
 	pixi run black tldr/*.py
 
-build: format
+build: clean format
 	pixi lock
 	pixi run python -m build
+	rm -rf build *.egg-info
 
 install:
 	pip install -e .

@@ -2,149 +2,154 @@
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-Version = 0.5.0
+Version = 1.0.0
 
 ## Overview
 
-`tldr` is a Python package designed to help researchers, scientists, and knowledge workers quickly extract key information from scientific publications, technical documents, and software REAME files. It uses OpenAI's language models to:
+`tldr` is a Python package designed to help researchers, scientists, and knowledge workers quickly extract key information from scientific publications, technical documents, and software README files. It streamlines the process of understanding complex information by leveraging the power of large language models.
 
-1. Scan and process multiple document types (PDF, DOCX, HTML, TXT)
-2. Generate detailed summaries of each document
-3. Synthesize information across multiple documents
-4. Perform additional research to fill knowledge gaps
-5. Create polished, comprehensive responses to user queries
+At its core, `tldr` processes various document formats, generates detailed summaries, synthesizes information across multiple sources, and even performs web research to fill knowledge gaps, delivering a polished and comprehensive response to user queries.
+
+## How It Works
+
+The tool operates through a modular, object-oriented design:
+
+-   **`TldrEngine`**: The central orchestrator. It manages the entire summarization pipeline, from parsing user arguments to generating the final polished response.
+-   **`FileHandler`**: A robust module for all file I/O operations. It handles reading different document types (PDF, DOCX, HTML, TXT, Markdown), discovering readable files, and saving all output files, including intermediate summaries and the final PDF report.
+-   **`CompletionHandler`**: Manages all interactions with the OpenAI API, including sending prompts and processing the responses for summarization, query refinement, and research.
+-   **`SummaryJudge`**: An evaluation tool to objectively score the quality of generated summaries based on criteria like correctness, coherence, and conciseness.
+
+This architecture allows for a clear separation of concerns and makes the system easily extensible.
 
 ## Features
 
-- **Multi-format document support**: PDF, DOCX, HTML, MD, and TXT files
-- **Intelligent query refinement**: Automatically improves user queries
-- **Document summarization**: Creates detailed summaries of scientific publications and technical documents
-- **Cross-document synthesis**: Integrates information across multiple sources
-- **Knowledge gap research**: Automatically identifies and researches missing information
-- **Customizable output**: Supports different output formats and tones
-- **Objective summary evaluation**: More objectively evaluate the quality of individual output summaries
+-   **Multi-format document support**: Handles PDF, DOCX, HTML, Markdown, and TXT files.
+-   **Intelligent Query Refinement**: Automatically improves user queries for more accurate results.
+-   **Local RAG with Vector Store**: Creates local embeddings of your documents to provide highly relevant, in-context answers to your queries.
+-   **Cross-document Synthesis**: Integrates information across multiple sources into a single, coherent summary.
+-   **Automated Research Agent**: Identifies knowledge gaps in the source material and uses web searches to find the missing information.
+-   **Customizable Output**: Supports different output tones and formats, including a final polished PDF report.
+-   **Objective Summary Evaluation**: Provides tools to score the quality of the generated summaries.
 
 ## Installation
+
+This project uses `pixi` for environment and dependency management.
 
 ```bash
 # Install from source
 git clone https://github.com/mattjenior/tldr.git
 cd tldr
-pip install -e .
+
+# Install dependencies and activate the environment
+pixi install
 ```
 
 ## Requirements
 
-- Python 3.11 or higher
-- OpenAI API key (set as environment variable `OPENAI_API_KEY`)
+-   Python 3.11 or higher
+-   An OpenAI API key, set as an environment variable `OPENAI_API_KEY`.
 
-### Packages:
+Key Python packages are listed in the `pixi.toml` file and include:
 
-- openai >= 1.78.1
-- pillow >= 10.2.0
-- pyyaml >= 6.0.1
-- jsonschema >= 4.21.1
-- python-docx
-- pypdf2
-- beautifulsoup4
-- black
-- langchain
+-   `openai`
+-   `pypdf2`
+-   `python-docx`
+-   `beautifulsoup4`
+-   `pyyaml`
+-   `reportlab`
+-   `chromadb`
+-   `lancedb`
+-   `numpy`
 
 ## Usage
 
-### Available Arguments
-
-*   `query` (Positional): Optional user query. (Default: None)
-*   `-q, --refine_query <True|False>`: Automatically refine user query. (Default: `True`)
-*   `-i, --input_files <path>`: Optional: List of input text files. (Default: None)
-*   `-c, --context_files <path>`: Optional: List of added context documents. (Default: None)
-*   `-r, --recursive_search <True|False>`: Recursively search input directories. (Default: `False`)
-*   `-w, --web_search <True|False>`: Use research agent for knowledge gaps. (Default: `True`)
-*   `-t, --tone <tone>`: Final summary tone. (Choices: `default`, `modified`; Default: `default`)
-*   `-s, --context_size <scale>`: Max output token multiplier and context window size for research agent web search. (Choices: `low`, `medium`, `high`; Default: `medium`)
-*   `-v, --verbose <True|False>`: Verbose stdout reporting. (Default: `True`)
-
 ### Command Line
 
+The tool is primarily used via the command line.
+
 ```bash
-# Basic usage - summarize all text files in current directory
+# Basic usage - summarize all text files in the current directory
 tldr
 
-# Add a specific query
+# Provide a specific query to guide the summarization
 tldr "What are the latest advancements in CRISPR gene editing?"
 
-# Enable automatic query refinement
-tldr "CRISPR advances" -r True
-
-# Instead specify certain input files for summary
+# Specify input files for summarization
 tldr -i ./my_papers/*
 
-# Add greater context to each summary generation
+# Add context documents to inform the summary
 tldr -c ./context_files/*
 
-# Enable recursive file search
-tldr -r True
+# Enable recursive file search in input directories
+tldr -r
 
-# Disable query prompt refinement
-tldr -q False
-
-# Disable research agent
+# Disable the web research agent
 tldr -w False
 
-# Use modified output tone
+# Use a modified output tone (e.g., 'technical' or 'casual')
 tldr -t modified
-
-# Increase the scale of max tokens allowed
-tldr -s high
 ```
 
-### Summary Quality Evaluator - Python API
+### Available Arguments
 
-Tooling is also provided to attempt objective scoring of generated summary text to guage quality of output text.
+*   `query` (Positional): Your question or topic of interest. (Default: None)
+*   `-q`, `--refine_query <True|False>`: Automatically refine the user query. (Default: `True`)
+*   `-i`, `--input_files <path>`: List of input files or directories. (Default: None)
+*   `-c`, `--context_files <path>`: List of files for additional context. (Default: None)
+*   `-r`, `--recursive_search <True|False>`: Recursively search input directories. (Default: `False`)
+*   `-w`, `--web_search <True|False>`: Use the research agent to fill knowledge gaps. (Default: `True`)
+*   `-t`, `--tone <tone>`: Define the tone for the final summary. (Default: `default`)
+*   `-s`, `--context_size <scale>`: Set the context window size for the model. (Choices: `low`, `medium`, `high`; Default: `medium`)
+*   `-v`, `--verbose <True|False>`: Enable verbose logging to stdout. (Default: `True`)
+
+### Summary Quality Evaluator (Python API)
+
+You can programmatically evaluate the quality of a generated summary using the `SummaryJudge` class.
 
 ```python
-from tldr.summary_judge import SummaryJudge
+from tldr.judge import SummaryJudge
 
-# Define paths and inputs
-content_path = "path/to/original_technical_text.txt"
-generated_summary_path = "path/to/summary_text.txt"
+# Define paths to the original content and the generated summary
+content_path = "path/to/original_document.txt"
+summary_path = "path/to/generated_summary.txt"
 
 # Instantiate the evaluator
-judge = SummaryEvaluator()
+judge = SummaryJudge()
 
-# Generate objective scoring from file paths
-judge.evaluate(content_path=content_path, summary_path=generated_summary_path)
-# Also can handle content and summary strings variables directly
-judge.evaluate(content=content_str, summary=generated_summary_str)
+# Generate an objective score from file paths
+judge.evaluate(content_path=content_path, summary_path=summary_path)
 
-# Print results
-print('Iterations:', '\n\n'.join(judge.evaluation_iters))
-print('\nFinal Evaluation:\n', judge.evaluations)
+# You can also pass content and summary strings directly
+# judge.evaluate(content=content_str, summary=summary_str)
 
+# Print the results
+print('Evaluation Iterations:', '\n\n'.join(judge.evaluation_iters))
+print('\nFinal Evaluation:', judge.evaluations)
 ```
 
 ## Output Files
 
-The tool generates several output files during processing:
+The tool generates several output files in a timestamped directory (`tldr.[timestamp].files/`):
 
-- `tldr.[timestamp]_files/summary.[file_count].tldr.[timestamp].txt`: Individual document summaries
-- `tldr.[timestamp]_files/synthesis.tldr.[timestamp].txt`: Integrated summary across documents
-- `tldr.[timestamp]_files/research.tldr.[timestamp].txt`: Additional research information
-- `[content_based_name].tldr.pdf`: Final polished response
-- `tldr.[timestamp].log`: Logfile of summary generation process
+-   `summary.[index].tldr.[timestamp].txt`: Individual summaries for each input document.
+-   `synthesis.tldr.[timestamp].txt`: The integrated summary combining all source documents.
+-   `research.tldr.[timestamp].txt`: Additional information gathered by the research agent.
+-   `[content_based_name].tldr.pdf`: The final, polished response formatted as a PDF.
+-   `tldr.[timestamp].log`: A log file detailing the entire process.
 
 ## Configuration
 
-Configuration is handled through command-line arguments or directly via the API. The system uses a set of carefully crafted prompts defined in `instructions.yaml`.
+System behavior is configured through command-line arguments. The prompts used for interacting with the language model are defined in `tldr/instructions.yaml`.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE.txt file for details.
+This project is licensed under the MIT License - see the `LICENSE.txt` file for details.
 
 ## Author
 
-- Matthew Jenior (mattjenior@gmail.com)
+-   Matthew Jenior (mattjenior@gmail.com)
 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
