@@ -12,10 +12,6 @@ async def main():
     # Read in content and extend user query
     tldr = TldrEngine(**parse_user_arguments())
 
-    # Report something if verbose is False
-    if tldr.verbose is False:
-        print("TLDR is working, this may take a minute...")
-
     # Create local embeddings
     if tldr.query is not None or tldr.research is True:
         tldr.encode_text_to_vector_store()
@@ -25,7 +21,7 @@ async def main():
 
     # Query local embedded text vectors
     if tldr.query != "":
-        await tldr.search_embedded_context()
+        tldr.search_embedded_context(query=tldr.query)
 
     # Condense any context docs provided
     if tldr.raw_context is not None:
@@ -43,7 +39,6 @@ async def main():
 
     # Rewrite for response type and tone
     await tldr.polish_response()
-    tldr.logger.info(tldr.polished_summary)
 
     # Complete run with stats reporting
     tldr.format_spending()

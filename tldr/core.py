@@ -146,7 +146,7 @@ class TldrEngine(CompletionHandler):
         self.logger.info("Generating summaries for selected resources...")
 
         # Asynchronously summarize documents
-        reference_summaries = await self.multi_completions()
+        reference_summaries = await self.multi_completions(self.content)
 
         # Annotate and save response strings
         self.reference_summaries = []
@@ -203,7 +203,7 @@ class TldrEngine(CompletionHandler):
 
         # Also search for additional context missed in references
         for question in research_questions:
-            await self.search_embedded_context(question, num_results=2)
+            self.search_embedded_context(query=question, num_results=1)
 
         # Handle output
         result = self.save_response_text(
@@ -238,8 +238,9 @@ class TldrEngine(CompletionHandler):
         )
 
         # Save formatted PDF
-        pdf_path = generate_tldr_pdf(
-            self.polished_summary["response"], polished_title["response"]
+        pdf_path = self.generate_tldr_pdf(
+            summary_text=self.polished_summary["response"],
+            doc_title=polished_title["response"],
         )
 
-        return f"Final summary saved to {pdf_path}\n"
+        self.logger.info(f"Final summary saved to {pdf_path}")

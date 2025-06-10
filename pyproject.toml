@@ -1,6 +1,6 @@
 [project]
 name = "tldr"
-version = "0.4.60"
+version = "0.4.69"
 description = "Reads and summarizes top points from a provided series of articles using the OpenAI API."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -14,7 +14,7 @@ dependencies = [
     "jsonschema>=4.21.1",
     "reportlab",
     "black",
-    "faiss-gpu-cu12",
+    "faiss-cpu",
     "langchain_community",
     "langchain_openai",
     "langchain",

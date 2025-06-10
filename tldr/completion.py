@@ -93,30 +93,28 @@ class CompletionHandler(DartboardRetriever):
             prompt_type=prompt_type,
         )
 
-    async def multi_completions(self, prompt_type="default", **kwargs):
+    async def multi_completions(self, message_list, prompt_type="default", **kwargs):
         """
         Runs multiple single_completion calls concurrently using asyncio.gather, with retry on 429.
         """
         # Parse all of the content found
         coroutine_tasks = []
-        for content in self.content:
+        for message in message_list:
 
             # Determine type of submission
             if prompt_type != "web_search":
                 # Determine type of resource
                 source_type = await self._retry_on_429(
                     partial(self._perform_api_call, **kwargs),
-                    message=content,
+                    message=message,
                     prompt_type="file_type",
                 )
                 prompt_type = source_type["response"]
-                print(prompt_type)
-                print(content)
 
             # Generate summary task
             task = self._retry_on_429(
                 partial(self._perform_api_call, **kwargs),
-                message=content,
+                message=message,
                 prompt_type=prompt_type,
             )
             coroutine_tasks.append(task)

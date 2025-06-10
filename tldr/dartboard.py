@@ -1,6 +1,6 @@
-import pickle
 import numpy as np
 from typing import Dict, List
+
 from scipy.special import logsumexp
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -103,10 +103,9 @@ class DartboardRetriever(ExpenseTracker):
     def _idx_to_text(self, idx: int) -> str:
         """
         Convert a vector store index to the corresponding text.
-        (Helper method, uses self.chunks)
         """
-        docstore_id = self.chunks.index_to_docstore_id[idx]
-        document = self.chunks.docstore.search(docstore_id)
+        docstore_id = self.vector_store.index_to_docstore_id[idx]
+        document = self.vector_store.docstore.search(docstore_id)
         return document.page_content
 
     def _greedy_dartsearch(
@@ -140,46 +139,27 @@ class DartboardRetriever(ExpenseTracker):
                 break
 
             # Create a mask for document_probabilities rows
-            # This needs to be based on the indices of documents already selected
-            # from the 'documents' list passed to this function.
-            # We need to map indices from 'selected_documents' back to 'documents' if they differ.
-            # For simplicity, assuming 'documents' here is the candidate_texts from get_context.
-            # The 'selected_indices_for_masking' refers to indices within the current candidate set.
-
-            # Update maximum distances considering new document
-            # Ensure broadcasting is correct if document_probabilities is 1D for a single query_prob
-            if (
-                document_probabilities.ndim == 1
-            ):  # If only one candidate doc initially (edge case)
+            if document_probabilities.ndim == 1:
                 updated_distances = np.maximum(max_distances, document_probabilities)
             else:
                 updated_distances = np.maximum(
                     max_distances[:, np.newaxis], document_probabilities
                 )
-
             combined_scores = (
-                updated_distances * div_weight
-                + query_probabilities
-                * rel_weight  # query_probabilities might need broadcasting if it's 1D
+                updated_distances * div_weight + query_probabilities * rel_weight
             )
 
             # Ensure combined_scores is 2D for logsumexp if not already
             if combined_scores.ndim == 1:
                 combined_scores = combined_scores[:, np.newaxis]
-
             normalized_scores = logsumexp(combined_scores, axis=1)
-            normalized_scores[selected_indices_for_masking] = (
-                -np.inf
-            )  # Mask already selected
-
-            if np.all(
-                np.isinf(normalized_scores)
-            ):  # All remaining options are masked or invalid
+            normalized_scores[selected_indices_for_masking] = -np.inf
+            if np.all(np.isinf(normalized_scores)):
                 break
 
+            # Select the best document
             best_idx = np.argmax(normalized_scores)
             best_score = np.max(normalized_scores)
-
             max_distances = updated_distances[best_idx]
             selected_documents.append(documents[best_idx])
             selection_scores.append(best_score)
@@ -187,59 +167,59 @@ class DartboardRetriever(ExpenseTracker):
                 selected_indices_for_masking, best_idx
             )
 
+        # Return the selected documents and their scores
         return dict(zip(selected_documents, selection_scores))
 
-    def search_embedded_context(self, query: str = None) -> Dict[str, float]:
+    def search_embedded_context(
+        self, query: str, num_results: int = 5
+    ) -> Dict[str, float]:
         """
         Retrieve most relevant and diverse context items for a query.
         Uses default parameters from __init__ if not provided.
         """
         self.logger.info("Querying local embedded text vectors...")
-        # Ensure k for FAISS search is at least num_results
-        k_search = max(self.num_results * self.oversampling_factor, self.num_results)
-        if k_search == 0:  # Handle case where num_results is 0
-            return {}
-
-        # Check for user or system query
-        if query is None:
-            query = self.query
-        query_embedding = self.chunks.embedding_function.embed_documents([query])
 
         # Check if the index is empty or k_search is too large
-        if self.chunks.index.ntotal == 0:
+        if self.vector_store.index.ntotal == 0:
             return {}
-        k_search = min(k_search, self.chunks.index.ntotal)
+        # Ensure k for FAISS search is at least num_results
+        k_search = max(num_results * self.oversampling_factor, num_results)
+        if k_search == 0:
+            return {}
 
-        scores, candidate_indices = self.chunks.index.search(
-            np.array(query_embedding), k=k_search
+        # Query local embedded text vectors
+        query_embedding = self.vector_store.embedding_function.embed_documents([query])
+        scores, candidate_indices = self.vector_store.index.search(
+            np.array(query_embedding), k=min(k_search, self.vector_store.index.ntotal)
         )
 
-        if not candidate_indices[0].size:  # No candidates found
+        # Extract candidate text
+        if not candidate_indices[0].size:
             return {}
-
         candidate_vectors = np.array(
-            self.chunks.index.reconstruct_batch(candidate_indices[0])
+            self.vector_store.index.reconstruct_batch(candidate_indices[0])
         )
         candidate_texts = [self._idx_to_text(idx) for idx in candidate_indices[0]]
-
-        if not candidate_texts:  # No text for candidates
+        if not candidate_texts:
             return {}
-
         document_distances = 1 - np.dot(candidate_vectors, candidate_vectors.T)
-        # query_distances needs to be 1D array of shape (n_candidates,)
         query_distances = (
             1 - np.dot(np.array(query_embedding), candidate_vectors.T)
         ).flatten()
 
+        # Perform greedy dartboard search
         result = self._greedy_dartsearch(
             query_distances,
             document_distances,
             candidate_texts,
-            self.num_results,
+            num_results,
             self.div_weight,
             self.rel_weight,
             self.sigma,
         )
+        # self.logger.info(
+        #    "Average relevance score: {}".format(np.mean(list(result.values())))
+        # )
 
         # Add search results to growing supplementary context
-        self.added_context += f"\n{"\n".join(list(result.values()))}"
+        self.added_context += f"\n{"\n".join(list(result.keys()))}"

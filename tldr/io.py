@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import yaml
 from datetime import datetime
@@ -6,6 +7,11 @@ from datetime import datetime
 from docx import Document
 from PyPDF2 import PdfReader
 from bs4 import BeautifulSoup
+
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
 
 
 class FileHandler:
@@ -219,3 +225,212 @@ class FileHandler:
             return filepath
         except IOError as e:
             return f"Error saving file '{filepath}': {e}"
+
+    def generate_tldr_pdf(self, summary_text, doc_title):
+        """Saves polished summary string to formatted PDF document."""
+
+        # Create file path with linted name
+        file_path = self._create_filename(doc_title)
+
+        # Format content
+        styles = getSampleStyleSheet()
+        h1_style = styles["h1"]
+        h1_style.alignment = 1
+        body = [
+            Paragraph(doc_title.replace('"', ""), h1_style),
+            Spacer(1, 0.15 * inch),
+        ]
+        body += self._interpret_markdown(summary_text)
+
+        # Create document
+        doc = SimpleDocTemplate(file_path, pagesize=letter)
+        try:
+            doc.build(body)
+        except Exception as e:
+            print(f"An unexpected error occurred while saving {file_path}: {e}")
+            raise
+
+        return file_path
+
+    @staticmethod
+    def _interpret_markdown(text: str) -> list:
+        """
+        Converts custom markdown-like syntax to ReportLab-friendly HTML.
+        - # Header 1      → <font size=18>
+        - ## Header 2    → <font size=16>
+        - ### Header 3  → <font size=14>
+        - #### Header 4   → <font size=12>
+        - *bold*          → <b>
+        - ~italic~    → <i>
+        Returns a list of Paragraph and Spacer elements.
+        """
+        styles = getSampleStyleSheet()
+        normal = styles["Normal"]
+        story = []
+
+        # Header sizes mapping
+        header_sizes = {1: 16, 2: 14, 3: 12, 4: 11}
+
+        lines = text.strip().splitlines()
+
+        for line in lines:
+            line = line.strip()
+            if not line:
+                story.append(Spacer(1, 0.1 * inch))
+                continue
+            elif line.startswith("# "):
+                continue
+            elif line in ["###", "---"]:
+                continue
+
+            # Convert italic/bold (model uses *, shrugs) and subscripts
+            line = re.sub(r"\*(.*?)\*", r"<b>\1</b>", line)
+            line = re.sub(r"_(.*?)_", r"<sub>\1</sub>", line)
+
+            # Header detection: one or more '#' followed by a space
+            header_match = re.match(r"^(#{1,6})\s+(.*)", line)
+            if header_match:
+                level = len(header_match.group(1))
+                content = header_match.group(2).strip()
+                font_size = header_sizes.get(level, 11)  # default to 11 for > 4 #
+                html_line = f'<b><font size="{font_size}">{content}</font></b>'
+                story.append(Paragraph(html_line, normal))
+                story.append(Spacer(1, 0.05 * inch))
+            elif line.startswith("- "):
+                bullet_content = line[2:].strip()
+                html_line = f"• {bullet_content}"
+                story.append(Paragraph(html_line, normal))
+            else:
+                html_line = line
+                story.append(Paragraph(html_line, normal))
+
+        return story
+
+    @staticmethod
+    def _create_filename(title: str, max_length: int = 50) -> str:
+        """
+        Accepts a string that is a document title, removes uninformative words,
+        and reformats the string to be used as a file name.
+        """
+        # Convert to lowercase
+        filename = title.lower()
+
+        # Define uninformative words (can be extended)
+        uninformative_words = [
+            "a",
+            "an",
+            "the",
+            "of",
+            "in",
+            "on",
+            "at",
+            "for",
+            "with",
+            "and",
+            "or",
+            "but",
+            "is",
+            "are",
+            "was",
+            "were",
+            "be",
+            "been",
+            "being",
+            "to",
+            "from",
+            "by",
+            "as",
+            "that",
+            "which",
+            "this",
+            "these",
+            "those",
+            "it",
+            "its",
+            "about",
+            "through",
+            "beyond",
+            "up",
+            "down",
+            "out",
+            "into",
+            "over",
+            "under",
+            "from",
+            "around",
+            "about",
+            "via",
+            "re",
+            "regarding",
+            "concerning",
+            "document",
+            "report",
+            "summary",
+            "efficient",
+            "technical",
+            "overview",
+            "introduction",
+            "advancements",
+            "analysis",
+            "study",
+            "research",
+            "paper",
+            "article",
+            "draft",
+            "final",
+            "version",
+            "update",
+            "notes",
+            "memo",
+            "brief",
+            "presentation",
+            "review",
+            "whitepaper",
+            "guide",
+            "manual",
+            "spec",
+            "specification",
+            "appendix",
+            "chapter",
+            "section",
+            "part",
+            "volume",
+            "issue",
+            "release",
+            "plan",
+            "project",
+            "initiative",
+            "program",
+            "system",
+            "process",
+            "procedure",
+            "framework",
+            "methodology",
+            "approach",
+            "solution",
+            "strategy",
+            "tbd",
+            "for review",
+            "confidential",
+        ]
+
+        # Remove uninformative words
+        for word in uninformative_words:
+            filename = re.sub(r"\b" + re.escape(word) + r"\b", "", filename)
+
+        # Replace non-alphanumeric characters (except spaces and underscores)
+        filename = re.sub(r"[^a-z0-9\s_]", " ", filename)
+
+        # Replace white space with underscore
+        filename = "_".join(filename.split()).strip("_")
+
+        # Truncate if too long
+        if len(filename) > max_length:
+            filename = filename[:max_length]
+            # Try to avoid cutting off in the middle of a word if possible
+            last_underscore = filename.rfind("_")
+            if last_underscore != -1 and last_underscore > max_length - 20:
+                filename = filename[:last_underscore]
+
+        # Assemble final name
+        return filename.strip("_") + ".tldr.pdf"

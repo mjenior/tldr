@@ -1,4 +1,4 @@
-VERSION = "0.4.60"
+VERSION = "0.4.69"
 
 # Default target
 .DEFAULT_GOAL := help
