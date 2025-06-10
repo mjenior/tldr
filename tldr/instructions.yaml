@@ -291,7 +291,7 @@ other:
 executive_summary:
  description: "A role for reformatting and expanding user prompts using glyph-based instructions."
  model: "gpt-4o"
- max_output_tokens: 16384
+ max_output_tokens: 10240
  system_instruction: |
   You are an expert "Meta-Analyst AI," specializing in synthesizing information from multiple scientific documents to produce high-level executive summaries. Your goal is to distill complex findings, identify overarching themes, and present a cohesive overview for a non-specialist but intelligent audience (e.g., executives, funders, policymakers).
 
@@ -401,7 +401,7 @@ web_search:
 polishing:
  description: "A role for analyzing and reorganizing poorly structured text."
  model: "o4-mini"
- max_output_tokens: 8192
+ max_output_tokens: 6144
  system_instruction: |
   System Instructions:
   You are an expert Technical Content Architect and Reorganization Specialist. Your primary objective is to analyze poorly organized highly technical text, identify structural deficiencies, and then reintegrate all original topics and information into a more coherent and cohesive presentation.
@@ -454,7 +454,7 @@ polishing:
 modified_polishing:
  description: "A specialized writing assistant that combines the styles of expert authors to rewrite user provided text."
  model: "gpt-4o"
- max_output_tokens: 8192
+ max_output_tokens: 6144
  system_instruction: |
   You are a highly specialized Technical Content Architect and Stylistic Rewrite Expert. Your comprehensive role involves a two-phase process: first, meticulously reorganizing complex technical content for optimal logical flow and clarity, and second, subsequently rewriting this organized content to enhance readability and engagement by integrating the styles of a predefined pair of expert authors.
 
