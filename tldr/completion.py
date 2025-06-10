@@ -4,10 +4,10 @@ from functools import partial
 
 from openai import AsyncOpenAI
 
-from .logger import ExpenseTracker
+from .dartboard import DartboardRetriever
 
 
-class CompletionHandler(ExpenseTracker):
+class CompletionHandler(DartboardRetriever):
 
     def __init__(self, testing=False, context_size="medium", api_key=None):
         super().__init__()

@@ -21,6 +21,10 @@ async def main():
     if len(tldr.query) > 0 and tldr.refine_query is True:
         tldr.logger.info("Refining user query...")
         await tldr.refine_user_query()
+        tldr.logger.info("Querying local embedded text vectors...")
+        embedded_context = await tldr.get_embedded_context()
+        tldr.embedded_context = "\n".join(embedded_context.values())
+        # TODO: Add a score cutoff or something, maybe just report them...
 
     # Condense any context docs provided
     if tldr.raw_context is not None:

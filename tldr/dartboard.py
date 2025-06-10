@@ -2,8 +2,10 @@ import numpy as np
 from typing import Dict, List, Any
 from scipy.special import logsumexp
 
+from .logger import ExpenseTracker
 
-class DartboardRetriever:
+
+class DartboardRetriever(ExpenseTracker):
     def __init__(
         self,
         chunks: Any,
@@ -13,6 +15,7 @@ class DartboardRetriever:
         default_rel_weight: float = 1.0,
         default_sigma: float = 0.1,
     ):
+        super().__init__()
         """
         Initializes the DartboardRetriever.
 
@@ -146,7 +149,7 @@ class DartboardRetriever:
 
         return dict(zip(selected_documents, selection_scores))
 
-    def get_context(
+    def get_embedded_context(
         self,
         query: str,
         num_results: int = None,
