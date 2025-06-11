@@ -4,7 +4,7 @@ from functools import partial
 
 from openai import AsyncOpenAI
 
-from .dartboard import DartboardRetriever
+from .search import DartboardRetriever
 
 
 class CompletionHandler(DartboardRetriever):

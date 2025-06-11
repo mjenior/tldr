@@ -87,29 +87,22 @@ class SummaryEvaluator(CompletionHandler):
         """Generate multiple scoring responses for the provided summary text"""
         self.logger.info("Generating summary evaluation iterations...")
 
-        # Request iterative scoring text
-        messages = [self.message] * self.iterations
-
         # Asynchronously request iterative scoring text
-        messages = [self.message] * self.iterations
-        summary_evals = await self.multi_completions(messages)
+        summary_evals = await self.multi_completions([self.message] * self.iterations)
 
-        # Annotate and save response strings
-        self.summary_evals = []
-        for i, summary in enumerate(summary_evals):
-            self.summary_evals.append(f"Evaluation {i}:\n{summary["response"]}\n")
-            result = self.save_response_text(
-                summary["response"], label="summary_eval", idx=i
-            )
-            self.logger.info(result)
+        # Extract and save response strings
+        self.summary_evals = [summary["response"] for summary in summary_evals]
+        result = self.save_response_text(
+            "\n".join(self.summary_evals), label="summary_eval_iters"
+        )
+        self.logger.info(result)
 
     async def _condense_iterations(self):
         """Condenses multiple API responses into a single coherent message."""
         self.logger.info("Condensing final evaluation text...")
 
         # Combine strings into demarcated single message
-        combined_summaries = self._gen_iteration_str(self.evaluation_iters)
-        self.save_response_text(combined_summaries, label="summary_iters")
+        combined_summaries = self._gen_iteration_str(self.summary_evals)
 
         # Obtain final score text
         condensed = await self.single_completion(

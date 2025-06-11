@@ -197,8 +197,10 @@ class TldrEngine(CompletionHandler):
         final_context = await self.single_completion(
             message="\n".join(self.added_context), prompt_type="format_context"
         )
-        self.added_context = f"\nBelow is additional context for reference during response generation:\n{final_context}"
-        result = self.save_response_text(final_context, label="research_context")
+        self.added_context = f"\nBelow is additional context for reference during response generation:\n{final_context["response"]}"
+        result = self.save_response_text(
+            final_context["response"], label="research_context"
+        )
         self.logger.info(result)
 
         # Handle output
