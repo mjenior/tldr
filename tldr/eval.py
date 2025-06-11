@@ -1,3 +1,4 @@
+import os
 import asyncio
 from pathlib import Path
 
@@ -14,18 +15,24 @@ class SummaryEvaluator(CompletionHandler):
 
     def __init__(
         self,
+        summary: str,
+        content: str,
+        model: str = "gpt-4o-mini",
+        verbose: bool = True,
         iterations: int = 5,
         **kwargs,
     ):
         super().__init__(**kwargs)
 
-        # Assign attr
-        self.iterations = (
-            self.iterations if self.iterations >= 3 else 3
-        )  # Ensure iterations
+        # Assign attributes
+        self.summary = summary
+        self.content = content
+        self.iterations = iterations if iterations >= 3 else 3  # Ensure iterations
         self.temperature = 0.9
         self.random_seed = 42
         self.top_p = 1.0
+        self.query = ""
+        self.added_context = ""
 
         # Set up logger and intermediate file output directory
         self.setup_logging()
@@ -34,11 +41,11 @@ class SummaryEvaluator(CompletionHandler):
         # Read in system instructions
         self.read_system_instructions()
 
-    async def evaluate(self, content: str = None, summary: str = None):
+    async def evaluate(self):
         """Evaluate summary text of a paired reference"""
 
         # Handle target text
-        self.message = self.get_content_and_summary_text(content, summary)
+        self.message = self.get_content_and_summary_text(self.content, self.summary)
 
         # Generate n responses to request
         await self._generate_eval_iterations()
@@ -55,17 +62,15 @@ class SummaryEvaluator(CompletionHandler):
         """Return combined content and summary text, reading from file if path provided."""
 
         # Determine content text
-        content_path = Path(content)
-        if content_path.is_file():
-            content_text = self.fetch_content(user_files=[content])
-        else:
+        try:
+            content_text = self.fetch_content(user_files=[content], label="content")
+        except Exception as e:
             content_text = content
 
         # Determine summary text
-        summary_path = Path(summary)
-        if summary_path.is_file():
-            summary_text = self.fetch_content(user_files=[summary])
-        else:
+        try:
+            summary_text = self.fetch_content(user_files=[summary], label="summary")
+        except Exception as e:
             summary_text = summary
 
         # Form combined content and summary string
@@ -108,9 +113,6 @@ class SummaryEvaluator(CompletionHandler):
         condensed = await self.single_completion(
             message=combined_summaries,
             prompt_type="condense_scoring",
-            seed=self.random_seed,
-            temperature=self.temperature,
-            top_p=self.top_p,
         )
 
         self.evaluation = condensed["response"]
@@ -316,19 +318,19 @@ async def main():
 
     # Read in content and extend user query
     evaluator1 = SummaryEvaluator(**parse_eval_arguments())
-    evaluator2 = SummaryScoring()
+    # evaluator2 = SummaryScoring()
 
     # Evaluate summary
     review = await evaluator1.evaluate()
-    scores = evaluator2.evaluate_summary(
-        original_article=evaluator1.content, generated_summary=review
-    )
+    # scores = evaluator2.evaluate_summary(
+    #    original_article=evaluator1.content, generated_summary=review
+    # )
 
     # Print results
-    print("\n--- Summary Evaluation Scores ---")
-    print(scores)
+    # print("\n--- Summary Evaluation Scores ---")
+    # print(scores)
     print("\n--- Summary Review ---")
-    print(review)
+    print(review, "\n")
 
 
 def cli_main():

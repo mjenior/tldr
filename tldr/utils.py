@@ -78,17 +78,18 @@ def parse_eval_arguments():
     )
 
     # Define arguments
-    parser.add_argument("-s", "--summary", default=None, help="Summary to evaluate")
     parser.add_argument(
         "-c",
         "--content",
         default=None,
+        required=True,
         help="Content to evaluate summary against",
     )
     parser.add_argument(
         "-s",
         "--summary",
         default=None,
+        required=True,
         help="Summary to evaluate",
     )
     parser.add_argument(
