@@ -2,7 +2,7 @@
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-Version = 1.0.0
+Version = 1.0.2
 
 ## Overview
 
@@ -102,30 +102,60 @@ tldr -t modified
 *   `-s`, `--context_size <scale>`: Set the context window size for the model. (Choices: `low`, `medium`, `high`; Default: `medium`)
 *   `-v`, `--verbose <True|False>`: Enable verbose logging to stdout. (Default: `True`)
 
-### Summary Quality Evaluator (Python API)
+### Summary Evaluation (Python API & CLI)
 
-You can programmatically evaluate the quality of a generated summary using the `SummaryJudge` class.
+You can evaluate the quality of generated summaries using either the Python API or command-line interface.
+
+#### Python API
 
 ```python
-from tldr.judge import SummaryJudge
+from tldr.eval import SummaryEvaluator
 
-# Define paths to the original content and the generated summary
-content_path = "path/to/original_document.txt"
-summary_path = "path/to/generated_summary.txt"
+# Initialize the evaluator with custom settings
+evaluator = SummaryEvaluator(
+    iterations=5,  # Number of evaluations to run (default: 5)
+    model="gpt-4o-mini",  # Model to use for evaluation
+    temperature=0.9,  # Controls randomness in evaluation
+    verbose=True  # Enable detailed logging
+)
 
-# Instantiate the evaluator
-judge = SummaryJudge()
+# Evaluate a summary against its source content
+evaluation = await evaluator.evaluate(
+    content="path/to/original_document.txt",  # Can be file path or string
+    summary="path/to/generated_summary.txt"    # Can be file path or string
+)
 
-# Generate an objective score from file paths
-judge.evaluate(content_path=content_path, summary_path=summary_path)
-
-# You can also pass content and summary strings directly
-# judge.evaluate(content=content_str, summary=summary_str)
-
-# Print the results
-print('Evaluation Iterations:', '\n\n'.join(judge.evaluation_iters))
-print('\nFinal Evaluation:', judge.evaluations)
+# Access the evaluation results
+print(f"Evaluation Score: {evaluation['score']}")
+print(f"Reasoning: {evaluation['reason']}")
 ```
+
+#### Command Line Interface
+
+```bash
+tldr_eval -c path/to/original_document.txt -s path/to/generated_summary.txt
+```
+
+CLI Options:
+- `-c, --content`: Path to the original content file or string
+- `-s, --summary`: Path to the generated summary file or string
+- `-m, --model`: Model to use for evaluation (default: "gpt-4o-mini")
+- `-i, --iterations`: Number of evaluation iterations (default: 5)
+- `-v, --verbose`: Enable verbose output (default: True)
+
+#### Evaluation Metrics
+
+The evaluation uses two complementary approaches:
+
+1. **Faithfulness Metric**: Measures factual consistency between the summary and source
+   - Checks for hallucinated or inconsistent information
+   - Returns a score between 0 and 1
+
+2. **GEval**: Comprehensive quality assessment using LLM-based evaluation
+   - Evaluates coherence, conciseness, completeness, and style
+   - Provides detailed reasoning for the assigned score
+
+All evaluations are saved in a timestamped directory for reference.
 
 ## Output Files
 

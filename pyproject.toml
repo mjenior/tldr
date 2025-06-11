@@ -1,6 +1,6 @@
 [project]
 name = "tldr"
-version = "1.0.0"
+version = "1.0.2"
 description = "Reads and summarizes top points from a provided series of articles using the OpenAI API."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -32,3 +32,4 @@ build-backend = "setuptools.build_meta"
 
 [project.scripts]
 tldr = "tldr.tldr:cli_main"
+tldr_eval = "tldr.eval:cli_main"

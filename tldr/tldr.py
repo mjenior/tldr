@@ -3,14 +3,14 @@
 import asyncio
 
 from .core import TldrEngine
-from .utils import parse_user_arguments
+from .utils import parse_tldr_arguments
 
 
 async def main():
     """Main entry point for the tldr command"""
 
     # Read in content and extend user query
-    tldr = TldrEngine(**parse_user_arguments())
+    tldr = TldrEngine(**parse_tldr_arguments())
 
     # Create local embeddings
     if tldr.query is not None or tldr.research is True:

@@ -1,4 +1,5 @@
-from .core import TldrClass
+from .core import TldrEngine
 from .tldr import main
+from .judge import SummaryEvaluator
 
-__all__ = ["TldrClass", "main"]
+__all__ = ["TldrEngine", "SummaryEvaluator", "main"]

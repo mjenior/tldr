@@ -1,7 +1,7 @@
 import argparse
 
 
-def parse_user_arguments():
+def parse_tldr_arguments():
     """Parses command-line arguments"""
     parser = argparse.ArgumentParser(
         description="TLDR: Summarize text files based on user arguments."
@@ -67,6 +67,49 @@ def parse_user_arguments():
         type=bool,
         default=False,
         help="Uses only gpt-4o-mini for cheaper+faster testing runs.",
+    )
+    return vars(parser.parse_args())
+
+
+def parse_eval_arguments():
+    """Parses command-line arguments"""
+    parser = argparse.ArgumentParser(
+        description="Evaluate a summary against the target content."
+    )
+
+    # Define arguments
+    parser.add_argument("-s", "--summary", default=None, help="Summary to evaluate")
+    parser.add_argument(
+        "-c",
+        "--content",
+        default=None,
+        help="Content to evaluate summary against",
+    )
+    parser.add_argument(
+        "-s",
+        "--summary",
+        default=None,
+        help="Summary to evaluate",
+    )
+    parser.add_argument(
+        "-m",
+        "--model",
+        default="gpt-4o-mini",
+        help="Model to use for evaluation",
+    )
+    parser.add_argument(
+        "-i",
+        "--iterations",
+        type=int,
+        default=5,
+        help="Number of iterations to run",
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        type=bool,
+        default=True,
+        help="Verbose stdout reporting",
     )
 
     return vars(parser.parse_args())

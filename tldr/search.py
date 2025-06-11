@@ -6,7 +6,7 @@ from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 
-from .logger import ExpenseTracker
+from .log import ExpenseTracker
 
 
 class DartboardRetriever(ExpenseTracker):

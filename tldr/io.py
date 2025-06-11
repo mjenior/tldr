@@ -178,7 +178,7 @@ class FileHandler:
 
         return content_list
 
-    def read_system_instructions(self, file_path: str = "instructions.yaml") -> dict:
+    def read_system_instructions(self, file_path: str = "prompts.yaml") -> dict:
         """
         Reads a YAML file and returns its content as a Python dictionary.
         """
@@ -196,13 +196,12 @@ class FileHandler:
             print(
                 f"An unexpected error occurred while reading '{instructions_path}': {e}"
             )
-        return instructions
+        self.instructions = instructions
 
     def save_response_text(
         self,
         out_data: str,
         label: str = "response",
-        output_dir: str = ".",
         idx: int = 1,
         chunk_size: int = 1024 * 1024,
         errors: str = "strict",
@@ -216,7 +215,7 @@ class FileHandler:
             filename = f"{label}.{idx}.{self.run_tag}.txt"
         else:
             filename = f"{label}.{self.run_tag}.txt"
-        filepath = os.path.join(output_dir, filename)
+        filepath = os.path.join(self.output_directory, filename)
 
         try:
             with open(filepath, "w", encoding="utf-8", errors=errors) as f:

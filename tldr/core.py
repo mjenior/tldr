@@ -1,7 +1,7 @@
 import re
 import asyncio
 
-from .completion import CompletionHandler
+from .gpt import CompletionHandler
 
 
 class TldrEngine(CompletionHandler):
@@ -61,7 +61,7 @@ class TldrEngine(CompletionHandler):
         self._create_output_path()
 
         # Read in system instructions
-        self.instructions = self.read_system_instructions()
+        self.read_system_instructions()
 
         # Read in files and contents
         if input_files is not None:
@@ -89,7 +89,6 @@ class TldrEngine(CompletionHandler):
         result = self.save_response_text(
             added_context,
             label="added_context",
-            output_dir=self.output_directory,
         )
         self.logger.info(result)
 
@@ -134,11 +133,7 @@ class TldrEngine(CompletionHandler):
 
         # Handle output text
         self.query = f"Ensure that addressing the following user query is the central theme of your response:\n{refined_query}\n"
-        result = self.save_response_text(
-            refined_query,
-            label="refined_query",
-            output_dir=self.output_directory,
-        )
+        result = self.save_response_text(refined_query, label="refined_query")
         self.logger.info(result)
 
     async def summarize_resources(self):
@@ -155,10 +150,7 @@ class TldrEngine(CompletionHandler):
                 f"Reference {i} Summary:\n{summary["response"]}\n"
             )
             result = self.save_response_text(
-                summary["response"],
-                label="summary",
-                output_dir=self.output_directory,
-                idx=i,
+                summary["response"], label="summary", idx=i
             )
             self.logger.info(result)
 
@@ -180,9 +172,7 @@ class TldrEngine(CompletionHandler):
 
         # Handle output
         result = self.save_response_text(
-            executive_summary["response"],
-            label="synthesis",
-            output_dir=self.output_directory,
+            executive_summary["response"], label="synthesis"
         )
         self.logger.info(result)
 
@@ -208,19 +198,18 @@ class TldrEngine(CompletionHandler):
             message="\n".join(self.added_context), prompt_type="format_context"
         )
         self.added_context = f"\nBelow is additional context for reference during response generation:\n{final_context}"
+        result = self.save_response_text(final_context, label="research_context")
+        self.logger.info(result)
 
         # Handle output
         divider = "#--------------------------------------------------------#"
-        result = self.save_response_text(
-            "\n".join(
-                [
-                    f'Question: {q_ans_pair["prompt"]}\nAnswer: {q_ans_pair["response"]}\n\n{divider}\n\n'
-                    for q_ans_pair in self.research_results
-                ]
-            ),
-            label="research",
-            output_dir=self.output_directory,
+        joint_text = "\n".join(
+            [
+                f'Question: {q_ans_pair["prompt"]}\nAnswer: {q_ans_pair["response"]}\n\n{divider}\n\n'
+                for q_ans_pair in self.research_results
+            ]
         )
+        result = self.save_response_text(joint_text, label="research")
         self.logger.info(result)
 
     async def polish_response(self):
