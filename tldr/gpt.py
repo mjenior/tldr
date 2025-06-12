@@ -4,10 +4,10 @@ from functools import partial
 
 from openai import AsyncOpenAI
 
-from .search import DartboardRetriever
+from .search import ResearchAgent
 
 
-class CompletionHandler(DartboardRetriever):
+class CompletionHandler(ResearchAgent):
 
     def __init__(self, testing=False, context_size="medium", api_key=None):
         super().__init__()

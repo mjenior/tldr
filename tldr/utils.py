@@ -60,6 +60,13 @@ def parse_tldr_arguments():
         help="Modifier for scale of maximum output tokens and context window size for research agent web search",
     )
     parser.add_argument(
+        "-sc",
+        "--split_chunks",
+        type=bool,
+        default=True,
+        help="Split summaries into chunks before shuffling",
+    )
+    parser.add_argument(
         "-v", "--verbose", type=bool, default=True, help="Verbose stdout reporting"
     )
     parser.add_argument(

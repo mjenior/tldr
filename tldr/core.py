@@ -41,6 +41,7 @@ class TldrEngine(CompletionHandler):
         web_search=True,
         context_size="medium",
         tone="default",
+        split_chunks=True,
         testing=False,
     ):
         super().__init__()
@@ -55,6 +56,8 @@ class TldrEngine(CompletionHandler):
         self.tone = tone
         self.research = True
         self.raw_context = None
+        self.split_chunks = split_chunks
+        self.random_seed = 42
 
         # Set up logger and intermediate file output directory
         self.setup_logging()
@@ -154,17 +157,46 @@ class TldrEngine(CompletionHandler):
             )
             self.logger.info(result)
 
+    def scramble_summaries(self):
+        """Scramble summaries to prevent bias in executive summary generation"""
+
+        np.random.seed(self.random_seed)
+        if self.split_chunks is True:
+            # Split summaries into chunks
+            summary_chunks = [
+                substr
+                for s in self.reference_summaries
+                for substr in s.split("\n\n")
+                if substr
+            ]
+            np.random.shuffle(summary_chunks)
+            self.logger.info(
+                f"Split summaries into {len(summary_chunks)} chunks for shuffling."
+            )
+            scrambled_chunks = "\n".join(summary_chunks)
+        else:
+            # Shuffle summaries
+            np.random.shuffle(self.reference_summaries)
+            self.logger.info(f"Shuffled summaries ({len(self.reference_summaries)})")
+            scrambled_chunks = "\n".join(self.reference_summaries)
+
+        # Save scrambled summaries
+        self.save_response_text(scrambled_chunks, label="scrambled_summaries")
+
+        return scrambled_chunks
+
     async def integrate_summaries(self):
         """Generate integrated executive summaries combine all current summary text"""
         self.logger.info("Generating integrated summary text...")
 
         # If only one summary, use it instead
-        if len(self.reference_summaries) >= 2:
+        if len(self.reference_summaries) == 1:
             self.executive_summary = self.reference_summaries[0]
             return
+        else:
+            all_summary_text = self.scramble_summaries()
 
-        # Join all summaries for one large submission
-        all_summary_text = "\n".join(self.reference_summaries)
+        # Generate executive summary
         executive_summary = await self.single_completion(
             message=all_summary_text, prompt_type="executive_summary"
         )
@@ -174,44 +206,6 @@ class TldrEngine(CompletionHandler):
         result = self.save_response_text(
             executive_summary["response"], label="synthesis"
         )
-        self.logger.info(result)
-
-    async def apply_research(self):
-        """Identify knowledge gaps and use web search to fill them. Integrating new info into summary."""
-        self.logger.info("Applying research agent to knowledge gaps...")
-
-        # Identify gaps in understanding
-        research_questions = await self.single_completion(
-            message=self.executive_summary, prompt_type="background_gaps"
-        )
-        research_questions = research_questions["response"].split("\n")
-
-        # Search web for to fill gaps
-        self.research_results = await self.multi_completions(
-            research_questions, prompt_type="web_search"
-        )
-
-        # Also search for additional context missed in references
-        for question in research_questions:
-            self.search_embedded_context(query=question, num_results=1)
-        final_context = await self.single_completion(
-            message="\n".join(self.added_context), prompt_type="format_context"
-        )
-        self.added_context = f"\nBelow is additional context for reference during response generation:\n{final_context["response"]}"
-        result = self.save_response_text(
-            final_context["response"], label="research_context"
-        )
-        self.logger.info(result)
-
-        # Handle output
-        divider = "#--------------------------------------------------------#"
-        joint_text = "\n".join(
-            [
-                f'Question: {q_ans_pair["prompt"]}\nAnswer: {q_ans_pair["response"]}\n\n{divider}\n\n'
-                for q_ans_pair in self.research_results
-            ]
-        )
-        result = self.save_response_text(joint_text, label="research")
         self.logger.info(result)
 
     async def polish_response(self):
