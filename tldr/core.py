@@ -133,7 +133,7 @@ class TldrEngine(CompletionHandler):
         refined_query = await self.single_completion(
             message=self.query, prompt_type="refine_prompt"
         )
-        self.logger.info(refined_query)
+        refined_query = refined_query["response"]
 
         # Handle output text
         self.query = f"Ensure that addressing the following user query is the central theme of your response:\n{refined_query}\n"
