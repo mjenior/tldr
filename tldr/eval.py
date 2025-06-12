@@ -1,11 +1,9 @@
-import os
 import asyncio
-from pathlib import Path
 
 from deepeval.metrics import FaithfulnessMetric, GEval
 from deepeval.test_case import LLMTestCase
 
-from .gpt import CompletionHandler
+from .openai import CompletionHandler
 
 from .utils import parse_eval_arguments
 
@@ -17,7 +15,7 @@ class SummaryEvaluator(CompletionHandler):
         self,
         summary: str,
         content: str,
-        model: str = "gpt-4o-mini",
+        testing: bool = True,
         verbose: bool = True,
         iterations: int = 5,
         **kwargs,
@@ -33,6 +31,8 @@ class SummaryEvaluator(CompletionHandler):
         self.top_p = 1.0
         self.query = ""
         self.added_context = ""
+        self.testing = testing
+        self.verbose = verbose
 
         # Set up logger and intermediate file output directory
         self.setup_logging()

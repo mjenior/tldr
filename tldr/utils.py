@@ -63,7 +63,7 @@ def parse_tldr_arguments():
         "-sc",
         "--split_chunks",
         type=bool,
-        default=True,
+        default=False,
         help="Split summaries into chunks before shuffling",
     )
     parser.add_argument(

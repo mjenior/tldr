@@ -1,7 +1,8 @@
 import re
 import asyncio
+import numpy as np
 
-from .gpt import CompletionHandler
+from .openai import CompletionHandler
 
 
 class TldrEngine(CompletionHandler):
@@ -41,7 +42,7 @@ class TldrEngine(CompletionHandler):
         web_search=True,
         context_size="medium",
         tone="default",
-        split_chunks=True,
+        split_chunks=False,
         testing=False,
     ):
         super().__init__()
@@ -150,7 +151,7 @@ class TldrEngine(CompletionHandler):
         self.reference_summaries = []
         for i, summary in enumerate(reference_summaries):
             self.reference_summaries.append(
-                f"Reference {i} Summary:\n{summary["response"]}\n"
+                f"Reference {i} Summary:\n{summary['response']}\n"
             )
             result = self.save_response_text(
                 summary["response"], label="summary", idx=i
@@ -175,9 +176,8 @@ class TldrEngine(CompletionHandler):
             )
             scrambled_chunks = "\n".join(summary_chunks)
         else:
-            # Shuffle summaries
+            # Shuffle entire summaries
             np.random.shuffle(self.reference_summaries)
-            self.logger.info(f"Shuffled summaries ({len(self.reference_summaries)})")
             scrambled_chunks = "\n".join(self.reference_summaries)
 
         # Save scrambled summaries
@@ -234,3 +234,41 @@ class TldrEngine(CompletionHandler):
         )
 
         self.logger.info(f"Final summary saved to {pdf_path}")
+
+    async def apply_research(self):
+        """Identify knowledge gaps and use web search to fill them. Integrating new info into summary."""
+        self.logger.info("Applying research agent to knowledge gaps...")
+
+        # Identify gaps in understanding
+        research_questions = await self.single_completion(
+            message=self.executive_summary, prompt_type="background_gaps"
+        )
+        research_questions = research_questions["response"].split("\n")
+
+        # Search web for to fill gaps
+        self.research_results = await self.multi_completions(
+            research_questions, prompt_type="web_search"
+        )
+
+        # Also search for additional context missed in references
+        for question in research_questions:
+            self.search_embedded_context(query=question, num_results=1)
+        final_context = await self.single_completion(
+            message="\n".join(self.added_context), prompt_type="format_context"
+        )
+        self.added_context = f"\nBelow is additional context for reference during response generation:\n{final_context['response']}"
+        result = self.save_response_text(
+            final_context["response"], label="research_context"
+        )
+        self.logger.info(result)
+
+        # Handle output
+        divider = "#--------------------------------------------------------#"
+        joint_text = "\n".join(
+            [
+                f'Question: {q_ans_pair["prompt"]}\nAnswer: {q_ans_pair["response"]}\n\n{divider}\n\n'
+                for q_ans_pair in self.research_results
+            ]
+        )
+        result = self.save_response_text(joint_text, label="research")
+        self.logger.info(result)
