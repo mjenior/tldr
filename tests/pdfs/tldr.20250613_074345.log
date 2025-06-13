@@ -1,0 +1,60 @@
+2025-06-13 07:43:45,682 - INFO - Intermediate files being written to: tldr.20250613_074345.files
+2025-06-13 07:43:45,714 - INFO - Searching for reference documents...
+2025-06-13 07:43:49,325 - INFO - Identified 2 reference documents.
+2025-06-13 07:43:49,325 - INFO - Generating embeddings for reference documents...
+2025-06-13 07:43:53,254 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-13 07:43:55,257 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-13 07:43:55,852 - INFO - Loading faiss.
+2025-06-13 07:43:55,893 - INFO - Successfully loaded faiss.
+2025-06-13 07:43:55,900 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-13 07:43:56,120 - INFO - Generating summaries for selected resources...
+2025-06-13 07:44:20,901 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:44:23,911 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:44:33,950 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:44:35,585 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:44:35,590 - INFO - tldr.20250613_074345.files/summary.0.tldr.20250613_074345.txt
+2025-06-13 07:44:35,590 - INFO - tldr.20250613_074345.files/summary.1.tldr.20250613_074345.txt
+2025-06-13 07:44:35,591 - INFO - Generating integrated summary text...
+2025-06-13 07:44:47,100 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:44:47,107 - INFO - tldr.20250613_074345.files/synthesis.tldr.20250613_074345.txt
+2025-06-13 07:44:47,107 - INFO - Applying research agent to knowledge gaps...
+2025-06-13 07:44:53,917 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:44:58,427 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:45:02,387 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:45:03,938 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:45:04,073 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:45:04,176 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:45:05,392 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:45:06,314 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:45:06,722 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:45:07,539 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:45:12,977 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:45:12,984 - INFO - Querying local embedded text vectors...
+2025-06-13 07:45:13,747 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-13 07:45:13,758 - INFO - Querying local embedded text vectors...
+2025-06-13 07:45:14,220 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-13 07:45:14,232 - INFO - Querying local embedded text vectors...
+2025-06-13 07:45:15,073 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-13 07:45:15,107 - INFO - Querying local embedded text vectors...
+2025-06-13 07:45:15,326 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-13 07:45:15,338 - INFO - Querying local embedded text vectors...
+2025-06-13 07:45:15,634 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-13 07:45:15,645 - INFO - Querying local embedded text vectors...
+2025-06-13 07:45:16,146 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-13 07:45:16,157 - INFO - Querying local embedded text vectors...
+2025-06-13 07:45:16,346 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-13 07:45:16,356 - INFO - Querying local embedded text vectors...
+2025-06-13 07:45:16,755 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-13 07:45:16,767 - INFO - Querying local embedded text vectors...
+2025-06-13 07:45:17,120 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-13 07:45:17,131 - INFO - Querying local embedded text vectors...
+2025-06-13 07:45:17,580 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-13 07:45:23,864 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:45:23,869 - INFO - tldr.20250613_074345.files/research_context.tldr.20250613_074345.txt
+2025-06-13 07:45:23,870 - INFO - tldr.20250613_074345.files/research.tldr.20250613_074345.txt
+2025-06-13 07:45:23,870 - INFO - Finalizing response text...
+2025-06-13 07:47:01,217 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:47:02,344 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-13 07:47:02,541 - INFO - Final summary saved to innovative_strategies_against_clostridioides.tldr.pdf
+2025-06-13 07:47:02,541 - INFO - Session Cost: $0.32
+2025-06-13 07:47:02,541 - INFO - Session Token Usage: gpt-4o-mini i:119210, o:14240, gpt-4o i:0, o:0, o4-mini i:0, o:0

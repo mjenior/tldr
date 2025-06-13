@@ -1,3 +1,19 @@
+"""Utility module for TLDR command-line argument parsing.
+
+This module provides utility functions for argument parsing in the TLDR application.
+
+1. parse_tldr_arguments(): Parses arguments for the main TLDR summarization functionality.
+   - Handles file input, query refinement, context files, recursive search, web search,
+     response tone, context size, chunk splitting, and verbosity settings.
+
+2. parse_eval_arguments(): Parses arguments for evaluating summaries against target content.
+   - Manages content paths, summary paths, evaluation model selection,
+     iteration count, and verbosity settings.
+
+The module uses argparse for argument parsing and provides clear, user-friendly help messages
+for all available options.
+"""
+
 import argparse
 
 
@@ -21,14 +37,14 @@ def parse_tldr_arguments():
         "--refine_query",
         type=bool,
         default=True,
-        help="Automatically refine and improve the user query",
+        help="Automatically refine and improve the user query"
     )
     parser.add_argument(
         "-c",
         "--context_files",
         default=None,
         nargs="+",
-        help="Optional: Additional context documents to include in the system instructions",
+        help="Optional: Additional context files to include in the summary"
     )
     parser.add_argument(
         "-r",
@@ -69,12 +85,7 @@ def parse_tldr_arguments():
     parser.add_argument(
         "-v", "--verbose", type=bool, default=True, help="Verbose stdout reporting"
     )
-    parser.add_argument(
-        "--testing",
-        type=bool,
-        default=False,
-        help="Uses only gpt-4o-mini for cheaper+faster testing runs.",
-    )
+
     return vars(parser.parse_args())
 
 

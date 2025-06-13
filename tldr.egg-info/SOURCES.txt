@@ -3,13 +3,12 @@ MANIFEST.in
 README.md
 pyproject.toml
 tldr/__init.__.py
-tldr/completion.py
 tldr/core.py
-tldr/dartboard.py
-tldr/instructions.yaml
+tldr/eval.py
 tldr/io.py
-tldr/judge.py
-tldr/logger.py
+tldr/log.py
+tldr/openai.py
+tldr/search.py
 tldr/tldr.py
 tldr/utils.py
 tldr.egg-info/PKG-INFO

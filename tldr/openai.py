@@ -9,10 +9,9 @@ from .search import ResearchAgent
 
 class CompletionHandler(ResearchAgent):
 
-    def __init__(self, testing=False, context_size="medium", api_key=None):
+    def __init__(self, context_size="medium", api_key=None):
         super().__init__()
 
-        self.testing = testing
         self.context_size = context_size
 
         # Set API key
@@ -36,7 +35,7 @@ class CompletionHandler(ResearchAgent):
         instructions_dict = self.instructions[prompt_type]
         instructions = instructions_dict["system_instruction"]
         output_tokens = instructions_dict["max_output_tokens"]
-        model = instructions_dict["model"] if self.testing == False else "gpt-4o-mini"
+        model = instructions_dict["model"]
 
         # Check message
         if len(message.strip()) == 0:

@@ -1,8 +1,18 @@
+"""
+This module contains the core logic for generating TLDR summaries.
+
+It provides a class, TldrEngine, which is responsible for processing input files,
+fetching additional context, optionally performing Retrieval Augmented Generation (RAG)
+using local embeddings, refining user queries, and generating summaries based on the
+provided information. It manages interactions with a completion API and handles the
+output of intermediate and final results.
+"""
+
 import re
 import asyncio
 import numpy as np
 
-from .openai import CompletionHandler
+from .core import CompletionHandler
 
 
 class TldrEngine(CompletionHandler):
@@ -43,11 +53,9 @@ class TldrEngine(CompletionHandler):
         context_size="medium",
         tone="default",
         split_chunks=False,
-        testing=False,
     ):
         super().__init__()
         self.verbose = verbose
-        self.testing = testing
         self.context_size = context_size
         self.recursive_search = recursive_search
         self.query = query

@@ -7,3 +7,10 @@ pyyaml>=6.0.1
 jsonschema>=4.21.1
 reportlab
 black
+faiss-cpu
+langchain_community
+langchain_openai
+langchain
+scipy
+numpy
+deepeval

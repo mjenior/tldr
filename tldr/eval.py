@@ -1,25 +1,35 @@
+"""
+This module provides functionality for evaluating the quality of generated summaries.
+
+It includes a SummaryEvaluator class that uses various metrics to assess the faithfulness,
+accuracy, and overall quality of summaries against their source content. The evaluation
+process can be configured for testing purposes and supports multiple iterations for
+consistent results.
+"""
+
 import asyncio
 
 from deepeval.metrics import FaithfulnessMetric, GEval
 from deepeval.test_case import LLMTestCase
 
 from .openai import CompletionHandler
-
 from .utils import parse_eval_arguments
 
 
 class SummaryEvaluator(CompletionHandler):
     """Attempt to objectively score the quality of a summary from a highly technical resource."""
 
-    def __init__(
-        self,
-        summary: str,
-        content: str,
-        testing: bool = True,
-        verbose: bool = True,
-        iterations: int = 5,
-        **kwargs,
-    ):
+    def __init__(self, summary: str, content: str, testing: bool = True, verbose: bool = True, iterations: int = 5, **kwargs):
+        """
+        Initialize the SummaryEvaluator with the summary and content to evaluate.
+        
+        Args:
+            summary: The generated summary to evaluate
+            content: The original content that the summary is based on
+            testing: Whether to run in testing mode
+            verbose: Whether to print detailed output
+            iterations: Number of iterations to run for evaluation
+        """
         super().__init__(**kwargs)
 
         # Assign attributes
@@ -41,8 +51,16 @@ class SummaryEvaluator(CompletionHandler):
         # Read in system instructions
         self.read_system_instructions()
 
-    async def evaluate(self):
+    async def evaluate(self) -> Dict:
         """Evaluate summary text of a paired reference"""
+        try:
+            self.summary_evals = self.evaluate_summary()
+        except Exception as specific_error:
+            self.message = f"An error occurred during summary evaluation: {str(specific_error)}"
+            print(self.message)
+            raise RuntimeError("Summary evaluation failed") from specific_error
+        
+        self.evaluation = self.evaluate_summary()
 
         # Handle target text
         self.message = self.get_content_and_summary_text(self.content, self.summary)
