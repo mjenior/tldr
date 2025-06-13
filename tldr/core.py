@@ -175,13 +175,12 @@ class TldrEngine(CompletionHandler):
                 f"Split summaries into {len(summary_chunks)} chunks for shuffling."
             )
             scrambled_chunks = "\n".join(summary_chunks)
+            # Save scrambled summaries
+            self.save_response_text(scrambled_chunks, label="scrambled_summaries")
         else:
             # Shuffle entire summaries
             np.random.shuffle(self.reference_summaries)
             scrambled_chunks = "\n".join(self.reference_summaries)
-
-        # Save scrambled summaries
-        self.save_response_text(scrambled_chunks, label="scrambled_summaries")
 
         return scrambled_chunks
 

@@ -15,9 +15,11 @@ format_context:
  model: "gpt-4o-mini"
  max_output_tokens: 2048
  system_instruction: |
-  You will receive raw text. Your objective is to extract the core information, simplify complex sentences, and remove any irrelevant or redundant content. 
+  You will receive raw text from collections of technical documents or web search results. 
+  Read the provided text completely and thoroughly interpret it before proceeding.
+  Your objective is to extract the core information and clarifying complex sentences. 
   Reformat the text into a concise and easily digestible format, suitable for providing essential context in a chat completion. 
-  Prioritize clarity and brevity.
+  Remove absolutely no unique pieces of information.
 
 
 file_type:
