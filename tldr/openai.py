@@ -86,7 +86,7 @@ class CompletionHandler(ResearchAgent):
         """
         Initialize and submit a single chat completion request with built-in retry logic.
         """
-        return await self._retry_on_429(
+        return await self._retry_with_sleep(
             partial(self._perform_api_call, **kwargs),
             message=message,
             prompt_type=prompt_type,
@@ -103,7 +103,7 @@ class CompletionHandler(ResearchAgent):
             # Determine type of submission
             if prompt_type != "web_search":
                 # Determine type of resource
-                source_type = await self._retry_on_429(
+                source_type = await self._retry_with_sleep(
                     partial(self._perform_api_call, **kwargs),
                     message=message,
                     prompt_type="file_type",
@@ -111,7 +111,7 @@ class CompletionHandler(ResearchAgent):
                 prompt_type = source_type["response"]
 
             # Generate summary task
-            task = self._retry_on_429(
+            task = self._retry_with_sleep(
                 partial(self._perform_api_call, **kwargs),
                 message=message,
                 prompt_type=prompt_type,
@@ -120,19 +120,20 @@ class CompletionHandler(ResearchAgent):
 
         return await asyncio.gather(*coroutine_tasks, return_exceptions=False)
 
-    async def _retry_on_429(
+    async def _retry_with_sleep(
         self, coro_fn, message, prompt_type, max_retries=9, **kwargs
     ):
         """Retry summary generation on token rate limit per hour exceeded errors."""
 
+        wait_time = 0.0
         for attempt in range(1, max_retries + 1):
             try:
                 return await coro_fn(message, prompt_type, **kwargs)
             except Exception as e:
-                if hasattr(e, "status") and e.status == 429:
-                    wait_time = random.uniform(*(1, 3)) * attempt * 5
+                if hasattr(e, "status"):
+                    wait_time += random.uniform(*(1, 3)) * attempt * 2
                     self.logger.info(
-                        f"Rate limit hit. Retrying in {wait_time:.2f}s (attempt {attempt})..."
+                        f"Error {e}. Retrying in {wait_time:.2f}s (attempt {attempt})..."
                     )
                     await asyncio.sleep(wait_time)
                 else:

@@ -27,7 +27,8 @@ build: clean patch
 	rm -rf build *.egg-info
 
 install:
+	pixi install
 	pip install -e .
 
 clean: 
-	rm -rf dist build *.egg-info
+	rm -rf dist
