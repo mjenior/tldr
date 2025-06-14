@@ -6,10 +6,10 @@ from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 
-from .log import ExpenseTracker
+from .logger import LogHandler
 
 
-class ResearchAgent(ExpenseTracker):
+class ResearchAgent(LogHandler):
     def __init__(
         self,
         num_results: int = 5,
@@ -217,9 +217,9 @@ class ResearchAgent(ExpenseTracker):
             self.rel_weight,
             self.sigma,
         )
-        # self.logger.info(
-        #    "Average relevance score: {}".format(np.mean(list(result.values())))
-        # )
+        self.logger.info(
+            "Average relevance score: {}".format(round(np.mean(list(result.values())), 3))
+        )
 
         # Add search results to growing supplementary context
         self.added_context += "\n" + "\n".join(list(result.keys()))

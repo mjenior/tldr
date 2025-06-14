@@ -6,7 +6,7 @@ import logging
 from .io import FileHandler
 
 
-class ExpenseTracker(FileHandler):
+class LogHandler(FileHandler):
     """
     Tracker for token useage and session cost
     """

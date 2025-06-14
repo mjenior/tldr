@@ -1,5 +1,29 @@
 # Changelog
 
+## Version 1.0.18 - Major Features and Improvements
+* Added intelligent file type determination and logging
+* Added context file search and automated refinement
+* New output directory handling
+* Added research context and improved user query handling
+* Implemented token scaling functionality
+* Improved versioning system
+* Added automated HTTP 429 error retries
+* Added pixi packaging support
+* Completed summary judge component
+* Improved installation process with Makefile
+* Added comprehensive documentation in README
+
+## Version 1.0.0 - Initial Release
+* Added summary judge component
+* Completed main workflow implementation
+* Added file handling and processing
+* Initial package structure setup
+* Basic summarization functionality
+* Basic OpenAI API integration
+* 7c80b5a - Finished a refactoring pass. (Matt Jenior)
+* dd41ed3 - Conducted a major refactor of the codebase. (Matt Jenior) 
+
+## Version 0.1.0 - Prerelease
 * 69bbc12 - Added intelligent file type determination and logging. (Matt Jenior)
 * e02681f - Added context file search and automated refinement. (Matt Jenior)
 * d14f224 - New output directory handling. (Matt Jenior)
@@ -32,5 +56,3 @@
 * ec2090c - Added pixi packaging support. (Matt Jenior)
 * de8d7b2 - Completed the main workflow implementation. (Matt Jenior)
 * 83a73ac - Added a summary judge component. (Matt Jenior)
-* 7c80b5a - Finished a refactoring pass. (Matt Jenior)
-* dd41ed3 - Conducted a major refactor of the codebase. (Matt Jenior) 

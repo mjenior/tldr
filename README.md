@@ -2,7 +2,7 @@
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-Version = 1.0.18
+Version = 1.0.19
 
 ## Overview
 
@@ -102,9 +102,9 @@ tldr -t modified
 *   `-s`, `--context_size <scale>`: Set the context window size for the model. (Choices: `low`, `medium`, `high`; Default: `medium`)
 *   `-v`, `--verbose <True|False>`: Enable verbose logging to stdout. (Default: `True`)
 
-### Summary Evaluation (Python API & CLI)
+### Summary Evaluation (Python API)
 
-You can evaluate the quality of generated summaries using either the Python API or command-line interface.
+You can evaluate the quality of generated summaries using the Python API for easier iterative testing.
 
 #### Python API
 
@@ -128,12 +128,6 @@ evaluation = await evaluator.evaluate(
 # Access the evaluation results
 print(f"Evaluation Score: {evaluation['score']}")
 print(f"Reasoning: {evaluation['reason']}")
-```
-
-#### Command Line Interface
-
-```bash
-tldr_eval -c path/to/original_document.txt -s path/to/generated_summary.txt
 ```
 
 CLI Options:

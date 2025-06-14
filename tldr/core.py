@@ -12,7 +12,7 @@ import re
 import asyncio
 import numpy as np
 
-from .core import CompletionHandler
+from .openai import CompletionHandler
 
 
 class TldrEngine(CompletionHandler):
