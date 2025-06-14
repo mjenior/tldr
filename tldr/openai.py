@@ -2,7 +2,8 @@ import os
 import asyncio
 from functools import partial
 
-from openai import AsyncOpenAI
+from openai import AsyncOpenAI, RateLimitError
+
 
 from .search import ResearchAgent
 
@@ -56,22 +57,32 @@ class CompletionHandler(ResearchAgent):
         ]
 
         # Run completion query
-        if model == "o4-mini":
-            response = await self.client.responses.create(
-                input=messages,
-                model=model,
-                max_output_tokens=self._scale_token(output_tokens),
-                reasoning={"effort": self.context_size},
-                **kwargs,
-            )
-        else:
-            response = await self.client.responses.create(
-                input=messages,
-                model=model,
-                tools=tools,
-                max_output_tokens=self._scale_token(output_tokens),
-                **kwargs,
-            )
+        response = None
+        while response is None:
+            try:
+                if model == "o4-mini":
+                    response = await self.client.responses.create(
+                        input=messages,
+                        model=model,
+                        max_output_tokens=self._scale_token(output_tokens),
+                        reasoning={"effort": self.context_size},
+                        **kwargs,
+                    )
+                else:
+                    response = await self.client.responses.create(
+                        input=messages,
+                        model=model,
+                        tools=tools,
+                        max_output_tokens=self._scale_token(output_tokens),
+                        **kwargs,
+                    )
+            except RateLimitError as e:
+                sleep_time = await self._extract_sleep_time(e.args[0])
+                self.logger.info(f"Rate limit exceeded. Sleeping for {sleep_time} seconds...")
+                if sleep_time is not None:
+                    await asyncio.sleep(sleep_time)
+                else:
+                    raise e
 
         # Update usage
         self.model_tokens[model]["input"] += response.usage.input_tokens
@@ -81,6 +92,22 @@ class CompletionHandler(ResearchAgent):
 
         # Return prompt and response pair
         return {"prompt": message, "response": response.output_text}
+
+    async def _extract_sleep_time(self, error_message, adjust=0.5):
+        """
+        Extract the sleep time from the error message.
+
+        Args:
+            error_message: The error message from the OpenAI API.
+            adjust: The amount of time to adjust the sleep time by.
+
+        Returns:
+            The sleep time in seconds.
+        """
+        if "rate_limit_exceeded" in error_message:
+            sleep_time = error_message.split("Please try again in ")[1].split(".")[0]
+            return float(sleep_time) + adjust
+        return None
 
     async def single_completion(self, message, prompt_type, **kwargs):
         """

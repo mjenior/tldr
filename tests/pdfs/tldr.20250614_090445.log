@@ -1,0 +1,69 @@
+2025-06-14 09:04:45,606 - INFO - Intermediate files being written to: tldr.20250614_090445.files
+2025-06-14 09:04:45,639 - INFO - Searching for reference documents...
+2025-06-14 09:04:49,285 - INFO - Identified 2 reference documents.
+2025-06-14 09:04:49,285 - INFO - Generating embeddings for reference documents...
+2025-06-14 09:04:51,734 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-14 09:04:53,757 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-14 09:04:54,394 - INFO - Loading faiss.
+2025-06-14 09:04:54,417 - INFO - Successfully loaded faiss.
+2025-06-14 09:04:54,424 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-14 09:04:54,649 - INFO - Generating summaries for selected resources...
+2025-06-14 09:04:57,064 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:04:58,902 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:05:03,956 - INFO - Retrying request to /responses in 0.428371 seconds
+2025-06-14 09:05:07,804 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:05:09,442 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 429 Too Many Requests"
+2025-06-14 09:05:09,444 - INFO - Retrying request to /responses in 0.992927 seconds
+2025-06-14 09:05:15,893 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 429 Too Many Requests"
+2025-06-14 09:05:44,875 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:05:44,883 - INFO - tldr.20250614_090445.files/summary.0.tldr.20250614_090445.txt
+2025-06-14 09:05:44,884 - INFO - tldr.20250614_090445.files/summary.1.tldr.20250614_090445.txt
+2025-06-14 09:05:44,884 - INFO - Generating integrated summary text...
+2025-06-14 09:05:55,729 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:05:55,736 - INFO - tldr.20250614_090445.files/synthesis.tldr.20250614_090445.txt
+2025-06-14 09:05:55,737 - INFO - Applying research agent to knowledge gaps...
+2025-06-14 09:06:05,764 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:06:11,810 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:06:11,813 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:06:11,821 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:06:13,033 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:06:13,708 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:06:13,715 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:06:14,344 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:06:14,799 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:06:15,443 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:06:36,074 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:06:36,085 - INFO - Querying local embedded text vectors...
+2025-06-14 09:06:36,570 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-14 09:06:36,611 - INFO - Average relevance score: 1.603
+2025-06-14 09:06:36,611 - INFO - Querying local embedded text vectors...
+2025-06-14 09:06:37,042 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-14 09:06:37,058 - INFO - Average relevance score: 1.629
+2025-06-14 09:06:37,059 - INFO - Querying local embedded text vectors...
+2025-06-14 09:06:37,273 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-14 09:06:37,288 - INFO - Average relevance score: 1.727
+2025-06-14 09:06:37,288 - INFO - Querying local embedded text vectors...
+2025-06-14 09:06:37,432 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-14 09:06:37,443 - INFO - Average relevance score: 1.413
+2025-06-14 09:06:37,443 - INFO - Querying local embedded text vectors...
+2025-06-14 09:06:37,625 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-14 09:06:37,632 - INFO - Average relevance score: 1.481
+2025-06-14 09:06:37,632 - INFO - Querying local embedded text vectors...
+2025-06-14 09:06:37,783 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-14 09:06:37,807 - INFO - Average relevance score: 1.532
+2025-06-14 09:06:37,808 - INFO - Querying local embedded text vectors...
+2025-06-14 09:06:38,153 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-14 09:06:38,173 - INFO - Average relevance score: 1.417
+2025-06-14 09:06:38,174 - INFO - Querying local embedded text vectors...
+2025-06-14 09:06:38,316 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-14 09:06:38,327 - INFO - Average relevance score: 1.638
+2025-06-14 09:06:38,328 - INFO - Querying local embedded text vectors...
+2025-06-14 09:06:38,479 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-14 09:06:38,492 - INFO - Average relevance score: 1.525
+2025-06-14 09:06:38,493 - INFO - Querying local embedded text vectors...
+2025-06-14 09:06:39,053 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-14 09:06:39,065 - INFO - Average relevance score: 1.407
+2025-06-14 09:06:44,161 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-14 09:06:44,167 - INFO - tldr.20250614_090445.files/research_context.tldr.20250614_090445.txt
+2025-06-14 09:06:44,167 - INFO - tldr.20250614_090445.files/research.tldr.20250614_090445.txt
+2025-06-14 09:06:44,168 - INFO - Finalizing response text...
