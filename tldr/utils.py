@@ -83,6 +83,20 @@ def parse_tldr_arguments():
         help="Split summaries into chunks before shuffling",
     )
     parser.add_argument(
+        "-te",
+        "--testing",
+        type=bool,
+        default=False,
+        help="Testing mode",
+    )
+    parser.add_argument(
+        "-p",
+        "--polish",
+        type=bool,
+        default=True,
+        help="Polish final response",
+    )
+    parser.add_argument(
         "-v", "--verbose", type=bool, default=True, help="Verbose stdout reporting"
     )
 

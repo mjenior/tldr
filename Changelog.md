@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 1.0.18 - Major Features and Improvements
+## Version 1.0.30 - Major Features and Improvements
 * Added intelligent file type determination and logging
 * Added context file search and automated refinement
 * New output directory handling

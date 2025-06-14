@@ -1,4 +1,4 @@
-VERSION = "1.0.27"
+VERSION = "1.0.30"
 
 # Default target
 .DEFAULT_GOAL := help
@@ -24,11 +24,12 @@ format:
 build: clean patch
 	pixi lock
 	pixi run python -m build
-	rm -rf build *.egg-info
+	rm -rf build tldr.egg-info
 
 install:
 	pixi install
 	pip install -e .
+	rm -rf build tldr.egg-info
 
 clean: 
-	rm -rf dist
+	rm -rf dist build tldr.egg-info

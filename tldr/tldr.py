@@ -13,7 +13,7 @@ async def main():
     tldr = TldrEngine(**parse_tldr_arguments())
 
     # Create local embeddings
-    if tldr.query is not None or tldr.research is True:
+    if tldr.query is not None:
         tldr.encode_text_to_vector_store()
 
     # Extend user query
@@ -38,7 +38,11 @@ async def main():
         await tldr.apply_research()
 
     # Rewrite for response type and tone
-    await tldr.polish_response()
+    if tldr.polish:
+        await tldr.polish_response()
+        await tldr.save_to_pdf(tldr.polished_summary)
+    else:
+        await tldr.save_to_pdf(tldr.executive_summary)
 
     # Complete run with stats reporting
     tldr.format_spending()

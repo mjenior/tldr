@@ -53,6 +53,8 @@ class TldrEngine(CompletionHandler):
         context_size="medium",
         tone="default",
         split_chunks=False,
+        polish=True,
+        testing=False,
     ):
         super().__init__()
         self.verbose = verbose
@@ -63,9 +65,10 @@ class TldrEngine(CompletionHandler):
         self.refine_query = refine_query
         self.added_context = ""
         self.tone = tone
-        self.research = True
         self.raw_context = None
         self.split_chunks = split_chunks
+        self.polish = polish
+        self.testing = testing
         self.random_seed = 42
 
         # Set up logger and intermediate file output directory
@@ -87,6 +90,14 @@ class TldrEngine(CompletionHandler):
         if context_files is not None:
             all_context = self.fetch_content(user_files=context_files, label="context")
             self.raw_context = "\n".join(all_context)
+
+        # Check for testing mode
+        if self.testing:
+            self.web_search = False
+            self.query = None
+            self.raw_context = None
+            self.polish = False
+            self.context_size = "low"
 
     async def format_context_references(self):
         """Creates more concise, less repetative context message."""
@@ -230,16 +241,21 @@ class TldrEngine(CompletionHandler):
             message=self.executive_summary + research_answers + self.added_context,
             prompt_type=tone_instructions,
         )
-        polished_title = await self.single_completion(
-            message=self.polished_summary["response"], prompt_type="title_instructions"
+        self.polished_summary = self.polished_summary["response"]
+
+    async def save_to_pdf(self, summary_text):
+        """Saves polished summary string to formatted PDF document."""
+        self.logger.info("Saving final summary to PDF...")
+        # Generate title
+        doc_title = await self.single_completion(
+            message=summary_text, prompt_type="title_instructions"
         )
 
-        # Save formatted PDF
+        # Save to PDF
         pdf_path = self.generate_tldr_pdf(
-            summary_text=self.polished_summary["response"],
-            doc_title=polished_title["response"],
+            summary_text=summary_text,
+            doc_title=doc_title["response"],
         )
-
         self.logger.info(f"Final summary saved to {pdf_path}")
 
     async def apply_research(self):
