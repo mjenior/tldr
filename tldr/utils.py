@@ -61,13 +61,6 @@ def parse_tldr_arguments():
         help="Additional research agent to find and fill knowledge gaps",
     )
     parser.add_argument(
-        "-t",
-        "--tone",
-        choices=["default", "modified"],
-        default="default",
-        help="Final executive summary response tone",
-    )
-    parser.add_argument(
         "-s",
         "--context_size",
         type=str,
@@ -76,14 +69,6 @@ def parse_tldr_arguments():
         help="Modifier for scale of maximum output tokens and context window size for research agent web search",
     )
     parser.add_argument(
-        "-sc",
-        "--split_chunks",
-        type=bool,
-        default=False,
-        help="Split summaries into chunks before shuffling",
-    )
-    parser.add_argument(
-        "-te",
         "--testing",
         type=bool,
         default=False,
@@ -92,12 +77,18 @@ def parse_tldr_arguments():
     parser.add_argument(
         "-p",
         "--polish",
-        choices=['stylized', 'formal'],
-        default='stylized',
-        help="Type of polishing to apply to the final response. Options: 'stylized' (default) or 'formal'.",
+        type=bool,
+        default=True,
+        help="Polish final response",
     )
     parser.add_argument(
-        "-pdf",
+        "-t",
+        "--tone",
+        choices=['stylized', 'formal'],
+        default='stylized',
+        help="Tone of polishing to apply to the final response. Options: 'stylized' (default) or 'formal'.",
+    )
+    parser.add_argument(
         "--pdf",
         type=bool,
         default=True,

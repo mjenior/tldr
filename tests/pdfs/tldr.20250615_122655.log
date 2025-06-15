@@ -1,0 +1,97 @@
+2025-06-15 12:26:55,996 - INFO - Intermediate files being written to: tldr.20250615_122655.files
+2025-06-15 12:26:56,012 - INFO - Searching for reference documents...
+2025-06-15 12:26:57,398 - INFO - Identified 2 reference documents.
+2025-06-15 12:26:57,398 - INFO - Generating embeddings for reference documents...
+2025-06-15 12:26:58,685 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:27:00,814 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:27:01,067 - INFO - Loading faiss with AVX2 support.
+2025-06-15 12:27:01,078 - INFO - Successfully loaded faiss with AVX2 support.
+2025-06-15 12:27:01,080 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-15 12:27:01,275 - INFO - Generating summaries for selected resources...
+2025-06-15 12:27:14,956 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:27:16,509 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:27:25,151 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:27:35,384 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:27:35,385 - INFO - tldr.20250615_122655.files/reference_summary.0.tldr.20250615_122655.txt
+2025-06-15 12:27:35,385 - INFO - tldr.20250615_122655.files/reference_summary.1.tldr.20250615_122655.txt
+2025-06-15 12:27:35,385 - INFO - Applying research agent to knowledge gaps...
+2025-06-15 12:27:57,708 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:02,478 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:02,786 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:02,900 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:03,346 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:03,595 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:03,899 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:03,965 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:03,966 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:04,008 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:04,199 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:04,800 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:05,429 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:05,747 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:05,985 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:06,006 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:08,779 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:27,099 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:27,101 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:27,262 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:27,265 - INFO - Average relevance score: 2.328
+2025-06-15 12:28:27,265 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:27,478 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:27,479 - INFO - Average relevance score: 1.966
+2025-06-15 12:28:27,480 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:27,997 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:27,999 - INFO - Average relevance score: 2.199
+2025-06-15 12:28:27,999 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:28,145 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:28,147 - INFO - Average relevance score: 2.077
+2025-06-15 12:28:28,147 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:28,317 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:28,319 - INFO - Average relevance score: 2.609
+2025-06-15 12:28:28,319 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:28,465 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:28,467 - INFO - Average relevance score: 2.334
+2025-06-15 12:28:28,467 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:28,575 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:28,577 - INFO - Average relevance score: 2.323
+2025-06-15 12:28:28,577 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:28,709 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:28,712 - INFO - Average relevance score: 2.168
+2025-06-15 12:28:28,712 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:28,845 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:28,847 - INFO - Average relevance score: 2.123
+2025-06-15 12:28:28,847 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:28,981 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:28,983 - INFO - Average relevance score: 2.082
+2025-06-15 12:28:28,983 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:29,157 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:29,159 - INFO - Average relevance score: 2.29
+2025-06-15 12:28:29,159 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:29,306 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:29,308 - INFO - Average relevance score: 2.278
+2025-06-15 12:28:29,308 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:29,486 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:29,488 - INFO - Average relevance score: 2.491
+2025-06-15 12:28:29,488 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:29,587 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:29,589 - INFO - Average relevance score: 2.139
+2025-06-15 12:28:29,589 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:29,714 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:29,716 - INFO - Average relevance score: 2.213
+2025-06-15 12:28:29,716 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:29,869 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:29,870 - INFO - Average relevance score: 1.919
+2025-06-15 12:28:29,870 - INFO - Querying local embedded text vectors...
+2025-06-15 12:28:30,038 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-15 12:28:30,040 - INFO - Average relevance score: 2.357
+2025-06-15 12:28:36,613 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:36,614 - INFO - tldr.20250615_122655.files/research_context.tldr.20250615_122655.txt
+2025-06-15 12:28:36,614 - INFO - tldr.20250615_122655.files/research_results.tldr.20250615_122655.txt
+2025-06-15 12:28:36,614 - INFO - Generating integrated summary text...
+2025-06-15 12:28:51,187 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:51,188 - INFO - tldr.20250615_122655.files/executive_summary.tldr.20250615_122655.txt
+2025-06-15 12:28:51,188 - INFO - Saving final summary to PDF...
+2025-06-15 12:28:51,819 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-15 12:28:51,828 - INFO - Final summary saved to innovative_strategies_combatting_c_difficile.tldr.pdf
+2025-06-15 12:28:51,829 - INFO - Session Cost: $0.18
+2025-06-15 12:28:51,829 - INFO - Session Token Usage: gpt-4o-mini i:57471, o:625, gpt-4o i:59215, o:9243, o4-mini i:1586, o:2046

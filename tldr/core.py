@@ -63,9 +63,9 @@ class TldrEngine(CompletionHandler):
         self.web_search = web_search
         self.refine_query = refine_query
         self.added_context = ""
+        self.polish = polish
         self.tone = tone
         self.raw_context = None
-        self.polish = polish
         self.pdf = pdf
         self.testing = testing
         self.random_seed = 42
@@ -105,10 +105,8 @@ class TldrEngine(CompletionHandler):
         """Creates more concise, less repetative context message."""
 
         # Format context references
-        formatted_context = asyncio.run(
-            self.single_completion(
-                message=new_context, prompt_type="format_context"
-            )
+        formatted_context = await self.single_completion(
+            message=new_context, prompt_type="format_context"
         )
         self.added_context += formatted_context["response"]
         result = self.save_response_text(
@@ -202,7 +200,7 @@ class TldrEngine(CompletionHandler):
 
         # Select tone
         tone_instructions = (
-            "formal_polishing" if self.tone == "default" else "modified_polishing"
+            "formal_polishing" if self.tone == "formal" else "stylized_polishing"
         )
 
         # Polish summary

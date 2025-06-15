@@ -42,6 +42,8 @@ async def main():
         await tldr.save_to_pdf(final_text)
 
     # Complete run with stats reporting
+    result = tldr.save_response_text(tldr.added_context, label="full_context")
+    tldr.logger.info(result)
     tldr.format_spending()
     tldr.generate_token_report()
 

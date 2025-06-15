@@ -1,6 +1,6 @@
 [project]
 name = "tldr"
-version = "1.0.30"
+version = "1.0.31"
 description = "Reads and summarizes top points from a provided series of articles using the OpenAI API."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -21,7 +21,6 @@ dependencies = [
     "numpy>=1.26.3",
     "deepeval>=0.1.1",
     "streamlit>=1.42.0",
-    "streamlit-frontend>=1.42.0",
     "faiss-cpu>=1.7.4",
 ]
 
