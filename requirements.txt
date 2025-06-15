@@ -8,3 +8,6 @@ reportlab>=3.6.0
 langchain>=0.0.1
 scipy>=1.7.0
 openai>=0.27.0
+streamlit>=1.42.0
+streamlit-frontend>=1.42.0
+faiss-cpu>=1.7.4

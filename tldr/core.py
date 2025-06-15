@@ -10,7 +10,6 @@ output of intermediate and final results.
 
 import re
 import asyncio
-import numpy as np
 
 from .openai import CompletionHandler
 
@@ -51,9 +50,9 @@ class TldrEngine(CompletionHandler):
         verbose=True,
         web_search=True,
         context_size="medium",
-        tone="default",
-        split_chunks=False,
-        polish=True,
+        tone="stylized",
+        polish=False,
+        pdf=True,
         testing=False,
     ):
         super().__init__()
@@ -66,8 +65,8 @@ class TldrEngine(CompletionHandler):
         self.added_context = ""
         self.tone = tone
         self.raw_context = None
-        self.split_chunks = split_chunks
         self.polish = polish
+        self.pdf = pdf
         self.testing = testing
         self.random_seed = 42
 
@@ -91,6 +90,9 @@ class TldrEngine(CompletionHandler):
             all_context = self.fetch_content(user_files=context_files, label="context")
             self.raw_context = "\n".join(all_context)
 
+        # Create local embeddings
+        self.encode_text_to_vector_store()
+
         # Check for testing mode
         if self.testing:
             self.web_search = False
@@ -99,19 +101,19 @@ class TldrEngine(CompletionHandler):
             self.polish = False
             self.context_size = "low"
 
-    async def format_context_references(self):
+    async def format_context(self, new_context, label="formatted_context"):
         """Creates more concise, less repetative context message."""
-        self.logger.info("Refining supplementary context...")
 
-        added_context = asyncio.run(
+        # Format context references
+        formatted_context = asyncio.run(
             self.single_completion(
-                message="\n".join(self.raw_context), prompt_type="format_context"
+                message=new_context, prompt_type="format_context"
             )
         )
-        self.added_context += f"\nBelow is additional context for reference during response generation:\n{added_context}"
+        self.added_context += formatted_context["response"]
         result = self.save_response_text(
-            added_context,
-            label="added_context",
+            formatted_context["response"],
+            label=label,
         )
         self.logger.info(result)
 
@@ -152,12 +154,13 @@ class TldrEngine(CompletionHandler):
         refined_query = await self.single_completion(
             message=self.query, prompt_type="refine_prompt"
         )
-        refined_query = refined_query["response"]
 
         # Handle output text
-        self.query = f"Ensure that addressing the following user query is the central theme of your response:\n{refined_query}\n"
+        refined_query = refined_query["response"]
         result = self.save_response_text(refined_query, label="refined_query")
         self.logger.info(result)
+
+        self.query = f"Ensure that addressing the following user query is the central theme of your response:\n{refined_query}\n\n"
 
     async def summarize_resources(self):
         """Generate component and synthesis summary text"""
@@ -173,56 +176,23 @@ class TldrEngine(CompletionHandler):
                 f"Reference {i} Summary:\n{summary['response']}\n"
             )
             result = self.save_response_text(
-                summary["response"], label="summary", idx=i
+                summary["response"], label="reference_summary", idx=i
             )
             self.logger.info(result)
-
-    def scramble_summaries(self):
-        """Scramble summaries to prevent bias in executive summary generation"""
-
-        np.random.seed(self.random_seed)
-        if self.split_chunks is True:
-            # Split summaries into chunks
-            summary_chunks = [
-                substr
-                for s in self.reference_summaries
-                for substr in s.split("\n\n")
-                if substr
-            ]
-            np.random.shuffle(summary_chunks)
-            self.logger.info(
-                f"Split summaries into {len(summary_chunks)} chunks for shuffling."
-            )
-            scrambled_chunks = "\n".join(summary_chunks)
-            # Save scrambled summaries
-            self.save_response_text(scrambled_chunks, label="scrambled_summaries")
-        else:
-            # Shuffle entire summaries
-            np.random.shuffle(self.reference_summaries)
-            scrambled_chunks = "\n".join(self.reference_summaries)
-
-        return scrambled_chunks
 
     async def integrate_summaries(self):
         """Generate integrated executive summaries combine all current summary text"""
         self.logger.info("Generating integrated summary text...")
 
-        # If only one summary, use it instead
-        if len(self.reference_summaries) == 1:
-            self.executive_summary = self.reference_summaries[0]
-            return
-        else:
-            all_summary_text = self.scramble_summaries()
-
         # Generate executive summary
         executive_summary = await self.single_completion(
-            message=all_summary_text, prompt_type="executive_summary"
+            message="\n\n".join(self.reference_summaries), prompt_type="executive_summary"
         )
         self.executive_summary = executive_summary["response"]
 
         # Handle output
         result = self.save_response_text(
-            executive_summary["response"], label="synthesis"
+            executive_summary["response"], label="executive_summary"
         )
         self.logger.info(result)
 
@@ -232,20 +202,25 @@ class TldrEngine(CompletionHandler):
 
         # Select tone
         tone_instructions = (
-            "polishing" if self.tone == "default" else "modified_polishing"
+            "formal_polishing" if self.tone == "default" else "modified_polishing"
         )
 
-        # Run completion and save final response text
-        research_answers = "\n".join([x["response"] for x in self.research_results])
+        # Polish summary
         self.polished_summary = await self.single_completion(
-            message=self.executive_summary + research_answers + self.added_context,
+            message=self.executive_summary,
             prompt_type=tone_instructions,
         )
         self.polished_summary = self.polished_summary["response"]
+        result = self.save_response_text(
+            self.polished_summary,
+            label="polished_summary",
+        )
+        self.logger.info(result)
 
     async def save_to_pdf(self, summary_text):
         """Saves polished summary string to formatted PDF document."""
         self.logger.info("Saving final summary to PDF...")
+
         # Generate title
         doc_title = await self.single_completion(
             message=summary_text, prompt_type="title_instructions"
@@ -264,7 +239,7 @@ class TldrEngine(CompletionHandler):
 
         # Identify gaps in understanding
         research_questions = await self.single_completion(
-            message=self.executive_summary, prompt_type="background_gaps"
+            message="\n\n".join(self.reference_summaries), prompt_type="background_gaps"
         )
         research_questions = research_questions["response"].split("\n")
 
@@ -272,18 +247,15 @@ class TldrEngine(CompletionHandler):
         self.research_results = await self.multi_completions(
             research_questions, prompt_type="web_search"
         )
+        research_context = "\n".join([x["response"] for x in self.research_results])
 
         # Also search for additional context missed in references
         for question in research_questions:
-            self.search_embedded_context(query=question, num_results=1)
-        final_context = await self.single_completion(
-            message="\n".join(self.added_context), prompt_type="format_context"
-        )
-        self.added_context = f"\nBelow is additional context for reference during response generation:\n{final_context['response']}"
-        result = self.save_response_text(
-            final_context["response"], label="research_context"
-        )
-        self.logger.info(result)
+            context = self.search_embedded_context(query=question, num_results=2)
+            research_context += "\n" + context
+        
+        # Update added context with new research
+        await self.format_context(research_context, label="research_context")
 
         # Handle output
         divider = "#--------------------------------------------------------#"
@@ -293,5 +265,5 @@ class TldrEngine(CompletionHandler):
                 for q_ans_pair in self.research_results
             ]
         )
-        result = self.save_response_text(joint_text, label="research")
+        result = self.save_response_text(joint_text, label="research_results")
         self.logger.info(result)

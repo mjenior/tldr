@@ -12,37 +12,34 @@ async def main():
     # Read in content and extend user query
     tldr = TldrEngine(**parse_tldr_arguments())
 
-    # Create local embeddings
-    if tldr.query is not None:
-        tldr.encode_text_to_vector_store()
-
     # Extend user query
     await tldr.refine_user_query()
 
     # Query local embedded text vectors
     if tldr.query != "":
-        tldr.search_embedded_context(query=tldr.query)
-
-    # Condense any context docs provided
-    if tldr.raw_context is not None:
-        await tldr.format_context_references()
+        context_search = await tldr.search_embedded_context(query=tldr.query)
+        await tldr.format_context(context_search, label="context_search")
 
     # Summarize documents
     await tldr.summarize_resources()
 
+    # Use research agent to fill gaps
+    if tldr.web_search is True:
+        await tldr.apply_research()
+
     # Synthesize content
     await tldr.integrate_summaries()
 
-    # Use research agent to fill gaps
-    if tldr.web_search:
-        await tldr.apply_research()
-
     # Rewrite for response type and tone
-    if tldr.polish:
+    if tldr.polish is True:
         await tldr.polish_response()
-        await tldr.save_to_pdf(tldr.polished_summary)
+        final_text = tldr.polished_summary
     else:
-        await tldr.save_to_pdf(tldr.executive_summary)
+        final_text = tldr.executive_summary
+
+    # Save final context
+    if tldr.pdf is True:
+        await tldr.save_to_pdf(final_text)
 
     # Complete run with stats reporting
     tldr.format_spending()

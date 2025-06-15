@@ -211,7 +211,10 @@ class FileHandler:
         This method now incorporates the logic of the former _save_summary_txt function.
         Returns the full path to the saved file, or an empty string on error.
         """
-        if label == "summary":
+        if out_data is None or out_data == "":
+            return "No data to save"
+
+        if label == "reference_summary":
             filename = f"{label}.{idx}.{self.run_tag}.txt"
         else:
             filename = f"{label}.{self.run_tag}.txt"

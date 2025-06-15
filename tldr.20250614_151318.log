@@ -1,0 +1,10 @@
+2025-06-14 15:13:18,821 - INFO - Intermediate files being written to: tldr.20250614_151318.files
+2025-06-14 15:13:18,886 - INFO - Searching for reference documents...
+2025-06-14 15:13:19,894 - INFO - Identified 1 reference documents.
+2025-06-14 15:13:19,894 - INFO - Generating embeddings for reference documents...
+2025-06-14 15:13:22,941 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-14 15:13:24,050 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-14 15:13:24,331 - INFO - Loading faiss.
+2025-06-14 15:13:24,374 - INFO - Successfully loaded faiss.
+2025-06-14 15:13:24,380 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-14 15:13:24,504 - INFO - Refining user query...

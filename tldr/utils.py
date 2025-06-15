@@ -92,14 +92,20 @@ def parse_tldr_arguments():
     parser.add_argument(
         "-p",
         "--polish",
+        choices=['stylized', 'formal'],
+        default='stylized',
+        help="Type of polishing to apply to the final response. Options: 'stylized' (default) or 'formal'.",
+    )
+    parser.add_argument(
+        "-pdf",
+        "--pdf",
         type=bool,
         default=True,
-        help="Polish final response",
+        help="Save final response to PDF",
     )
     parser.add_argument(
         "-v", "--verbose", type=bool, default=True, help="Verbose stdout reporting"
     )
-
     return vars(parser.parse_args())
 
 

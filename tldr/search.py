@@ -220,6 +220,4 @@ class ResearchAgent(LogHandler):
         self.logger.info(
             "Average relevance score: {}".format(round(np.mean(list(result.values())), 3))
         )
-
-        # Add search results to growing supplementary context
-        self.added_context += "\n" + "\n".join(list(result.keys()))
+        return "\n".join([x.strip() for x in list(result.keys())])

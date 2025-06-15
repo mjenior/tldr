@@ -52,7 +52,7 @@ class CompletionHandler(ResearchAgent):
 
         # Assemble messages object, adding query and context information
         messages = [
-            {"role": "system", "content": instructions + self.query},
+            {"role": "system", "content": self.query + instructions},
             {"role": "user", "content": message + self.added_context},
         ]
 

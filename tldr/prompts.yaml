@@ -400,7 +400,7 @@ web_search:
   Your output must be the answer to the question, with all sources clearly cited. Do not include any conversational text or extraneous formatting.
 
 
-polishing:
+formal_polishing:
  description: "A role for analyzing and reorganizing poorly structured text."
  model: "o4-mini"
  max_output_tokens: 6144
@@ -453,7 +453,7 @@ polishing:
   The overall text flows smoothly without abrupt or disorienting shifts.
 
 
-modified_polishing:
+stylized_polishing:
  description: "A specialized writing assistant that combines the styles of expert authors to rewrite user provided text."
  model: "gpt-4o"
  max_output_tokens: 6144
