@@ -21,7 +21,7 @@ major:
 format:
 	pixi run black tldr/*.py
 
-build: clean patch
+build: clean
 	pixi lock
 	pixi run python -m build
 	rm -rf build tldr.egg-info
