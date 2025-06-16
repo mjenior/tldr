@@ -16,18 +16,16 @@ from reportlab.lib.units import inch
 
 class FileHandler:
 
-    def create_timestamp(self):
+    def _generate_run_tag(self):
         """Generate a timestamp string (e.g., 20231027_103000)"""
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.run_tag = f"tldr.{timestamp}"
+        self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.run_tag = f"tldr.{self.timestamp}"
 
     def _create_output_path(self):
         """Set up where to write intermediate files"""
         self.output_directory = f"{self.run_tag}.files"
         os.makedirs(self.output_directory, exist_ok=True)
-        self.logger.info(
-            f"Intermediate files being written to: {self.output_directory}"
-        )
+        self.logger.info(f"Intermediate files being written to: {self.output_directory}")
 
     def fetch_content(
         self,
@@ -178,7 +176,7 @@ class FileHandler:
 
         return content_list
 
-    def read_system_instructions(self, file_path: str = "prompts.yaml") -> dict:
+    def _read_system_instructions(self, file_path: str = "prompts.yaml") -> dict:
         """
         Reads a YAML file and returns its content as a Python dictionary.
         """
@@ -197,6 +195,7 @@ class FileHandler:
                 f"An unexpected error occurred while reading '{instructions_path}': {e}"
             )
         self.instructions = instructions
+        self.logger.info("Systems instructions loaded successfully.")
 
     def save_response_text(
         self,

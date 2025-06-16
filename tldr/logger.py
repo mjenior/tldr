@@ -35,7 +35,7 @@ class LogHandler(FileHandler):
         self.session_spend = {"input": 0.0, "output": 0.0}
         self.total_spend = 0.0
 
-    def setup_logging(self):
+    def _start_logging(self):
         """
         Configures the root logger for the application.
         """
@@ -48,11 +48,7 @@ class LogHandler(FileHandler):
                 self.logger.removeHandler(handler)
 
         # Set the verbosity
-        (
-            self.logger.setLevel(logging.INFO)
-            if self.verbose == True
-            else self.logger.setLevel(logging.WARNING)
-        )
+        self.logger.setLevel(logging.INFO if self.verbose else logging.WARNING)
 
         # Console handler
         handler = logging.StreamHandler(sys.stdout)
@@ -61,8 +57,7 @@ class LogHandler(FileHandler):
         self.logger.addHandler(handler)
 
         # File handler
-        self.create_timestamp()
-        log_file = os.path.join(f"{self.run_tag}.log")
+        log_file = os.path.join(self.output_directory, f"{self.run_tag}.log")
         file_handler = logging.FileHandler(log_file)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
         file_handler.setFormatter(formatter)

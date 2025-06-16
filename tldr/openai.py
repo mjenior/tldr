@@ -12,16 +12,19 @@ class CompletionHandler(ResearchAgent):
 
     def __init__(self, context_size="medium", api_key=None):
         super().__init__()
-
         self.context_size = context_size
+        self.api_key = api_key
 
+    def _new_openai_client(self):
+        """Initialize OpenAI client"""
         # Set API key
-        self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        self.api_key = self.api_key or os.environ.get("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError("OpenAI API key not provided.")
 
         # Initialize OpenAI clients
         self.client = AsyncOpenAI(api_key=self.api_key)
+        self.logger.info(f"Initialized OpenAI client: version={self.client._version}, context size={self.context_size}")
 
     def _scale_token(self, tokens):
         """Multiply the size of maximum output tokens allowed."""

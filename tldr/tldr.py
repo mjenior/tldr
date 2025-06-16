@@ -3,7 +3,7 @@
 import asyncio
 
 from .core import TldrEngine
-from .utils import parse_tldr_arguments
+from .args import parse_tldr_arguments
 
 
 async def main():
@@ -41,9 +41,8 @@ async def main():
     if tldr.pdf is True:
         await tldr.save_to_pdf(final_text)
 
-    # Complete run with stats reporting
-    tldr.format_spending()
-    tldr.generate_token_report()
+    # End session 
+    await tldr.finish_session()
 
 
 def cli_main():

@@ -13,13 +13,20 @@ from deepeval.metrics import FaithfulnessMetric, GEval
 from deepeval.test_case import LLMTestCase
 
 from .openai import CompletionHandler
-from .utils import parse_eval_arguments
+from .args import parse_eval_arguments
 
 
 class SummaryEvaluator(CompletionHandler):
     """Attempt to objectively score the quality of a summary from a highly technical resource."""
 
-    def __init__(self, summary: str, content: str, testing: bool = True, verbose: bool = True, iterations: int = 5, **kwargs):
+    def __init__(
+        self, 
+        summary: str, 
+        content: str, 
+        testing: bool = True, 
+        verbose: bool = True, 
+        iterations: int = 5, 
+        **kwargs):
         """
         Initialize the SummaryEvaluator with the summary and content to evaluate.
         
@@ -44,12 +51,16 @@ class SummaryEvaluator(CompletionHandler):
         self.testing = testing
         self.verbose = verbose
 
-        # Set up logger and intermediate file output directory
-        self.setup_logging()
-        self._create_output_path()
+        # Start async session
+        self.initialize_session()
 
-        # Read in system instructions
-        self.read_system_instructions()
+    def initialize_session(self):
+        """Initialize a new session"""
+        self._generate_run_tag()
+        self._start_logging()
+        self._create_output_path()
+        self._read_system_instructions()
+        self._new_openai_client()
 
     async def evaluate(self) -> Dict:
         """Evaluate summary text of a paired reference"""
@@ -334,21 +345,19 @@ class SummaryScoring:
 async def main():
     """Main entry point for the tldr command"""
 
-    # Read in content and extend user query
+    # Evaluate summary with custom method
     evaluator1 = SummaryEvaluator(**parse_eval_arguments())
-    # evaluator2 = SummaryScoring()
-
-    # Evaluate summary
     review = await evaluator1.evaluate()
-    # scores = evaluator2.evaluate_summary(
-    #    original_article=evaluator1.content, generated_summary=review
-    # )
+    print("\n--- Summary Review ---", review, "\n")
 
-    # Print results
-    # print("\n--- Summary Evaluation Scores ---")
-    # print(scores)
-    print("\n--- Summary Review ---")
-    print(review, "\n")
+
+    # Evaluate summary with deepeval
+    #evaluator2 = SummaryScoring(**parse_eval_arguments())
+    #scores = evaluator2.evaluate_summary(
+    #    original_article=evaluator1.content, generated_summary=review
+    #)
+    #print("\n--- Summary Evaluation Scores ---", scores, "\n")
+    
 
 
 def cli_main():

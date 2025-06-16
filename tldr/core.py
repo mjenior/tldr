@@ -70,12 +70,8 @@ class TldrEngine(CompletionHandler):
         self.testing = testing
         self.random_seed = 42
 
-        # Set up logger and intermediate file output directory
-        self.setup_logging()
-        self._create_output_path()
-
-        # Read in system instructions
-        self.read_system_instructions()
+        # Start new seesion
+        self.initialize_session()
 
         # Read in files and contents
         if input_files is not None:
@@ -100,6 +96,20 @@ class TldrEngine(CompletionHandler):
             self.raw_context = None
             self.polish = False
             self.context_size = "low"
+
+    def initialize_session(self):
+        """Initialize a new session"""
+        self._generate_run_tag()
+        self._start_logging()
+        self._create_output_path()
+        self._read_system_instructions()
+        self._new_openai_client()
+
+    async def finish_session(self):
+        """Complete run with stats reporting"""
+        self.format_spending()
+        self.generate_token_report()
+        await self.client.close()
 
     async def format_context(self, new_context, label="formatted_context"):
         """Creates more concise, less repetative context message."""
@@ -142,7 +152,7 @@ class TldrEngine(CompletionHandler):
 
     async def refine_user_query(self):
         """Attempt to automatically improve user query for greater specificity"""
-        if self.query is None:
+        if self.query is None or self.query.strip() is None:
             self.query = ""
             return
 
