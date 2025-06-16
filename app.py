@@ -96,6 +96,9 @@ class TLDRApp:
         if 'polished' not in st.session_state:
             st.session_state.polished = ""
 
+        
+
+
     def process_files(self, files: List[Union[UploadedFile, BinaryIO]]) -> List[dict]:
         """Process uploaded files and return file info"""
         file_info = []
@@ -202,7 +205,7 @@ def main():
         # Tone
         tone = st.selectbox(
             "Tone",
-            ["default", "formal", "casual"],
+            ["stylized", "formal"],
             index=0
         )
         
@@ -210,6 +213,7 @@ def main():
         st.subheader("Options")
         recursive_search = st.checkbox("Recursive Search", value=False)
         web_search = st.checkbox("Enable Web Research", value=False)
+        polish = st.checkbox("Polish Final Summary", value=True)
         
         # Status
         st.divider()
@@ -235,13 +239,48 @@ def main():
             accept_multiple_files=True,
             key="file_uploader"
         )
+
+        # Context uploader
+        context_files = st.file_uploader(
+            "Upload context documents (PDF, TXT, DOCX)",
+            type=["pdf", "txt", "docx"],
+            accept_multiple_files=True,
+            key="context_uploader"
+        )            
         
         # Process uploaded files
         if uploaded_files:
             if st.button("Process Files"):
                 with st.spinner("Processing files..."):
                     st.session_state.documents = app.process_files(uploaded_files)
+                    if context_files:
+                        st.session_state.context_files = app.process_files(context_files)
+                        st.session_state.context = ...
+
+                    else:
+                        st.session_state.context  = ""
+
+
+                    # Prepare arguments for TldrEngine
+                    args = {
+                        'input_files': [f['path'] for f in st.session_state.documents],
+                        'query': query,
+                        'context_files': st.session_state.context,
+                        'polish': polish,
+                        'web_search': web_search
+                    }
+                    
+                    # Initialize TldrEngine
+                    st.session_state.tldr = TldrEngine(**args)
+
+
+                    # TODO: generate component summaries at upload
+
+
         
+
+
+
         # Display file list
         if st.session_state.documents:
             st.subheader("Uploaded Files")

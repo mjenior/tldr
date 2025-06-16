@@ -70,6 +70,14 @@ class TldrEngine(CompletionHandler):
         self.testing = testing
         self.random_seed = 42
 
+        # Check for testing mode
+        if self.testing:
+            self.web_search = False
+            self.query = None
+            self.raw_context = None
+            self.polish = False
+            self.context_size = "low"
+
         # Start new seesion
         self.initialize_session()
 
@@ -88,14 +96,6 @@ class TldrEngine(CompletionHandler):
 
         # Create local embeddings
         self.encode_text_to_vector_store()
-
-        # Check for testing mode
-        if self.testing:
-            self.web_search = False
-            self.query = None
-            self.raw_context = None
-            self.polish = False
-            self.context_size = "low"
 
     def initialize_session(self):
         """Initialize a new session"""
