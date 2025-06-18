@@ -155,13 +155,11 @@ async def main():
         st.title("⚙️ Settings")
         
         # Select options
+        #st.subheader("Options")
+        polish = st.checkbox("Polish Final Summary", value=True)
+        web_search = st.checkbox("Enable Web Research", value=True)
         tone = st.selectbox("Polished summary tone", ["stylized", "formal"], index=0)
         context_size = st.selectbox("Context size", ["small", "medium", "large"], index=1)
-        
-        # Boolean options
-        st.subheader("Options")
-        web_search = st.checkbox("Enable Web Research", value=True)
-        polish = st.checkbox("Polish Final Summary", value=True)
         
         # Status
         st.divider()

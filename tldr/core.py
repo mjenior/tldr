@@ -252,9 +252,10 @@ class TldrEngine(CompletionHandler):
 
     async def apply_research(self):
         """Identify knowledge gaps and use web search to fill them. Integrating new info into summary."""
+        if self.web_search is False:
+            return
+        
         self.logger.info("Applying research agent to knowledge gaps...")
-
-        # Identify gaps in understanding
         research_questions = await self.single_completion(
             message="\n\n".join(self.reference_summaries), prompt_type="background_gaps"
         )
@@ -268,8 +269,8 @@ class TldrEngine(CompletionHandler):
 
         # Also search for additional context missed in references
         for question in research_questions:
-            context = self.search_embedded_context(query=question, num_results=2)
-            research_context += "\n" + context
+            search_context = self.search_embedded_context(query=question, num_results=2)
+            research_context += "\n" + search_context
         
         # Update added context with new research
         await self.format_context(research_context, label="research_context")
