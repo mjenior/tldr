@@ -90,7 +90,7 @@ class TldrEngine(CompletionHandler):
         await self.refine_user_query()
         
         # Read in files and contents
-        if self.input_files is not None:
+        if self.input_files is not None and len(self.input_files) > 0:
             self.content = self.fetch_content(user_files=self.input_files, label="reference")
         else:
             self.content = self.fetch_content(
@@ -162,7 +162,7 @@ class TldrEngine(CompletionHandler):
 
     async def refine_user_query(self):
         """Attempt to automatically improve user query for greater specificity"""
-        if self.query is None or self.query.strip() is None:
+        if self.query is None or self.query.strip() is None or self.query.strip() == "":
             self.query = ""
             return
 

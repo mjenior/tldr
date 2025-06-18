@@ -197,7 +197,7 @@ async def main():
         
         # Process uploaded files
         if documents:
-            if st.button("Process Files"):
+            if st.button("Process Input"):
                 with st.spinner("Processing files..."):
                     st.session_state.documents = tldr_ui.process_files(documents)
                     if context:
@@ -206,6 +206,7 @@ async def main():
                         st.session_state.context = None
 
                     # Prepare arguments for TldrEngine
+                    print([f['path'] for f in st.session_state.documents])
                     args = {
                         'input_files': [f['path'] for f in st.session_state.documents],
                         'query': query,
