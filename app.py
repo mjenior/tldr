@@ -218,8 +218,9 @@ async def main():
                         'verbose': False,
                     }
                     
-                    # Initialize TldrEngine
+                    # Initialize TldrEngine and load content
                     tldr_ui.tldr = TldrEngine(**args)
+                    await tldr_ui.tldr.initialize_async_session()
                     
                     # Update the query with the refined version if available
                     if hasattr(tldr_ui.tldr, 'refined_query') and tldr_ui.tldr.refined_query:

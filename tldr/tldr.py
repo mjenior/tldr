@@ -9,23 +9,19 @@ from .args import parse_tldr_arguments
 async def main():
     """Main entry point for the tldr command"""
 
-    # Read in content and extend user query
+    # Initialize TldrEngine and load content
     tldr = TldrEngine(**parse_tldr_arguments())
+    await tldr.initialize_async_session()
 
-    # Extend user query
-    await tldr.refine_user_query()
-
-    # Query local embedded text vectors
-    if tldr.query != "":
-        context_search = await tldr.search_embedded_context(query=tldr.query)
-        await tldr.format_context(context_search, label="context_search")
+    # Extend user query if needed
+    if tldr.refine_query:
+        await tldr.refine_user_query()
 
     # Summarize documents
     await tldr.summarize_resources()
 
     # Use research agent to fill gaps
-    if tldr.web_search is True:
-        await tldr.apply_research()
+    await tldr.apply_research()
 
     # Synthesize content
     await tldr.integrate_summaries()

@@ -68,6 +68,9 @@ class TldrEngine(CompletionHandler):
         self.pdf = pdf
         self.testing = testing
         self.random_seed = 42
+        self.content = None
+        self.input_files = input_files
+        self.context_files = context_files
 
         # Check for testing mode
         if self.testing:
@@ -76,24 +79,31 @@ class TldrEngine(CompletionHandler):
             self.polish = False
             self.context_size = "low"
 
-        # Start new seesion
-        self.initialize_session()
+    async def initialize_async_session(self):
+        """Initialize the TldrEngine asynchronously"""
 
+        self._generate_run_tag()
+        self._start_logging()
+        self._create_output_path()
+        self._read_system_instructions()
+        self._new_openai_client()
+        await self.refine_user_query()
+        
         # Read in files and contents
-        if input_files is not None:
-            self.content = self.fetch_content(user_files=input_files, label="reference")
+        if self.input_files is not None:
+            self.content = self.fetch_content(user_files=self.input_files, label="reference")
         else:
             self.content = self.fetch_content(
                 recursive=self.recursive_search, label="reference"
             )
 
         # Fetch and reformat additional context if provided
-        if context_files is not None:
-            all_context = self.fetch_content(user_files=context_files, label="context")
-            asyncio.run(self.format_context("\n".join(all_context), label="context_files"))
+        if self.context_files is not None:
+            all_context = self.fetch_content(user_files=self.context_files, label="context")
+            await self.format_context("".join(all_context), label="context_files")
 
         # Create embeddings
-        asyncio.run(self.create_embeddings())
+        await self.create_embeddings()
 
     async def create_embeddings(self):
         """Create local embeddings for reference documents"""
@@ -104,15 +114,6 @@ class TldrEngine(CompletionHandler):
         # Search for added initial context
         context_search = await self.search_embedded_context(query=self.query)
         await self.format_context(context_search, label="context_search")
-
-    async def initialize_session(self):
-        """Initialize a new session"""
-        self._generate_run_tag()
-        self._start_logging()
-        self._create_output_path()
-        self._read_system_instructions()
-        self._new_openai_client()
-        await self.refine_user_query()
 
     async def finish_session(self):
         """Complete run with stats reporting"""
