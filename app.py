@@ -135,14 +135,14 @@ class TLDRApp:
         finally:
             self.processing = False
 
-    def document_uploader(self, header: str):
+    def document_uploader(self, header: str, key: str):
         """Document uploader"""
         st.subheader(header)
         uploaded_files = st.file_uploader(
             "Upload documents (PDF, TXT, DOCX)",
             type=["pdf", "txt", "docx"],
             accept_multiple_files=True,
-            key="file_uploader"
+            key=key
         )
         return uploaded_files
 
@@ -192,8 +192,8 @@ async def main():
             st.session_state.refined_query = query
         
         # Upload files
-        documents = tldr_ui.document_uploader("Target Documents")
-        context = tldr_ui.document_uploader("Additional Context")
+        documents = tldr_ui.document_uploader("Target Documents", "document_uploader")
+        context = tldr_ui.document_uploader("Additional Context", "context_uploader")
         
         # Process uploaded files
         if documents:
@@ -209,13 +209,12 @@ async def main():
                     args = {
                         'input_files': [f['path'] for f in st.session_state.documents],
                         'query': query,
-                        'context_files': [f['path'] for f in st.session_state.context],
+                        'context_files': [f['path'] for f in st.session_state.context] if st.session_state.context else None,
                         'polish': polish,
                         'web_search': web_search,
                         'context_size': context_size,
                         'tone': tone,
                         'pdf': False,
-                        'random_seed': 42,
                         'verbose': False,
                     }
                     
