@@ -287,7 +287,7 @@ async def main():
             if st.button("Integrate", disabled=not st.session_state.reference_summaries or tldr_ui.processing):
                 asyncio.run(tldr_ui.integrate_summaries())
         with col3:
-            if st.button("Polish", disabled=not st.session_state.executive_summary or tldr_ui.processing):
+            if st.button("Polish", disabled=not st.session_state.executive or tldr_ui.processing):
                 asyncio.run(tldr_ui.polish_response())
 
     with col2:
@@ -300,7 +300,7 @@ async def main():
         with tab1:
             executive = st.text_area(
                 "Summaries",
-                value=st.session_state.executive_summary,
+                value=st.session_state.executive,
                 height=400,
                 key="executive_output"
             )
