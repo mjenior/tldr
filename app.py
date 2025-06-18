@@ -93,13 +93,13 @@ class TLDRApp:
         if 'documents' not in st.session_state:
             st.session_state.documents = []
         if 'context' not in st.session_state:
-            st.session_state.context = []
-        if 'summary' not in st.session_state:
-            st.session_state.summary = ""
+            st.session_state.context = None
         if 'executive' not in st.session_state:
             st.session_state.executive = ""
         if 'polished' not in st.session_state:
             st.session_state.polished = ""
+        if 'reference_summaries' not in st.session_state:
+            st.session_state.reference_summaries = []
 
         
 
@@ -250,12 +250,12 @@ async def main():
                         col1, col2 = st.columns([4, 1])
                         with col1:
                             # Make file name clickable for selection
-                            if st.button(doc['name'], key=f"select_{doc['name']}", use_container_width=True):
+                            if st.button(doc['path'], key=f"select_{doc['path']}", use_container_width=True):
                                 st.session_state.selected_doc = doc
                         with col2:
-                            if st.button("🗑️", key=f"del_{doc['name']}"):
-                                st.session_state.documents = [d for d in st.session_state.documents if d['name'] != doc['name']]
-                                if st.session_state.selected_doc and st.session_state.selected_doc['name'] == doc['name']:
+                            if st.button("🗑️", key=f"del_{doc['path']}"):
+                                st.session_state.documents = [d for d in st.session_state.documents if d['path'] != doc['path']]
+                                if st.session_state.selected_doc and st.session_state.selected_doc['path'] == doc['path']:
                                     st.session_state.selected_doc = None
                                 st.rerun()
             
@@ -278,34 +278,31 @@ async def main():
                     with st.container():
                         st.text(summary)
 
-        
-        
-        
         # Action buttons
         col1, col2, col3 = st.columns(3)
         with col1:
-            if st.button("Generate Summary", disabled=not st.session_state.documents or tldr_ui.processing):
-                asyncio.run(tldr_ui.generate_summary(query))
-        with col2:
-            if st.button("Polish", disabled=not st.session_state.summary or tldr_ui.processing):
-                asyncio.run(tldr_ui.generate_summary(query, polish=True))
-        with col3:
             if st.button("Research", disabled=tldr_ui.processing):
-                asyncio.run(tldr_ui.generate_summary(query, web_search=True))
-    
+                asyncio.run(tldr_ui.apply_research())
+        with col2:
+            if st.button("Integrate", disabled=not st.session_state.reference_summaries or tldr_ui.processing):
+                asyncio.run(tldr_ui.integrate_summaries())
+        with col3:
+            if st.button("Polish", disabled=not st.session_state.executive_summary or tldr_ui.processing):
+                asyncio.run(tldr_ui.polish_response())
+
     with col2:
-        st.subheader("Summary")
+        st.subheader("Summaries")
         
         # Summary tabs
         tab1, tab2 = st.tabs(["Current", "Polished"])
         
         # Summary content
         with tab1:
-            summary = st.text_area(
-                "Summary",
-                value=st.session_state.summary,
+            executive = st.text_area(
+                "Summaries",
+                value=st.session_state.executive_summary,
                 height=400,
-                key="summary_output"
+                key="executive_output"
             )
         
         with tab2:
@@ -323,7 +320,7 @@ async def main():
         btn_container = st.container()
         
         # Use f-strings for button layout with proper escaping
-        disabled_attr = 'disabled' if not st.session_state.summary else ''
+        disabled_attr = 'disabled' if not st.session_state.reference_summaries else ''
         btn_html = f"""
         <style>
             .button-container {{
@@ -355,16 +352,16 @@ async def main():
         # Add the actual buttons (invisible, just for the click handlers)
         if st.button("📋 Copy to Clipboard", 
                     key="copy_btn_hidden", 
-                    disabled=not st.session_state.summary,
+                    disabled=not st.session_state.reference_summaries,
                     help="Copy summary to clipboard"):
-            st.session_state.clipboard = st.session_state.summary
+            st.session_state.clipboard = st.session_state.reference_summaries
             st.toast("Copied to clipboard!")
         
         if st.button("💾 Save as PDF",
                    key="pdf_btn_hidden",
-                   disabled=not st.session_state.summary,
+                   disabled=not st.session_state.polished,
                    help="Save summary as PDF"):
-            # TODO: Implement PDF saving
+            await tldr.save_to_pdf(st.session_state.polished)
             st.toast("PDF saved!")
     
     # Status bar
