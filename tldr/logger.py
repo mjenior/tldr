@@ -57,6 +57,7 @@ class LogHandler(FileHandler):
         self.logger.addHandler(handler)
 
         # File handler
+        self.logger.info(f"Intermediate files being written to: {self.output_directory}")
         log_file = os.path.join(self.output_directory, f"{self.run_tag}.log")
         file_handler = logging.FileHandler(log_file)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")

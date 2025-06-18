@@ -83,8 +83,8 @@ class TldrEngine(CompletionHandler):
         """Initialize the TldrEngine asynchronously"""
 
         self._generate_run_tag()
-        self._start_logging()
         self._create_output_path()
+        self._start_logging()
         self._read_system_instructions()
         self._new_openai_client()
         await self.refine_user_query()

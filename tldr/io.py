@@ -25,7 +25,6 @@ class FileHandler:
         """Set up where to write intermediate files"""
         self.output_directory = f"{self.run_tag}.files"
         os.makedirs(self.output_directory, exist_ok=True)
-        self.logger.info(f"Intermediate files being written to: {self.output_directory}")
 
     def fetch_content(
         self,
