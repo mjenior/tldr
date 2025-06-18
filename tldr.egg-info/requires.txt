@@ -1,0 +1,17 @@
+openai>=1.78.1
+python-docx>=1.0.0
+pypdf2>=2.0.0
+beautifulsoup4>=4.12.2
+pillow>=10.2.0
+pyyaml>=6.0.1
+jsonschema>=4.21.1
+reportlab>=4.0.8
+black>=24.1.1
+langchain_community>=0.1.1
+langchain_openai>=0.1.1
+langchain>=0.1.1
+scipy>=1.9.0
+numpy>=1.26.3
+deepeval>=0.1.1
+streamlit>=1.42.0
+faiss-cpu>=1.7.4
