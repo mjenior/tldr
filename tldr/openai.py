@@ -53,10 +53,22 @@ class CompletionHandler(ResearchAgent):
         else:
             tools = None
 
+        # Update query if needed
+        if self.query is not None and self.query.strip() != "":
+            query = f"Ensure that addressing the following user query is a central theme of your response:\n{self.query}\n\n"
+        else:
+            query = ""
+
+        # Update added context if needed
+        if self.added_context is not None and self.added_context.strip() != "":
+            added_context = f"\n\nHere is additional context to consider when generating your response:\n{self.added_context}\n\n"
+        else:
+            added_context = ""
+
         # Assemble messages object, adding query and context information
         messages = [
-            {"role": "system", "content": self.query + instructions},
-            {"role": "user", "content": message + self.added_context},
+            {"role": "system", "content": query + instructions},
+            {"role": "user", "content": message + added_context},
         ]
 
         # Run completion query

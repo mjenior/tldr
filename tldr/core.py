@@ -65,7 +65,6 @@ class TldrEngine(CompletionHandler):
         self.added_context = ""
         self.polish = polish
         self.tone = tone
-        self.raw_context = None
         self.pdf = pdf
         self.testing = testing
         self.random_seed = 42
@@ -74,7 +73,6 @@ class TldrEngine(CompletionHandler):
         if self.testing:
             self.web_search = False
             self.query = None
-            self.raw_context = None
             self.polish = False
             self.context_size = "low"
 
@@ -89,21 +87,32 @@ class TldrEngine(CompletionHandler):
                 recursive=self.recursive_search, label="reference"
             )
 
-        # Fetch additional context if provided
+        # Fetch and reformat additional context if provided
         if context_files is not None:
             all_context = self.fetch_content(user_files=context_files, label="context")
-            self.raw_context = "\n".join(all_context)
+            asyncio.run(self.format_context("\n".join(all_context), label="context_files"))
+
+        # Create embeddings
+        asyncio.run(self.create_embeddings())
+
+    async def create_embeddings(self):
+        """Create local embeddings for reference documents"""
 
         # Create local embeddings
         self.encode_text_to_vector_store()
 
-    def initialize_session(self):
+        # Search for added initial context
+        context_search = await self.search_embedded_context(query=self.query)
+        await self.format_context(context_search, label="context_search")
+
+    async def initialize_session(self):
         """Initialize a new session"""
         self._generate_run_tag()
         self._start_logging()
         self._create_output_path()
         self._read_system_instructions()
         self._new_openai_client()
+        await self.refine_user_query()
 
     async def finish_session(self):
         """Complete run with stats reporting"""
@@ -166,11 +175,9 @@ class TldrEngine(CompletionHandler):
         )
 
         # Handle output text
-        refined_query = refined_query["response"]
-        result = self.save_response_text(refined_query, label="refined_query")
+        self.query = refined_query["response"]
+        result = self.save_response_text(self.query, label="refined_query")
         self.logger.info(result)
-
-        self.query = f"Ensure that addressing the following user query is the central theme of your response:\n{refined_query}\n\n"
 
     async def summarize_resources(self):
         """Generate component and synthesis summary text"""
