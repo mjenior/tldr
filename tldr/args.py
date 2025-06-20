@@ -18,7 +18,16 @@ import argparse
 
 
 def parse_tldr_arguments():
-    """Parses command-line arguments"""
+    """Parse command-line arguments for the TLDR application.
+
+    This function sets up and parses the command-line arguments that control
+    the behavior of the application. It defines options for specifying the
+    user query, input files, context files, and various other settings.
+
+    Returns:
+        argparse.Namespace: An object containing the parsed command-line
+            arguments as attributes.
+    """
     parser = argparse.ArgumentParser(
         description="TLDR: Summarize text files based on user arguments."
     )
@@ -49,8 +58,7 @@ def parse_tldr_arguments():
     parser.add_argument(
         "-r",
         "--recursive_search",
-        type=bool,
-        default=False,
+        action="store_true",
         help="Recursively search input directories",
     )
     parser.add_argument(
@@ -70,8 +78,7 @@ def parse_tldr_arguments():
     )
     parser.add_argument(
         "--testing",
-        type=bool,
-        default=False,
+        action="store_true",
         help="Testing mode",
     )
     parser.add_argument(
@@ -97,11 +104,21 @@ def parse_tldr_arguments():
     parser.add_argument(
         "-v", "--verbose", type=bool, default=True, help="Verbose stdout reporting"
     )
-    return vars(parser.parse_args())
-
+    return parser.parse_args()
+    
 
 def parse_eval_arguments():
-    """Parses command-line arguments"""
+    """Parse command-line arguments for the evaluation functionality.
+
+    This function sets up and parses the command-line arguments that control
+    the behavior of the evaluation functionality. It defines options for
+    specifying the content to evaluate, the summary to evaluate, the model to
+    use for evaluation, and the number of iterations to run.
+
+    Returns:
+        argparse.Namespace: An object containing the parsed command-line
+            arguments as attributes.
+    """
     parser = argparse.ArgumentParser(
         description="Evaluate a summary against the target content."
     )
@@ -142,4 +159,4 @@ def parse_eval_arguments():
         help="Verbose stdout reporting",
     )
 
-    return vars(parser.parse_args())
+    return parser.parse_args()

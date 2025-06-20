@@ -5,11 +5,29 @@ from scipy.special import logsumexp
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 
 from .logger import LogHandler
 
 
 class ResearchAgent(LogHandler):
+    """
+    A class for performing research tasks, including document retrieval and ranking.
+
+    This agent is designed to find the most relevant and diverse set of documents
+    from a given corpus based on a user query. It uses techniques like Maximal
+    Marginal Relevance (MMR) to balance relevance and diversity in the search
+    results.
+
+    Attributes:
+        num_results (int): The default number of documents to return.
+        oversampling_factor (int): A factor to determine how many initial
+            candidates to retrieve before ranking.
+        div_weight (float): The weight given to diversity in the MMR calculation.
+        rel_weight (float): The weight given to relevance in the MMR calculation.
+        sigma (float): A smoothing parameter for the probability distribution
+            used in the ranking algorithm.
+    """
     def __init__(
         self,
         num_results: int = 5,
@@ -17,6 +35,7 @@ class ResearchAgent(LogHandler):
         div_weight: float = 1.0,
         rel_weight: float = 1.0,
         sigma: float = 0.1,
+        platform: str = "openai",
     ):
         super().__init__()
         """
@@ -28,17 +47,20 @@ class ResearchAgent(LogHandler):
             div_weight: Default weight for diversity.
             rel_weight: Default weight for relevance.
             sigma: Default smoothing parameter for probability distribution.
+            platform: Default platform for embeddings (OpenAI vs Gemini)
         """
         self.num_results = num_results
         self.oversampling_factor = oversampling_factor
         self.div_weight = div_weight
         self.rel_weight = rel_weight
         self.sigma = sigma
+        self.platform = platform
 
     def encode_text_to_vector_store(
         self,
         chunk_size: int = 1000,
         chunk_overlap: int = 200,
+        platform: str = "openai",
     ) -> FAISS:
         """
         Encodes a string into a FAISS vector store using OpenAI embeddings.
@@ -64,7 +86,7 @@ class ResearchAgent(LogHandler):
                     doc.metadata = {}
                 doc.metadata["relevance_score"] = 1.0
 
-            embeddings = OpenAIEmbeddings()
+            embeddings = OpenAIEmbeddings() if platform == "openai" else GoogleGenerativeAIEmbeddings()
             vector_store = FAISS.from_documents(docs, embeddings)
             self.check_vector_store(vector_store)
 

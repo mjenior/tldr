@@ -1,3 +1,0 @@
-[console_scripts]
-tldr = tldr.tldr:cli_main
-tldr_eval = tldr.eval:cli_main

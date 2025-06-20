@@ -8,7 +8,28 @@ from .io import FileHandler
 
 class LogHandler(FileHandler):
     """
-    Tracker for token useage and session cost
+    Manages logging and tracks API usage costs for the application.
+
+    This class is responsible for two main things:
+    1.  Configuring the application's logger to provide detailed output.
+    2.  Tracking the number of tokens used and the associated costs for
+        different OpenAI models during a session.
+
+    It inherits from `FileHandler` to leverage file I/O capabilities.
+
+    Attributes:
+        model (str): The default model for which to track usage.
+        verbose (bool): A flag to control the verbosity of logging.
+        model_rates_perM (dict): A dictionary mapping model names to their
+            cost per million tokens for input and output.
+        model_tokens (dict): A dictionary tracking the number of input and
+            output tokens used per model.
+        model_spend (dict): A dictionary tracking the cost of input and
+            output tokens used per model.
+        session_spend (dict): A dictionary tracking the total input and
+            output cost for the current session.
+        total_spend (float): The total cost for the current session.
+        logger (logging.Logger): The logger instance for the application.
     """
 
     def __init__(self):

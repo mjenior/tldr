@@ -1,8 +1,14 @@
+
+# UNDER CONSTRUCTION
+
+#chat = client.aio.chats.create(model='gemini-2.0-flash-001')
+#response = await chat.send_message('tell me a story')
+
 import os
 import asyncio
 from tenacity import retry, stop_after_attempt, wait_random_exponential, retry_if_exception_type
 
-from openai import AsyncOpenAI, RateLimitError
+from openai import AsyncOpenAI
 
 from .search import ResearchAgent
 
@@ -32,9 +38,9 @@ class CompletionHandler(ResearchAgent):
     def _new_openai_client(self):
         """Initialize OpenAI client"""
         # Set API key
-        self.api_key = self.api_key or os.environ.get("OPENAI_API_KEY")
+        self.api_key = self.api_key or os.environ.get("GEMINI_API_KEY")
         if not self.api_key:
-            raise ValueError("OpenAI API key not provided.")
+            raise ValueError("Gemini API key not provided.")
 
         # Initialize OpenAI clients
         self.client = AsyncOpenAI(api_key=self.api_key)
@@ -47,7 +53,7 @@ class CompletionHandler(ResearchAgent):
         return int(tokens * factor)
 
 
-    def assemble_messages(self, message, prompt_type, web_search=True, context_size="medium"):
+    def assemble_messages(self, message, prompt_type, web_search=True):
         """Assemble messages object, adding query and context information."""
         instructions_dict = self.instructions[prompt_type]
         instructions = instructions_dict["system_instruction"]
@@ -61,12 +67,12 @@ class CompletionHandler(ResearchAgent):
         # Model-specific tools and reasoning
         if web_search is True:
             tools = [
-                {"type": "web_search_preview", "search_context_size": context_size}
+                {"type": "web_search_preview", "search_context_size": self.context_size}
             ]
         else:
             tools = None
         if model == "o4-mini":
-            reasoning = {"effort": context_size}
+            reasoning = {"effort": self.context_size}
         else:
             reasoning = None
 
@@ -102,13 +108,13 @@ class CompletionHandler(ResearchAgent):
     @retry(
         wait=wait_random_exponential(min=1, max=60),
         stop=stop_after_attempt(6),
-        retry=retry_if_exception_type(RateLimitError)
+        retry=retry_if_exception_type(openai.error.RateLimitError)
     )
-    async def _perform_api_call(self, prompt, prompt_type, search, context_size, **kwargs):
+    async def _perform_api_call(self, prompt, prompt_type, tries, search, **kwargs):
         """
         Helper function to encapsulate the actual API call logic.
         """
-        call_params = self.assemble_messages(prompt, prompt_type, search, context_size)
+        call_params = self.assemble_messages(prompt, prompt_type, search)
 
         # Run completion query
         response = await self.client.responses.create(**call_params, **kwargs)
@@ -143,21 +149,21 @@ class CompletionHandler(ResearchAgent):
 
         return sleep_time
 
-    async def single_completion(self, prompt, prompt_type, web_search=True, context_size="medium", **kwargs):
+    async def single_completion(self, prompt, prompt_type, max_tries=9, web_search=True, **kwargs):
         """
         Initialize and submit a single chat completion request with built-in retry logic.
         """
         return await self._perform_api_call(
             prompt,
             prompt_type,
+            tries=max_tries,
             search=web_search,
-            context_size=context_size,
             **kwargs
         )
 
-    async def multi_completions(self, message_list, context_size="medium", **kwargs):
+    async def multi_completions(self, message_list, max_tries=9, **kwargs):
         """
-        Runs multiple completion calls concurrently using asyncio.gather, with retry on 429.
+        Runs multiple single_completion calls concurrently using asyncio.gather, with retry on 429.
         """
         # Parse all of the content found
         coroutine_tasks = []
@@ -165,13 +171,14 @@ class CompletionHandler(ResearchAgent):
 
             # Determine type of submission
             source_type = await self._perform_api_call(
-                message, "file_type", **kwargs
+                message, "file_type", max_tries=max_tries, **kwargs
             )
 
             # Generate summary task
             task = self._perform_api_call(
-                message, source_type["response"], context_size=context_size, **kwargs
+                message, source_type["response"], max_tries=max_tries, **kwargs
             )
             coroutine_tasks.append(task)
 
         return await asyncio.gather(*coroutine_tasks, return_exceptions=False)
+

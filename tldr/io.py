@@ -15,6 +15,22 @@ from reportlab.lib.units import inch
 
 
 class FileHandler:
+    """
+    Handles all file system operations for the application.
+
+    This class is responsible for finding, reading, and writing files in various
+    formats, including text, PDF, DOCX, and YAML. It also manages the creation
+    of timestamped output directories for each run, ensuring that intermediate
+    and final files are stored in an organized manner.
+
+    Attributes:
+        timestamp (str): A timestamp string generated for the current run,
+            e.g., '20231027_103000'.
+        run_tag (str): A unique identifier for the current run, combining a
+            prefix with the timestamp, e.g., 'tldr.20231027_103000'.
+        output_directory (str): The path to the directory where output files
+            for the current run are stored.
+    """
 
     def _generate_run_tag(self):
         """Generate a timestamp string (e.g., 20231027_103000)"""

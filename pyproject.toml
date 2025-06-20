@@ -23,6 +23,8 @@ dependencies = [
     "deepeval>=0.1.1",
     "streamlit>=1.42.0",
     "faiss-cpu>=1.7.4",
+    "tenacity>=8.2.3",
+    "langchain_google_genai>=0.1.1",
 ]
 
 [project.urls]

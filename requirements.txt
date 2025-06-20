@@ -10,3 +10,4 @@ scipy>=1.7.0
 openai>=0.27.0
 streamlit>=1.42.0
 faiss-cpu>=1.7.4
+tenacity>=8.2.3

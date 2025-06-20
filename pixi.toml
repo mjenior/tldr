@@ -11,6 +11,7 @@ wheel = "*"
 faiss = "*"
 langchain = "*"
 langchain-openai = "*"
+langchain-google-genai = "*"
 langchain-community = "*"
 
 [pypi-dependencies]
@@ -29,3 +30,5 @@ scipy = "*"
 numpy = "*"
 deepeval = "*"
 streamlit = "*"
+tenacity = "*"
+
