@@ -28,6 +28,7 @@ class ResearchAgent(LogHandler):
         sigma (float): A smoothing parameter for the probability distribution
             used in the ranking algorithm.
     """
+
     def __init__(
         self,
         num_results: int = 5,
@@ -86,7 +87,11 @@ class ResearchAgent(LogHandler):
                     doc.metadata = {}
                 doc.metadata["relevance_score"] = 1.0
 
-            embeddings = OpenAIEmbeddings() if platform == "openai" else GoogleGenerativeAIEmbeddings()
+            embeddings = (
+                OpenAIEmbeddings()
+                if platform == "openai"
+                else GoogleGenerativeAIEmbeddings()
+            )
             vector_store = FAISS.from_documents(docs, embeddings)
             self.check_vector_store(vector_store)
 
@@ -192,9 +197,7 @@ class ResearchAgent(LogHandler):
         # Return the selected documents and their scores
         return dict(zip(selected_documents, selection_scores))
 
-    def search_embedded_context(
-        self, query: str, num_results: int = 5
-    ) -> Dict[str, float]:
+    def search_embedded_context(self, query: str, num_results: int = 5) -> str:
         """
         Retrieve most relevant and diverse context items for a query.
         Uses default parameters from __init__ if not provided.
@@ -240,6 +243,8 @@ class ResearchAgent(LogHandler):
             self.sigma,
         )
         self.logger.info(
-            "Average relevance score: {}".format(round(np.mean(list(result.values())), 3))
+            "Average relevance score: {}".format(
+                round(np.mean(list(result.values())), 3)
+            )
         )
         return "\n".join([x.strip() for x in list(result.keys())])

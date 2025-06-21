@@ -46,14 +46,14 @@ def parse_tldr_arguments():
         "--refine_query",
         type=bool,
         default=True,
-        help="Automatically refine and improve the user query"
+        help="Automatically refine and improve the user query",
     )
     parser.add_argument(
         "-c",
         "--context_files",
         default=None,
         nargs="+",
-        help="Optional: Additional context files to include in the summary"
+        help="Optional: Additional context files to include in the summary",
     )
     parser.add_argument(
         "-r",
@@ -91,8 +91,8 @@ def parse_tldr_arguments():
     parser.add_argument(
         "-t",
         "--tone",
-        choices=['stylized', 'formal'],
-        default='stylized',
+        choices=["stylized", "formal"],
+        default="stylized",
         help="Tone of polishing to apply to the final response. Options: 'stylized' (default) or 'formal'.",
     )
     parser.add_argument(
@@ -104,8 +104,14 @@ def parse_tldr_arguments():
     parser.add_argument(
         "-v", "--verbose", type=bool, default=True, help="Verbose stdout reporting"
     )
+    parser.add_argument(
+        "--api_key",
+        type=str,
+        default=None,
+        help="API key for OpenAI",
+    )
     return parser.parse_args()
-    
+
 
 def parse_eval_arguments():
     """Parse command-line arguments for the evaluation functionality.

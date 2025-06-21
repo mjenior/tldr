@@ -29,65 +29,53 @@ from .core import TldrEngine
 from .args import parse_tldr_arguments
 
 
-async def main():
+async def pipeline():
     """Main entry point for the tldr command"""
 
     # Initialize TldrEngine
     args = parse_tldr_arguments()
     tldr = TldrEngine(
-        verbose = args.verbose,
-        api_key = args.api_key,
+        verbose=args.verbose,
+        api_key=args.api_key,
     )
 
     # Optional: Refine user query
     if args.refine_query is True and args.testing is False:
-        await tldr.refine_user_query(
-            query=args.query,
-            context_size=args.context_size
-        )
+        await tldr.refine_user_query(query=args.query, context_size=args.context_size)
 
     # Establish context
     await tldr.load_all_content(
         input_files=args.input_files,
         context_files=args.context_files,
         context_size=args.context_size,
-        recursive_search=args.recursive_search
+        recursive=args.recursive_search,
     )
 
     # Summarize documents
-    await tldr.summarize_resources(
-        context_size=args.context_size
-    )
+    await tldr.summarize_resources(context_size=args.context_size)
 
     # Optional: Use research agent to fill gaps
     if args.web_search is True and args.testing is False:
-        await tldr.apply_research(
-            context_size=args.context_size
-        )
+        await tldr.apply_research(context_size=args.context_size)
 
     # Synthesize content
-    await tldr.integrate_summaries(
-        context_size=args.context_size
-    )
+    await tldr.integrate_summaries(context_size=args.context_size)
 
     # Optional: Rewrite for response type and tone
     if args.polish is True and args.testing is False:
-        await tldr.polish_response(
-            tone=args.tone,
-            context_size=args.context_size
-        )
+        await tldr.polish_response(tone=args.tone, context_size=args.context_size)
 
     # Optional: Save final context
     if args.pdf is True and args.testing is False:
         await tldr.save_to_pdf(polished=args.polish)
 
-    # End session 
+    # End session
     await tldr.finish_session()
 
 
 def run_tldr():
     """Command-line entry point to run the tldr script."""
-    asyncio.run(main())
+    asyncio.run(pipeline())
 
 
 if __name__ == "__main__":

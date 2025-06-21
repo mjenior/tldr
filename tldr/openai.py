@@ -1,6 +1,11 @@
 import os
 import asyncio
-from tenacity import retry, stop_after_attempt, wait_random_exponential, retry_if_exception_type
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_random_exponential,
+    retry_if_exception_type,
+)
 
 from openai import AsyncOpenAI, RateLimitError
 
@@ -38,7 +43,9 @@ class CompletionHandler(ResearchAgent):
 
         # Initialize OpenAI clients
         self.client = AsyncOpenAI(api_key=self.api_key)
-        self.logger.info(f"Initialized OpenAI client: version={self.client._version}, context size={self.context_size}")
+        self.logger.info(
+            f"Initialized OpenAI client: version={self.client._version}, context size={self.context_size}"
+        )
 
     def _scale_token(self, tokens):
         """Multiply the size of maximum output tokens allowed."""
@@ -46,8 +53,9 @@ class CompletionHandler(ResearchAgent):
         factor = scaling[self.context_size]
         return int(tokens * factor)
 
-
-    def assemble_messages(self, message, prompt_type, web_search=True, context_size="medium"):
+    def assemble_messages(
+        self, message, prompt_type, web_search=True, context_size="medium"
+    ):
         """Assemble messages object, adding query and context information."""
         instructions_dict = self.instructions[prompt_type]
         instructions = instructions_dict["system_instruction"]
@@ -102,13 +110,17 @@ class CompletionHandler(ResearchAgent):
     @retry(
         wait=wait_random_exponential(min=1, max=60),
         stop=stop_after_attempt(6),
-        retry=retry_if_exception_type(RateLimitError)
+        retry=retry_if_exception_type(RateLimitError),
     )
-    async def _perform_api_call(self, prompt, prompt_type, search, context_size, **kwargs):
+    async def perform_api_call(
+        self, prompt, prompt_type, web_search=False, context_size="medium", **kwargs
+    ):
         """
         Helper function to encapsulate the actual API call logic.
         """
-        call_params = self.assemble_messages(prompt, prompt_type, search, context_size)
+        call_params = self.assemble_messages(
+            prompt, prompt_type, web_search, context_size
+        )
 
         # Run completion query
         response = await self.client.responses.create(**call_params, **kwargs)
@@ -123,7 +135,7 @@ class CompletionHandler(ResearchAgent):
         self.model_tokens[model]["output"] += response.usage.output_tokens
         self.update_spending()
         self.update_session_totals()
-    
+
     async def _extract_sleep_time(self, error_message, adjust=0.5):
         """
         Extract the sleep time from the error message.
@@ -136,26 +148,18 @@ class CompletionHandler(ResearchAgent):
             The sleep time in seconds.
         """
         try:
-            sleep_time = float(error_message.split("Please try again in ")[1].split(".")[0])
+            sleep_time = float(
+                error_message.split("Please try again in ")[1].split(".")[0]
+            )
             sleep_time += adjust
         except Exception as e:
             raise e
 
         return sleep_time
 
-    async def single_completion(self, prompt, prompt_type, web_search=True, context_size="medium", **kwargs):
-        """
-        Initialize and submit a single chat completion request with built-in retry logic.
-        """
-        return await self._perform_api_call(
-            prompt,
-            prompt_type,
-            search=web_search,
-            context_size=context_size,
-            **kwargs
-        )
-
-    async def multi_completions(self, message_list, context_size="medium", **kwargs):
+    async def multi_completions(
+        self, message_list, context_size="medium", web_search=False, **kwargs
+    ):
         """
         Runs multiple completion calls concurrently using asyncio.gather, with retry on 429.
         """
@@ -164,13 +168,25 @@ class CompletionHandler(ResearchAgent):
         for message in message_list:
 
             # Determine type of submission
-            source_type = await self._perform_api_call(
-                message, "file_type", **kwargs
-            )
+            if web_search is False:
+                source_type = await self.perform_api_call(
+                    prompt=message,
+                    prompt_type="file_type",
+                    web_search=False,
+                    context_size=context_size,
+                    **kwargs,
+                )
+                prompt_type = source_type["response"]
+            else:
+                prompt_type = "web_search"
 
             # Generate summary task
-            task = self._perform_api_call(
-                message, source_type["response"], context_size=context_size, **kwargs
+            task = self.perform_api_call(
+                prompt=message,
+                prompt_type=prompt_type,
+                web_search=web_search,
+                context_size=context_size,
+                **kwargs,
             )
             coroutine_tasks.append(task)
 

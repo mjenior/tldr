@@ -9,27 +9,19 @@ help:
 
 # -----------------------------------------------------------------------------
 
-patch:
-	bumpversion --current-version ${VERSION} patch --allow-dirty --no-tag --no-commit
-
-minor:
-	bumpversion --current-version ${VERSION} minor --allow-dirty --no-tag --no-commit
-
-major:
-	bumpversion --current-version ${VERSION} major --allow-dirty --no-tag --no-commit
+.PHONY: patch minor major
+patch minor major:
+	bumpversion --current-version ${VERSION} $@ --allow-dirty --no-tag --no-commit
 
 format:
 	pixi run black tldr/*.py
+	pixi run black ui.py
 
-build: clean
+build: format
 	pixi lock
 	pixi run python -m build
-	rm -rf build tldr.egg-info
 
-install:
+install: build
 	pixi install
-	pip install -e .
-	rm -rf build tldr.egg-info
-
-clean: 
+	pixi run pip install -e .
 	rm -rf dist build tldr.egg-info

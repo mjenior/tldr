@@ -1,12 +1,16 @@
-
 # UNDER CONSTRUCTION
 
-#chat = client.aio.chats.create(model='gemini-2.0-flash-001')
-#response = await chat.send_message('tell me a story')
+# chat = client.aio.chats.create(model='gemini-2.0-flash-001')
+# response = await chat.send_message('tell me a story')
 
 import os
 import asyncio
-from tenacity import retry, stop_after_attempt, wait_random_exponential, retry_if_exception_type
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_random_exponential,
+    retry_if_exception_type,
+)
 
 from openai import AsyncOpenAI
 
@@ -44,14 +48,15 @@ class CompletionHandler(ResearchAgent):
 
         # Initialize OpenAI clients
         self.client = AsyncOpenAI(api_key=self.api_key)
-        self.logger.info(f"Initialized OpenAI client: version={self.client._version}, context size={self.context_size}")
+        self.logger.info(
+            f"Initialized OpenAI client: version={self.client._version}, context size={self.context_size}"
+        )
 
     def _scale_token(self, tokens):
         """Multiply the size of maximum output tokens allowed."""
         scaling = {"low": 0.5, "medium": 1.0, "high": 1.5}
         factor = scaling[self.context_size]
         return int(tokens * factor)
-
 
     def assemble_messages(self, message, prompt_type, web_search=True):
         """Assemble messages object, adding query and context information."""
@@ -108,7 +113,7 @@ class CompletionHandler(ResearchAgent):
     @retry(
         wait=wait_random_exponential(min=1, max=60),
         stop=stop_after_attempt(6),
-        retry=retry_if_exception_type(openai.error.RateLimitError)
+        retry=retry_if_exception_type(openai.error.RateLimitError),
     )
     async def _perform_api_call(self, prompt, prompt_type, tries, search, **kwargs):
         """
@@ -129,7 +134,7 @@ class CompletionHandler(ResearchAgent):
         self.model_tokens[model]["output"] += response.usage.output_tokens
         self.update_spending()
         self.update_session_totals()
-    
+
     async def _extract_sleep_time(self, error_message, adjust=0.5):
         """
         Extract the sleep time from the error message.
@@ -142,23 +147,23 @@ class CompletionHandler(ResearchAgent):
             The sleep time in seconds.
         """
         try:
-            sleep_time = float(error_message.split("Please try again in ")[1].split(".")[0])
+            sleep_time = float(
+                error_message.split("Please try again in ")[1].split(".")[0]
+            )
             sleep_time += adjust
         except Exception as e:
             raise e
 
         return sleep_time
 
-    async def single_completion(self, prompt, prompt_type, max_tries=9, web_search=True, **kwargs):
+    async def single_completion(
+        self, prompt, prompt_type, max_tries=9, web_search=True, **kwargs
+    ):
         """
         Initialize and submit a single chat completion request with built-in retry logic.
         """
         return await self._perform_api_call(
-            prompt,
-            prompt_type,
-            tries=max_tries,
-            search=web_search,
-            **kwargs
+            prompt, prompt_type, tries=max_tries, search=web_search, **kwargs
         )
 
     async def multi_completions(self, message_list, max_tries=9, **kwargs):
@@ -181,4 +186,3 @@ class CompletionHandler(ResearchAgent):
             coroutine_tasks.append(task)
 
         return await asyncio.gather(*coroutine_tasks, return_exceptions=False)
-

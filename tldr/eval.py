@@ -20,16 +20,17 @@ class SummaryEvaluator(CompletionHandler):
     """Attempt to objectively score the quality of a summary from a highly technical resource."""
 
     def __init__(
-        self, 
-        summary: str, 
-        content: str, 
-        testing: bool = True, 
-        verbose: bool = True, 
-        iterations: int = 5, 
-        **kwargs):
+        self,
+        summary: str,
+        content: str,
+        testing: bool = True,
+        verbose: bool = True,
+        iterations: int = 5,
+        **kwargs,
+    ):
         """
         Initialize the SummaryEvaluator with the summary and content to evaluate.
-        
+
         Args:
             summary: The generated summary to evaluate
             content: The original content that the summary is based on
@@ -67,10 +68,12 @@ class SummaryEvaluator(CompletionHandler):
         try:
             self.summary_evals = self.evaluate_summary()
         except Exception as specific_error:
-            self.message = f"An error occurred during summary evaluation: {str(specific_error)}"
+            self.message = (
+                f"An error occurred during summary evaluation: {str(specific_error)}"
+            )
             print(self.message)
             raise RuntimeError("Summary evaluation failed") from specific_error
-        
+
         self.evaluation = self.evaluate_summary()
 
         # Handle target text
@@ -350,14 +353,12 @@ async def main():
     review = await evaluator1.evaluate()
     print("\n--- Summary Review ---", review, "\n")
 
-
     # Evaluate summary with deepeval
-    #evaluator2 = SummaryScoring(**parse_eval_arguments())
-    #scores = evaluator2.evaluate_summary(
+    # evaluator2 = SummaryScoring(**parse_eval_arguments())
+    # scores = evaluator2.evaluate_summary(
     #    original_article=evaluator1.content, generated_summary=review
-    #)
-    #print("\n--- Summary Evaluation Scores ---", scores, "\n")
-    
+    # )
+    # print("\n--- Summary Evaluation Scores ---", scores, "\n")
 
 
 def cli_main():

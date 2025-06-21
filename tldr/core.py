@@ -57,7 +57,13 @@ class TldrEngine(CompletionHandler):
         self._read_system_instructions()
         self._new_openai_client()
 
-    async def load_all_content(self, input_files=None, context_files=None, context_size="medium", recursive=False):
+    async def load_all_content(
+        self,
+        input_files=None,
+        context_files=None,
+        context_size="medium",
+        recursive=False,
+    ):
         """Establish context for the TldrEngine"""
 
         # Read in files and contents
@@ -67,9 +73,11 @@ class TldrEngine(CompletionHandler):
             self.content = self.fetch_content(recursive=recursive, label="reference")
 
         # Fetch and reformat additional context if provided
-        if context_files is not None:
+        if context_files is not None and context_files != []:
             all_context = self.fetch_content(user_files=context_files, label="context")
-            await self.format_context("".join(all_context), context_size=context_size, label="context_files")
+            await self.format_context(
+                "".join(all_context), context_size=context_size, label="context_files"
+            )
 
         # Create embeddings
         await self._create_embeddings(context_size=context_size)
@@ -81,8 +89,10 @@ class TldrEngine(CompletionHandler):
         self.encode_text_to_vector_store(platform=platform)
 
         # Search for added initial context
-        context_search = await self.search_embedded_context(query=self.query)
-        await self.format_context(context_search, context_size=context_size, label="context_search")
+        context_search = self.search_embedded_context(query=self.query)
+        await self.format_context(
+            context_search, context_size=context_size, label="context_search"
+        )
 
     async def finish_session(self):
         """Complete run with stats reporting"""
@@ -92,14 +102,18 @@ class TldrEngine(CompletionHandler):
         self.generate_token_report()
         await self.client.close()
 
-    async def format_context(self, new_context, context_size="medium", label="formatted_context"):
+    async def format_context(
+        self, new_context, context_size="medium", label="formatted_context"
+    ):
         """
         Creates more concise, less repetative context message
         """
-
         # Format context references
-        formatted_context = await self.single_completion(
-            message=new_context, prompt_type="format_context", context_size=context_size
+        formatted_context = await self.perform_api_call(
+            prompt=new_context,
+            prompt_type="format_context",
+            context_size=context_size,
+            web_search=False,
         )
         self.added_context += formatted_context["response"]
         result = self.save_response_text(
@@ -131,15 +145,18 @@ class TldrEngine(CompletionHandler):
         if query is None or query.strip() == "":
             self.query = ""
             return
-        elif self.refine_query is False:
+        elif len(query) > 0:
             self.query = self._lint_query(query)
             return
         else:
             self.logger.info("Refining user query...")
 
         # Generate new query text
-        refined_query = await self.single_completion(
-            message=self._lint_query(query), prompt_type="refine_prompt", context_size=context_size
+        refined_query = await self.perform_api_call(
+            prompt=self._lint_query(query),
+            prompt_type="refine_prompt",
+            context_size=context_size,
+            web_search=False,
         )
 
         # Handle output text
@@ -147,12 +164,14 @@ class TldrEngine(CompletionHandler):
         result = self.save_response_text(self.query, label="refined_query")
         self.logger.info(result)
 
-    async def summarize_resources(self):
+    async def summarize_resources(self, context_size="medium"):
         """Generate component and synthesis summary text"""
         self.logger.info("Generating summaries for selected resources...")
 
         # Asynchronously summarize documents
-        reference_summaries = await self.multi_completions(self.content)
+        reference_summaries = await self.multi_completions(
+            message_list=self.content, context_size=context_size
+        )
 
         # Annotate and save response strings
         self.reference_summaries = []
@@ -160,18 +179,22 @@ class TldrEngine(CompletionHandler):
             self.reference_summaries.append(
                 f"Reference {i} Summary:\n{summary['response']}\n"
             )
-            result = self.save_response_text(
-                summary["response"], label="reference_summary", idx=i
-            )
-            self.logger.info(result)
+        self.reference_summaries = "\n\n".join(self.reference_summaries)
+        result = self.save_response_text(
+            self.reference_summaries, label="reference_summaries"
+        )
+        self.logger.info(result)
 
     async def integrate_summaries(self, context_size="medium"):
         """Generate integrated executive summaries combine all current summary text"""
         self.logger.info("Generating integrated summary text...")
 
         # Generate executive summary
-        executive_summary = await self.single_completion(
-            message="\n\n".join(self.reference_summaries), prompt_type="executive_summary", context_size=context_size
+        executive_summary = await self.perform_api_call(
+            prompt=self.reference_summaries,
+            prompt_type="executive_summary",
+            context_size=context_size,
+            web_search=False,
         )
         self.executive_summary = executive_summary["response"]
 
@@ -191,10 +214,11 @@ class TldrEngine(CompletionHandler):
         )
 
         # Polish summary
-        self.polished_summary = await self.single_completion(
-            message=self.executive_summary,
+        self.polished_summary = await self.perform_api_call(
+            prompt=self.executive_summary,
             prompt_type=tone_instructions,
             context_size=context_size,
+            web_search=False,
         )
         self.polished_summary = self.polished_summary["response"]
         result = self.save_response_text(
@@ -206,12 +230,17 @@ class TldrEngine(CompletionHandler):
     async def save_to_pdf(self, smart_title=True, polished=True):
         """Saves polished summary string to formatted PDF document."""
         self.logger.info("Saving final summary to PDF...")
-        summary_text = self.polished_summary if polished is True else self.executive_summary
+        summary_text = (
+            self.polished_summary if polished is True else self.executive_summary
+        )
 
         # Generate title
         if smart_title is True:
-            doc_title = await self.single_completion(
-                message=summary_text, prompt_type="title_instructions", context_size="low"
+            doc_title = await self.perform_api_call(
+                prompt=summary_text,
+                prompt_type="title_instructions",
+                context_size="low",
+                web_search=False,
             )
 
         # Save to PDF
@@ -222,16 +251,24 @@ class TldrEngine(CompletionHandler):
         self.logger.info(f"Final summary saved to {pdf_path}")
 
     async def apply_research(self, context_size="medium"):
-        """Identify knowledge gaps and use web search to fill them. Integrating new info into summary."""        
-        self.logger.info("Applying research agent to knowledge gaps...")
-        research_questions = await self.single_completion(
-            message="\n\n".join(self.reference_summaries), prompt_type="background_gaps", context_size="medium"
+        """
+        Identify knowledge gaps and use web search to fill them.
+        """
+        self.logger.info("Identifying knowledge gaps...")
+        research_questions = await self.perform_api_call(
+            prompt=self.reference_summaries,
+            prompt_type="background_gaps",
+            context_size=context_size,
+            web_search=False,
         )
         research_questions = research_questions["response"].split("\n")
 
         # Search web for to fill gaps
+        self.logger.info("Applying research agent to knowledge gaps...")
         self.research_results = await self.multi_completions(
-            research_questions, prompt_type="web_search", context_size=context_size
+            message_list=research_questions,
+            context_size=context_size,
+            web_search=True,
         )
         research_context = "\n".join([x["response"] for x in self.research_results])
 
@@ -239,7 +276,7 @@ class TldrEngine(CompletionHandler):
         for question in research_questions:
             search_context = self.search_embedded_context(query=question, num_results=2)
             research_context += "\n" + search_context
-        
+
         # Update added context with new research
         await self.format_context(research_context, label="research_context")
 
@@ -247,7 +284,7 @@ class TldrEngine(CompletionHandler):
         divider = "#--------------------------------------------------------#"
         joint_text = "\n".join(
             [
-                f'Question: {q_ans_pair["prompt"]}\nAnswer: {q_ans_pair["response"]}\n\n{divider}\n\n'
+                f'Question:\n{q_ans_pair["prompt"]}\n\nAnswer:\n{q_ans_pair["response"]}\n\n{divider}\n\n'
                 for q_ans_pair in self.research_results
             ]
         )

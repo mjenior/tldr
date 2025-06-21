@@ -31,4 +31,3 @@ numpy = "*"
 deepeval = "*"
 streamlit = "*"
 tenacity = "*"
-
