@@ -55,6 +55,8 @@ class LogHandler(FileHandler):
         }
         self.session_spend = {"input": 0.0, "output": 0.0}
         self.total_spend = 0.0
+        self.total_input_tokens = 0
+        self.total_output_tokens = 0
 
     def _start_logging(self):
         """
@@ -99,6 +101,8 @@ class LogHandler(FileHandler):
             self.model_spend[self.model][direction] += (
                 useage_dict[direction] * rate_dict[direction]
             ) / 1e6
+            self.total_input_tokens += useage_dict["input"]
+            self.total_output_tokens += useage_dict["output"]
 
     def update_session_totals(self):
         """Calculate current seesion totals for token use and spending"""

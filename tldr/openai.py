@@ -113,7 +113,13 @@ class CompletionHandler(ResearchAgent):
         retry=retry_if_exception_type(RateLimitError),
     )
     async def perform_api_call(
-        self, prompt, prompt_type, web_search=False, context_size="medium", **kwargs
+        self,
+        prompt,
+        prompt_type,
+        web_search=False,
+        context_size="medium",
+        source=None,
+        **kwargs,
     ):
         """
         Helper function to encapsulate the actual API call logic.
@@ -127,7 +133,7 @@ class CompletionHandler(ResearchAgent):
 
         # Update usage and return prompt and response pair
         self.update_usage(call_params["model"], response)
-        return {"prompt": prompt, "response": response.output_text}
+        return {"prompt": prompt, "response": response.output_text, "source": source}
 
     def update_usage(self, model, response):
         """Update usage statistics."""
@@ -157,37 +163,3 @@ class CompletionHandler(ResearchAgent):
 
         return sleep_time
 
-    async def multi_completions(
-        self, message_list, context_size="medium", web_search=False, **kwargs
-    ):
-        """
-        Runs multiple completion calls concurrently using asyncio.gather, with retry on 429.
-        """
-        # Parse all of the content found
-        coroutine_tasks = []
-        for message in message_list:
-
-            # Determine type of submission
-            if web_search is False:
-                source_type = await self.perform_api_call(
-                    prompt=message,
-                    prompt_type="file_type",
-                    web_search=False,
-                    context_size=context_size,
-                    **kwargs,
-                )
-                prompt_type = source_type["response"]
-            else:
-                prompt_type = "web_search"
-
-            # Generate summary task
-            task = self.perform_api_call(
-                prompt=message,
-                prompt_type=prompt_type,
-                web_search=web_search,
-                context_size=context_size,
-                **kwargs,
-            )
-            coroutine_tasks.append(task)
-
-        return await asyncio.gather(*coroutine_tasks, return_exceptions=False)

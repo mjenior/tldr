@@ -51,25 +51,24 @@ class FileHandler:
     ):
         """
         Find files and read in their contents.
-        Returns a list of content strings.
+        Returns a dictionary of file paths and content strings.
         """
         self.logger.info(f"Searching for {label} documents...")
         files = self._find_readable_files(
             infiles=user_files, directory=search_dir, recursive=recursive
         )
-
-        content = []
+        content = {}
         for ext in files.keys():
-            content += self.read_file_content(files[ext], ext)
+            content[files[ext]] = self.read_file_content(files[ext], ext)
 
         # Check if no resources were found
-        if len(content) == 0:
+        if len(content.keys()) == 0:
             self.logger.error(
                 "No resources found in current search directory. Exiting."
             )
             sys.exit(1)
         else:
-            self.logger.info(f"Identified {len(content)} {label} documents.")
+            self.logger.info(f"Identified {len(content.keys())} {label} documents.")
             return content
 
     def _find_readable_files(

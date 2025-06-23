@@ -45,6 +45,13 @@ title_instructions:
   Read the following technical summary and generate a concise, descriptive title that is no more than 10 words long. Return only the new title.
   
 
+resume:
+ description: "Scientist Resume Summarizer"
+ model: "gpt-4o"
+ max_output_tokens: 10240
+ system_instruction: |
+  Role: 
+
 publication:
  description: "Scientific Publication Summarizer"
  model: "gpt-4o"

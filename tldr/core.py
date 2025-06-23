@@ -170,18 +170,19 @@ class TldrEngine(CompletionHandler):
 
         # Asynchronously summarize documents
         reference_summaries = await self.multi_completions(
-            message_list=self.content, context_size=context_size
+            content_dict=self.content, context_size=context_size
         )
 
         # Annotate and save response strings
-        self.reference_summaries = []
+        all_summaries = []
         for i, summary in enumerate(reference_summaries):
-            self.reference_summaries.append(
+            self.content[summary["source"]]["summary"] = summary["response"]
+            all_summaries.append(
                 f"Reference {i} Summary:\n{summary['response']}\n"
             )
-        self.reference_summaries = "\n\n".join(self.reference_summaries)
+        self.all_summaries = "\n\n".join(all_summaries)
         result = self.save_response_text(
-            self.reference_summaries, label="reference_summaries"
+            self.all_summaries, label="reference_summaries"
         )
         self.logger.info(result)
 
@@ -191,7 +192,7 @@ class TldrEngine(CompletionHandler):
 
         # Generate executive summary
         executive_summary = await self.perform_api_call(
-            prompt=self.reference_summaries,
+            prompt=self.all_summaries,
             prompt_type="executive_summary",
             context_size=context_size,
             web_search=False,
@@ -250,43 +251,91 @@ class TldrEngine(CompletionHandler):
         )
         self.logger.info(f"Final summary saved to {pdf_path}")
 
+    async def determine_prompt_type(self, web_search):
+        """Determine type of submission"""
+        if web_search is False:
+            source_type = await self.perform_api_call(
+                prompt=message,
+                prompt_type="file_type",
+                web_search=web_search,
+                **kwargs,
+            )
+            return source_type["response"]
+        else:
+            return "web_search"
+
+    async def multi_completions(
+        self,
+        content_dict,
+        context_size="medium",
+        web_search=False,
+        **kwargs,
+    ):
+        """
+        Runs multiple completion calls concurrently.
+        """
+        # Parse all of the content found
+        coroutine_tasks = []
+        for source in content_dict.keys():
+
+            # Determine type of submission
+            prompt_type = self.determine_prompt_type(web_search)
+
+            # Generate summary task
+            task = self.perform_api_call(
+                prompt=content_dict[source]['content'],
+                prompt_type=prompt_type,
+                web_search=web_search,
+                context_size=context_size,
+                source=source,
+                **kwargs,
+            )
+            coroutine_tasks.append(task)
+
+        return await asyncio.gather(*coroutine_tasks, return_exceptions=False)
+
     async def apply_research(self, context_size="medium"):
         """
         Identify knowledge gaps and use web search to fill them.
         """
         self.logger.info("Identifying knowledge gaps...")
         research_questions = await self.perform_api_call(
-            prompt=self.reference_summaries,
+            prompt=self.all_summaries,
             prompt_type="background_gaps",
             context_size=context_size,
             web_search=False,
         )
+
+        # Reassemble research questions into content dictionary
         research_questions = research_questions["response"].split("\n")
+        research_question_dict = {}
+        for i, question in enumerate(research_questions):
+            research_question_dict[f"Question_{i}"] = {"content": question}
 
         # Search web for to fill gaps
         self.logger.info("Applying research agent to knowledge gaps...")
         self.research_results = await self.multi_completions(
-            message_list=research_questions,
+            content_dict=research_question_dict,
             context_size=context_size,
             web_search=True,
         )
-        research_context = "\n".join([x["response"] for x in self.research_results])
 
         # Also search for additional context missed in references
-        for question in research_questions:
-            search_context = self.search_embedded_context(query=question, num_results=2)
-            research_context += "\n" + search_context
+        research_context = []
+        for q_ans_pair in self.research_results:
+            search_context = self.search_embedded_context(query=q_ans_pair["prompt"], num_results=2)
+            current_context = f'Question:\n{q_ans_pair["prompt"]}\n'
+            current_context += f'Answer:\n{q_ans_pair["response"]}\n'
+            current_context += f'Local RAG Context:\n{"\n".join(search_context)}\n'
+            research_context.append(current_context)
+
+        # Assemble full research context
+        divider = "\n#--------------------------------------------------------#\n"
+        research_str = divider.join(research_context)
 
         # Update added context with new research
-        await self.format_context(research_context, label="research_context")
-
-        # Handle output
-        divider = "#--------------------------------------------------------#"
-        joint_text = "\n".join(
-            [
-                f'Question:\n{q_ans_pair["prompt"]}\n\nAnswer:\n{q_ans_pair["response"]}\n\n{divider}\n\n'
-                for q_ans_pair in self.research_results
-            ]
+        await self.format_context(research_str, label="research_context")
+        result = self.save_response_text(
+            research_str, label="research_results"
         )
-        result = self.save_response_text(joint_text, label="research_results")
         self.logger.info(result)

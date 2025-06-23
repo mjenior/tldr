@@ -5,10 +5,10 @@ TLDR Summary Generator - Streamlit Web Interface
 import os
 import sys
 import asyncio
-import traceback
 import streamlit as st
 from pathlib import Path
 from typing import List, Union, BinaryIO
+
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 # from streamlit.delta_generator import DeltaGenerator
@@ -17,7 +17,7 @@ from streamlit.runtime.uploaded_file_manager import UploadedFile
 sys.path.append(str(Path(__file__).parent))
 
 # Import tldr components
-from tldr.tldr import TldrEngine
+from tldr.core import TldrEngine
 
 # Page config
 st.set_page_config(
@@ -80,6 +80,10 @@ st.markdown(
         font-size: 0.8rem;
         color: #64748b;
     }
+    .process-button button {
+        font-weight: bold !important;
+        font-size: 1.2rem !important;
+    }
     </style>
 """,
     unsafe_allow_html=True,
@@ -93,7 +97,8 @@ class TldrUI:
         self.summary = ""
         self.polished_summary = ""
         self.status = "Ready"
-        self.token_count = 0
+        self.input_token_count = 0
+        self.output_token_count = 0
         self.total_spend = 0.0
         self.processing = False
 
@@ -104,14 +109,16 @@ class TldrUI:
             st.session_state.context = None
         if "executive" not in st.session_state:
             st.session_state.executive = ""
+        if "research_results" not in st.session_state:
+            st.session_state.research_results = ""
         if "polished" not in st.session_state:
             st.session_state.polished = ""
         if "reference_summaries" not in st.session_state:
-            st.session_state.reference_summaries = []
+            st.session_state.reference_summaries = None
         if "user_query" not in st.session_state:
-            st.session_state.user_query = (
-                "Summarize the key findings and recommendations."
-            )
+            st.session_state.user_query = None
+        if "refined_query" not in st.session_state:
+            st.session_state.refined_query = None
 
     async def run_async_function(self, async_func, *args, **kwargs):
         """Run an async function with processing status updates"""
@@ -119,24 +126,24 @@ class TldrUI:
             self.status = "Processing..."
             self.processing = True
             await async_func(*args, **kwargs)
-            self.status = "Ready"
-
         except Exception as e:
             import traceback
-
             error_details = traceback.format_exc()
             self.status = "Error during processing"
             st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
             st.stop()
-
         finally:
+            self.status = "Ready"
             self.processing = False
+            self.total_spend += self.tldr.total_spend
+            self.input_token_count += self.tldr.total_input_tokens
+            self.output_token_count += self.tldr.total_output_tokens
 
     def process_files(self, files: List[Union[UploadedFile, BinaryIO]]) -> List[dict]:
         """Process uploaded files and return file info"""
         file_info = []
         for file in files:
-            file_path = os.path.join("uploads", file.name)
+            file_path = os.path.join(self.tldr.output_directory, file.name)
             # Get file size before writing
             file_size = len(file.getvalue())
             # Write file content
@@ -166,9 +173,17 @@ class TldrUI:
 
 async def main():
 
+    # Initialize session state for selected_doc
+    if "selected_doc" not in st.session_state:
+        st.session_state.selected_doc = None
+
+    # If a refined query is in the session state, update the main query
+    if st.session_state.get("refined_query"):
+        st.session_state.user_query = st.session_state.refined_query
+
     # Initialize TLDR classes
     tldr_ui = TldrUI()
-    tldr = TldrEngine()
+    tldr_ui.tldr = TldrEngine()
 
     # Sidebar for settings
     with st.sidebar:
@@ -176,8 +191,6 @@ async def main():
 
         # Select options
         st.subheader("Options")
-        polish = st.checkbox("Polish Final Summary", value=True)
-        web_search = st.checkbox("Enable Web Research", value=True)
         tone = st.selectbox("Polished summary tone", ["stylized", "formal"], index=0)
         context_size = st.selectbox(
             "Context size", ["small", "medium", "large"], index=1
@@ -204,24 +217,14 @@ async def main():
         documents = tldr_ui.document_uploader("Target Documents", "document_uploader")
         context = tldr_ui.document_uploader("Additional Context", "context_uploader")
 
-        # Query input
-        st.subheader("Query")
-        query = st.text_area(
-            "What would you like to know from these documents?",
-            height=50,
-            key="user_query",
-        )
-
-        # Add a refine button
-        if st.button("Refine Query", disabled=tldr_ui.processing):
-            with st.spinner("Refining query..."):
-                await tldr_ui.run_async_function(tldr.refine_user_query, query)
-                st.session_state.user_query = tldr.query  # Update the query widget
-
         # Process uploaded files
         if documents is not None:
-            if st.button("Process Input"):
-                with st.spinner("Processing files..."):
+            st.markdown('<div class="process-button">', unsafe_allow_html=True)
+            process_clicked = st.button("Upload Documents")
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            if process_clicked:
+                with st.spinner("Processing documents..."):
                     st.session_state.documents = tldr_ui.process_files(documents)
                     input_files = [f["path"] for f in st.session_state.documents]
                     if context:
@@ -233,116 +236,175 @@ async def main():
 
                     # Collect all content
                     await tldr_ui.run_async_function(
-                        tldr.load_all_content,
+                        tldr_ui.tldr.load_all_content,
                         input_files=input_files,
                         context_files=context_files,
                         context_size=context_size,
                     )
 
-                    # Generate component summaries
-                    await tldr.summarize_resources(context_size=context_size)
-                    st.session_state.reference_summaries = tldr.reference_summaries
+        # Query input
+        st.subheader("Query")
+        query = st.text_area(
+            "What would you like to know from these documents?",
+            height=70,
+            key="user_query",
+        )
 
-        # Display file list and document summary
-        if st.session_state.documents:
+        # Add a refine button
+        if st.button("Refine Query", disabled=not st.session_state.user_query or tldr_ui.processing):
+            with st.spinner("Refining query..."):
+                await tldr_ui.run_async_function(tldr_ui.tldr.refine_user_query, query)
+                st.session_state.refined_query = tldr_ui.tldr.query
+                st.rerun()
+
+        # Display the refined query if it exists, then clear it
+        if st.session_state.get("refined_query"):
+            st.info(f"**Refined Query:** {st.session_state.refined_query}")
+            st.session_state.refined_query = None
+
+        # Display file listdoc
+        if st.session_state.documents is not None:
             st.subheader("Uploaded Files")
 
-            # Create two columns: one for file list, one for summary
-            file_col, summary_col = st.columns([1, 2])
-
-            with file_col:
-                # Track selected document
-                if "selected_doc" not in st.session_state:
-                    st.session_state.selected_doc = None
-
-                # Display file list with selection
-                for doc in st.session_state.documents:
-                    with st.container():
-                        col1, col2 = st.columns([4, 1])
-                        with col1:
-                            # Make file name clickable for selection
-                            if st.button(
-                                doc["path"],
-                                key=f"select_{doc['path']}",
-                                use_container_width=True,
+            # Display file list with selection
+            for doc in st.session_state.documents:
+                with st.container():
+                    file_name_col, del_btn_col = st.columns([4, 1])
+                    with file_name_col:
+                        # Make file name clickable for selection
+                        if st.button(
+                            doc["source"],
+                            key=f"select_{doc['source']}",
+                            use_container_width=True,
+                        ):
+                            st.session_state.selected_doc = doc
+                    with del_btn_col:
+                        if st.button("🗑️", key=f"del_{doc['source']}"):
+                            st.session_state.documents = [
+                                d
+                                for d in st.session_state.documents
+                                if d["source"] != doc["source"]
+                            ]
+                            if (
+                                st.session_state.selected_doc
+                                and st.session_state.selected_doc["source"] == doc["source"]
                             ):
-                                st.session_state.selected_doc = doc
-                        with col2:
-                            if st.button("🗑️", key=f"del_{doc['path']}"):
-                                st.session_state.documents = [
-                                    d
-                                    for d in st.session_state.documents
-                                    if d["path"] != doc["path"]
-                                ]
-                                if (
-                                    st.session_state.selected_doc
-                                    and st.session_state.selected_doc["path"]
-                                    == doc["path"]
-                                ):
-                                    st.session_state.selected_doc = None
-                                st.rerun()
+                                st.session_state.selected_doc = None
+                            st.rerun()
 
-            with summary_col:
-                st.subheader("Document Summary")
-                if st.session_state.selected_doc:
-                    # Display document summary in a scrollable container
-                    summary = st.session_state.selected_doc.get(
-                        "summary", "No summary available"
-                    )
-                    st.markdown(
-                        f'<div style="border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px; max-height: 300px; overflow-y: auto;">'
-                        f"{summary}"
-                        "</div>",
-                        unsafe_allow_html=True,
-                    )
-                else:
-                    st.info("Select a document to view its summary")
-            if st.session_state.reference_summaries:
-                st.subheader("Component Summaries")
-                for summary in st.session_state.reference_summaries:
-                    with st.container():
-                        st.text(summary)
+            # Generate initial summaries
+            if st.button("Summarize Documents"):
+                with st.spinner("Summarizing documents..."):
 
-        # Action buttons
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            if st.button("Research", disabled=tldr_ui.processing):
-                asyncio.run(tldr_ui.apply_research())
-        with col2:
+                    # Generate component summaries
+                    await tldr_ui.run_async_function(
+                        tldr_ui.tldr.summarize_resources,
+                        context_size=context_size,
+                    )
+                    for content, filethat, summary .... in tldr.content
+                    reference_summaries = ""
+                    st.session_state.reference_summaries = (
+                        tldr_ui.tldr.reference_summaries
+                    )
+
+    # Right column - Summaries and actions
+    with col2:
+        # Display selected document content
+        if st.session_state.selected_doc:
+            st.subheader(f"Content of {st.session_state.selected_doc['path']}")
+            # Display content in a scrollable text area
+            st.text_area(
+                "Document Content",
+                value=st.session_state.selected_doc["content"],
+                height=300,
+                key=f"content_{st.session_state.selected_doc['path']}",
+                disabled=True,
+            )
+
+        st.subheader("Document Summary")
+        if st.session_state.selected_doc:
+            # Display document summary in a scrollable container
+            summary = st.session_state.selected_doc.get(
+                "summary", "No summary available"
+            )
+            st.markdown(
+                f'<div style="border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px; max-height: 300px; overflow-y: auto;">'
+                f"{summary}"
+                "</div>",
+                unsafe_allow_html=True,
+            )
+        else:
+            st.info("Select a document to view its summary")
+        if st.session_state.reference_summaries:
+            st.subheader("Component Summaries")
+            for summary in st.session_state.reference_summaries:
+                with st.container():
+                    st.text(summary)
+
+        st.subheader("Actions")
+
+        # Create three columns for buttons
+        action_col1, action_col2, action_col3 = st.columns(3)
+        with action_col1:
+            if st.button(
+                "Research",
+                disabled=not st.session_state.reference_summaries or tldr_ui.processing,
+            ):
+                await tldr_ui.run_async_function(
+                    tldr_ui.tldr.apply_research,
+                    context_size=context_size,
+                )
+                st.session_state.research_results = tldr_ui.tldr.research_results
+        with action_col2:
             if st.button(
                 "Integrate",
                 disabled=not st.session_state.reference_summaries or tldr_ui.processing,
             ):
-                asyncio.run(tldr_ui.integrate_summaries())
-        with col3:
+                await tldr_ui.run_async_function(
+                    tldr_ui.tldr.integrate_summaries,
+                    context_size=context_size,
+                )
+                st.session_state.executive = tldr_ui.tldr.executive_summary
+        with action_col3:
             if st.button(
                 "Polish", disabled=not st.session_state.executive or tldr_ui.processing
             ):
-                asyncio.run(tldr_ui.polish_response())
+                await tldr_ui.run_async_function(
+                    tldr_ui.tldr.polish_response,
+                    context_size=context_size,
+                    tone=tone,
+                )
+                st.session_state.polished = tldr_ui.tldr.polished_summary
 
-    with col2:
         st.subheader("Summaries")
 
         # Summary tabs
-        tab1, tab2 = st.tabs(["Current", "Polished"])
+        tab1, tab2, tab3 = st.tabs(
+            ["Executive", "Research", "Polished"]
+        )
 
         # Summary content
         with tab1:
             executive = st.text_area(
-                "Summaries",
+                "Executive Summary",
                 value=st.session_state.executive,
                 height=400,
                 key="executive_output",
             )
-
         with tab2:
+            research = st.text_area(
+                "Research Results",
+                value=st.session_state.research_results,
+                height=400,
+                key="research_output",
+            )
+        with tab3:
             polished = st.text_area(
                 "Polished Summary",
                 value=st.session_state.polished,
                 height=400,
                 key="polished_output",
             )
-
         # Action buttons for summary - using a single row
         st.write("")
 
@@ -395,7 +457,7 @@ async def main():
             disabled=not st.session_state.polished,
             help="Save summary as PDF",
         ):
-            await tldr.save_to_pdf(st.session_state.polished)
+            await tldr_ui.tldr.save_to_pdf(st.session_state.polished)
             st.toast("PDF saved!")
 
     # Status bar
@@ -414,5 +476,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    os.makedirs("uploads", exist_ok=True)
     asyncio.run(main())
