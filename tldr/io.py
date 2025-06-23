@@ -59,7 +59,7 @@ class FileHandler:
         )
         content = {}
         for ext in files.keys():
-            content[files[ext]] = self.read_file_content(files[ext], ext)
+            content[files[ext]] = {"content": self.read_file_content(files[ext], ext)}
 
         # Check if no resources were found
         if len(content.keys()) == 0:

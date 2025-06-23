@@ -108,11 +108,11 @@ class TldrUI:
         if "context" not in st.session_state:
             st.session_state.context = None
         if "executive" not in st.session_state:
-            st.session_state.executive = ""
+            st.session_state.executive = None
         if "research_results" not in st.session_state:
-            st.session_state.research_results = ""
+            st.session_state.research_results = None
         if "polished" not in st.session_state:
-            st.session_state.polished = ""
+            st.session_state.polished = None
         if "summarized" not in st.session_state:
             st.session_state.summarized = False
         if "selected_doc" not in st.session_state:
@@ -448,7 +448,7 @@ async def main():
         if st.button(
             "💾 Save as PDF",
             key="pdf_btn_hidden",
-            disabled=not st.session_state.polished,
+            disabled=not st.session_state.polished or not st.session_state.executive,
             help="Save summary as PDF",
         ):
             await tldr_ui.tldr.save_to_pdf(st.session_state.polished)

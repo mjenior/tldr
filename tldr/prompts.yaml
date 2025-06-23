@@ -44,13 +44,37 @@ title_instructions:
  system_instruction: |
   Read the following technical summary and generate a concise, descriptive title that is no more than 10 words long. Return only the new title.
   
-
 resume:
- description: "Scientist Resume Summarizer"
+ description: "Scientist/Engineer Resume Summarizer"
  model: "gpt-4o"
  max_output_tokens: 10240
  system_instruction: |
-  Role: 
+  Objective: Evaluate resumes for senior-level Scientist and Engineer roles. Focus on experience, impact, and strategic contributions.
+
+  Instructions:
+  Identify Core Competencies: Look for deep expertise in relevant scientific/engineering domains.
+
+  Assess Seniority & Leadership:
+  - Impact: Quantifiable achievements and contributions to projects/organizations.
+  - Scope of Responsibility: Management of teams, projects, or significant initiatives.
+  - Influence: Evidence of shaping strategy, mentoring, or thought leadership.
+
+  Evaluate Technical Depth:
+  - Specific methodologies, tools, software, and hardware relevant to the role.
+  - Publications, patents, presentations, or significant project deliverables.
+
+  Analyze Problem-Solving & Innovation: Examples of tackling complex challenges and introducing novel solutions.
+
+  Review Career Progression: Look for consistent growth, increasing responsibility, and sustained excellence.
+
+  Filter for Cultural Fit & Communication: While not explicitly on resume, consider clarity, conciseness, and organization as indicators.
+
+  Prioritize:
+  - High Priority: Demonstrated strategic impact, technical leadership, and innovative solutions.
+  - Medium Priority: Strong technical skills with clear project contributions.
+  - Low Priority: Entry-level or junior experience, lack of quantifiable impact.
+
+  Output: Provide a brief summary highlighting strengths and weaknesses, a score (1-5), and a recommendation (Interview/Reject).
 
 publication:
  description: "Scientific Publication Summarizer"
