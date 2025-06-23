@@ -113,8 +113,10 @@ class TldrUI:
             st.session_state.research_results = ""
         if "polished" not in st.session_state:
             st.session_state.polished = ""
-        if "reference_summaries" not in st.session_state:
-            st.session_state.reference_summaries = None
+        if "summarized" not in st.session_state:
+            st.session_state.summarized = False
+        if "selected_doc" not in st.session_state:
+            st.session_state.selected_doc = None
         if "user_query" not in st.session_state:
             st.session_state.user_query = None
         if "refined_query" not in st.session_state:
@@ -153,7 +155,7 @@ class TldrUI:
                 {
                     "name": file.name,
                     "size": f"{file_size / 1024:.1f} KB",
-                    "path": file_path,
+                    "source": file_path,
                 }
             )
         return file_info
@@ -195,7 +197,6 @@ async def main():
         context_size = st.selectbox(
             "Context size", ["small", "medium", "large"], index=1
         )
-
         # Status
         st.divider()
         st.subheader("Status")
@@ -241,6 +242,9 @@ async def main():
                         context_files=context_files,
                         context_size=context_size,
                     )
+                    # And update the session state
+                    for doc in st.session_state.documents:
+                        doc["content"] = tldr_ui.tldr.content[doc["path"]]
 
         # Query input
         st.subheader("Query")
@@ -293,36 +297,44 @@ async def main():
                             st.rerun()
 
             # Generate initial summaries
-            if st.button("Summarize Documents"):
+            if st.button("Generating Summaries"):
                 with st.spinner("Summarizing documents..."):
 
-                    # Generate component summaries
+                    # Generate document summaries
                     await tldr_ui.run_async_function(
                         tldr_ui.tldr.summarize_resources,
                         context_size=context_size,
                     )
-                    for content, filethat, summary .... in tldr.content
-                    reference_summaries = ""
-                    st.session_state.reference_summaries = (
-                        tldr_ui.tldr.reference_summaries
+                    # And update the session state
+                    st.session_state.summarized = True
+                    for doc in st.session_state.documents:
+                        doc["summary"] = tldr_ui.tldr.content[doc["path"]]["summary"]
+
+                with st.spinner("Integrating summaries..."):
+                    await tldr_ui.run_async_function(
+                        tldr_ui.tldr.integrate_summaries,
+                        context_size=context_size,
                     )
+                    # Update session
+                    st.session_state.executive = tldr_ui.tldr.executive_summary
 
     # Right column - Summaries and actions
     with col2:
         # Display selected document content
         if st.session_state.selected_doc:
-            st.subheader(f"Content of {st.session_state.selected_doc['path']}")
+            st.subheader(f"Content of {st.session_state.selected_doc['source']}")
             # Display content in a scrollable text area
             st.text_area(
                 "Document Content",
                 value=st.session_state.selected_doc["content"],
                 height=300,
-                key=f"content_{st.session_state.selected_doc['path']}",
+                key=f"content_{st.session_state.selected_doc['source']}",
                 disabled=True,
             )
 
         st.subheader("Document Summary")
-        if st.session_state.selected_doc:
+        if st.session_state.summarized is True:
+            st.info("Select a document to view its summary")
             # Display document summary in a scrollable container
             summary = st.session_state.selected_doc.get(
                 "summary", "No summary available"
@@ -333,22 +345,14 @@ async def main():
                 "</div>",
                 unsafe_allow_html=True,
             )
-        else:
-            st.info("Select a document to view its summary")
-        if st.session_state.reference_summaries:
-            st.subheader("Component Summaries")
-            for summary in st.session_state.reference_summaries:
-                with st.container():
-                    st.text(summary)
 
         st.subheader("Actions")
-
         # Create three columns for buttons
-        action_col1, action_col2, action_col3 = st.columns(3)
+        action_col1, action_col2 = st.columns(2)
         with action_col1:
             if st.button(
                 "Research",
-                disabled=not st.session_state.reference_summaries or tldr_ui.processing,
+                disabled=not st.session_state.documents or tldr_ui.processing,
             ):
                 await tldr_ui.run_async_function(
                     tldr_ui.tldr.apply_research,
@@ -356,16 +360,6 @@ async def main():
                 )
                 st.session_state.research_results = tldr_ui.tldr.research_results
         with action_col2:
-            if st.button(
-                "Integrate",
-                disabled=not st.session_state.reference_summaries or tldr_ui.processing,
-            ):
-                await tldr_ui.run_async_function(
-                    tldr_ui.tldr.integrate_summaries,
-                    context_size=context_size,
-                )
-                st.session_state.executive = tldr_ui.tldr.executive_summary
-        with action_col3:
             if st.button(
                 "Polish", disabled=not st.session_state.executive or tldr_ui.processing
             ):
@@ -412,7 +406,7 @@ async def main():
         btn_container = st.container()
 
         # Use f-strings for button layout with proper escaping
-        disabled_attr = "disabled" if not st.session_state.reference_summaries else ""
+        disabled_attr = "disabled" if st.session_state.summarized is False else ""
         btn_html = f"""
         <style>
             .button-container {{
@@ -445,7 +439,7 @@ async def main():
         if st.button(
             "📋 Copy to Clipboard",
             key="copy_btn_hidden",
-            disabled=not st.session_state.reference_summaries,
+            disabled=st.session_state.summarized is False,
             help="Copy summary to clipboard",
         ):
             st.session_state.clipboard = st.session_state.reference_summaries
