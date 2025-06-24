@@ -1,0 +1,16 @@
+2025-06-24 05:25:08,101 - INFO - Systems instructions loaded successfully.
+2025-06-24 05:25:08,212 - INFO - Initialized OpenAI client: version=1.86.0, context size=medium
+2025-06-24 05:25:08,212 - INFO - Searching for reference documents...
+2025-06-24 05:25:11,985 - INFO - Identified 2 reference documents.
+2025-06-24 05:25:11,985 - INFO - Generating embeddings for reference documents...
+2025-06-24 05:25:13,454 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:25:13,472 - INFO - Loading faiss.
+2025-06-24 05:25:13,569 - INFO - Successfully loaded faiss.
+2025-06-24 05:25:13,588 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-24 05:25:13,591 - INFO - Querying local embedded text vectors...
+2025-06-24 05:25:14,169 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:25:14,178 - INFO - Average relevance score: 0.148
+2025-06-24 05:25:16,012 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:25:16,102 - INFO - tldr.20250624_052508.files/context_search.tldr.20250624_052508.txt
+2025-06-24 05:25:16,103 - INFO - Generating summaries for selected resources...
+2025-06-24 05:25:16,105 - INFO - Determining file type of ./jenior-et-al.pdf...

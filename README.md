@@ -2,7 +2,7 @@
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-Version: 1.0.32
+Version: 1.0.33
 
 ## Overview
 

@@ -57,9 +57,14 @@ class FileHandler:
         files = self._find_readable_files(
             infiles=user_files, directory=search_dir, recursive=recursive
         )
+
+        # Create content dictionary
         content = {}
-        for ext in files.keys():
-            content[files[ext]] = {"content": self.read_file_content(files[ext], ext)}
+        for ext, filelist in files.items():
+            for f in filelist:
+                f_content = self.read_file_content(f, ext)
+                if f_content is not None:
+                    content[f] = {"content": f_content}
 
         # Check if no resources were found
         if len(content.keys()) == 0:
@@ -149,46 +154,39 @@ class FileHandler:
             # Silently ignore files that can't be processed or raise an error
             pass
 
-    def read_file_content(self, filelist, ext=None):
+    def read_file_content(self, filepath, ext=None):
         """
         Reads the main body text from given file paths and returns as strings.
         """
-        if isinstance(filelist, str):
-            filelist = [filelist]
+        current_ext = ext
+        if current_ext is None:
+            current_ext = os.path.splitext(filepath)[1].lower().lstrip(".")
 
-        content_list = []
-        for filepath in filelist:
-            current_ext = ext
-            if current_ext is None:
-                current_ext = os.path.splitext(filepath)[1].lower().lstrip(".")
+        try:
+            if current_ext == "pdf":
+                reader = PdfReader(filepath)
+                text = ""
+                for page in reader.pages:
+                    page_text = page.extract_text()
+                    if page_text:
+                        text += page_text + "\n"
+            elif current_ext in ["doc", "docx"]:
+                doc = Document(filepath)
+                text = "\n".join([para.text for para in doc.paragraphs])
+            elif current_ext in ["htm", "html"]:
+                with open(filepath, "r", encoding="utf-8") as f:
+                    html_content = f.read()
+                soup = BeautifulSoup(html_content, "html.parser")
+                text = soup.get_text(separator="\n")
+            elif current_ext in ["txt", "md"]:
+                with open(filepath, "r", encoding="utf-8") as f:
+                    text = f.read()
 
-            try:
-                if current_ext == "pdf":
-                    reader = PdfReader(filepath)
-                    text = ""
-                    for page in reader.pages:
-                        page_text = page.extract_text()
-                        if page_text:
-                            text += page_text + "\n"
-                elif current_ext in ["doc", "docx"]:
-                    doc = Document(filepath)
-                    text = "\n".join([para.text for para in doc.paragraphs])
-                elif current_ext in ["htm", "html"]:
-                    with open(filepath, "r", encoding="utf-8") as f:
-                        html_content = f.read()
-                    soup = BeautifulSoup(html_content, "html.parser")
-                    text = soup.get_text(separator="\n")
-                elif current_ext in ["txt", "md"]:
-                    with open(filepath, "r", encoding="utf-8") as f:
-                        text = f.read()
+            return text.strip()
 
-                content_list.append(text.strip())
-
-            except Exception as e:  # pylint: disable=broad-except
-                print(f"Error reading file '{filepath}': {e}")
-                continue
-
-        return content_list
+        except Exception as e:  # pylint: disable=broad-except
+            print(f"Error reading file '{filepath}': {e}")
+            return None
 
     def _read_system_instructions(self, file_path: str = "prompts.yaml") -> dict:
         """

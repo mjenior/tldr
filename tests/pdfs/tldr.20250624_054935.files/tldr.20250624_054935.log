@@ -1,0 +1,124 @@
+2025-06-24 05:49:35,948 - INFO - Systems instructions loaded successfully.
+2025-06-24 05:49:36,012 - INFO - Initialized OpenAI client: version=1.86.0, context size=medium
+2025-06-24 05:49:36,012 - INFO - Searching for reference documents...
+2025-06-24 05:49:39,727 - INFO - Identified 2 reference documents.
+2025-06-24 05:49:39,727 - INFO - Generating embeddings for reference documents...
+2025-06-24 05:49:41,537 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:49:41,556 - INFO - Loading faiss.
+2025-06-24 05:49:41,618 - INFO - Successfully loaded faiss.
+2025-06-24 05:49:41,626 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-24 05:49:41,627 - INFO - Generating summaries for selected resources...
+2025-06-24 05:49:41,627 - INFO - Determining file type of ./jenior-et-al.pdf...
+2025-06-24 05:49:43,525 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:49:43,589 - INFO - Determining file type of ./leslie-et-al.pdf...
+2025-06-24 05:49:45,074 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:49:50,980 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 429 Too Many Requests"
+2025-06-24 05:49:50,983 - INFO - Retrying request to /responses in 0.428494 seconds
+2025-06-24 05:49:57,556 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 429 Too Many Requests"
+2025-06-24 05:49:57,558 - INFO - Retrying request to /responses in 0.902007 seconds
+2025-06-24 05:50:03,437 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 429 Too Many Requests"
+2025-06-24 05:50:04,767 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:50:10,341 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 429 Too Many Requests"
+2025-06-24 05:50:10,345 - INFO - Retrying request to /responses in 0.455973 seconds
+2025-06-24 05:50:17,108 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 429 Too Many Requests"
+2025-06-24 05:50:17,110 - INFO - Retrying request to /responses in 0.898103 seconds
+2025-06-24 05:50:37,545 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:50:37,551 - INFO - Response saved to: tldr.20250624_054935.files/reference_summaries.tldr.20250624_054935.txt
+2025-06-24 05:50:37,552 - INFO - Identifying knowledge gaps...
+2025-06-24 05:50:49,597 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:50:49,604 - INFO - Applying research agent to knowledge gaps...
+2025-06-24 05:50:54,997 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:50:55,305 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:50:56,297 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:50:56,831 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:50:56,955 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:50:57,149 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:50:57,758 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:50:57,773 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:50:57,911 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:50:58,068 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:50:58,331 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:50:58,697 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:50:59,236 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:51:00,926 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:51:02,677 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:51:05,652 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:51:05,663 - INFO - Searching for additional context: - What computational tools and algorithms are commonly used to generate context-specific metabolic models from transcriptomic data?  
+2025-06-24 05:51:05,664 - INFO - Querying local embedded text vectors...
+2025-06-24 05:51:06,774 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:51:06,783 - INFO - Average relevance score: 0.862
+2025-06-24 05:51:06,783 - INFO - Searching for additional context: - What constitutes a genome-scale metabolic network reconstruction (GENRE), and what are the standard steps involved in their manual curation for bacteria like C. difficile?  
+2025-06-24 05:51:06,783 - INFO - Querying local embedded text vectors...
+2025-06-24 05:51:07,082 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:51:07,091 - INFO - Average relevance score: 0.757
+2025-06-24 05:51:07,093 - INFO - Searching for additional context: - How is gene essentiality predicted using GENREs, and what experimental methods are typically used to validate these predictions in C. difficile?  
+2025-06-24 05:51:07,094 - INFO - Querying local embedded text vectors...
+2025-06-24 05:51:08,264 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:51:08,274 - INFO - Average relevance score: 0.831
+2025-06-24 05:51:08,275 - INFO - Searching for additional context: - What types of in vivo datasets are commonly used to validate metabolic network models of bacterial pathogens?  
+2025-06-24 05:51:08,276 - INFO - Querying local embedded text vectors...
+2025-06-24 05:51:09,129 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:51:09,138 - INFO - Average relevance score: 0.904
+2025-06-24 05:51:09,138 - INFO - Searching for additional context: - What is the biochemical role of N-acetylneuraminate in bacterial metabolism, and how is it metabolized by C. difficile?  
+2025-06-24 05:51:09,139 - INFO - Querying local embedded text vectors...
+2025-06-24 05:51:09,477 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:51:09,485 - INFO - Average relevance score: 0.637
+2025-06-24 05:51:09,485 - INFO - Searching for additional context: - How does increased cytidine utilization influence virulence in bacterial pathogens?  
+2025-06-24 05:51:09,485 - INFO - Querying local embedded text vectors...
+2025-06-24 05:51:09,663 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:51:09,671 - INFO - Average relevance score: 0.814
+2025-06-24 05:51:09,672 - INFO - Searching for additional context: - What methodologies are used to assess substrate utilization in metabolic network validation studies?  
+2025-06-24 05:51:09,673 - INFO - Querying local embedded text vectors...
+2025-06-24 05:51:09,835 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:51:09,842 - INFO - Average relevance score: 0.918
+2025-06-24 05:51:09,843 - INFO - Searching for additional context: - What regulatory networks linking metabolism and virulence have been described in C. difficile?  
+2025-06-24 05:51:09,843 - INFO - Querying local embedded text vectors...
+2025-06-24 05:51:10,016 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:51:10,027 - INFO - Average relevance score: 0.844
+2025-06-24 05:51:10,028 - INFO - Searching for additional context: - How can limitations in genome annotation quality lead to underprediction of certain metabolite groups in GENREs?  
+2025-06-24 05:51:10,028 - INFO - Querying local embedded text vectors...
+2025-06-24 05:51:10,514 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:51:10,521 - INFO - Average relevance score: 0.852
+2025-06-24 05:51:10,522 - INFO - Searching for additional context: - What genetic and functional differences distinguish nontoxigenic from toxigenic strains of C. difficile?  
+2025-06-24 05:51:10,523 - INFO - Querying local embedded text vectors...
+2025-06-24 05:51:10,691 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:51:10,698 - INFO - Average relevance score: 0.894
+2025-06-24 05:51:10,699 - INFO - Searching for additional context: - What role does recombination-activating gene 1 (RAG1) play in adaptive immunity, and why are RAG1⁻/⁻ mice used in C. difficile infection studies?  
+2025-06-24 05:51:10,700 - INFO - Querying local embedded text vectors...
+2025-06-24 05:51:10,990 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:51:10,997 - INFO - Average relevance score: 0.576
+2025-06-24 05:51:10,998 - INFO - Searching for additional context: - What is the molecular mechanism by which glycine acts as a cogerminant for C. difficile spore germination?  
+2025-06-24 05:51:10,999 - INFO - Querying local embedded text vectors...
+2025-06-24 05:51:11,319 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:51:11,326 - INFO - Average relevance score: 0.727
+2025-06-24 05:51:11,326 - INFO - Searching for additional context: - Which metabolomics techniques are employed to quantify amino acid concentrations in cecal content during C. difficile colonization experiments?  
+2025-06-24 05:51:11,327 - INFO - Querying local embedded text vectors...
+2025-06-24 05:51:11,591 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:51:11,600 - INFO - Average relevance score: 0.85
+2025-06-24 05:51:11,601 - INFO - Searching for additional context: - Besides glycine, what other amino acids have been identified as co-germinants for C. difficile spores?  
+2025-06-24 05:51:11,601 - INFO - Querying local embedded text vectors...
+2025-06-24 05:51:11,759 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:51:11,767 - INFO - Average relevance score: 0.631
+2025-06-24 05:51:11,768 - INFO - Searching for additional context: - What examples exist of bacterial therapeutics targeting metabolic pathways to prevent C. difficile infection?  
+2025-06-24 05:51:11,769 - INFO - Querying local embedded text vectors...
+2025-06-24 05:51:12,058 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:51:12,066 - INFO - Average relevance score: 0.742
+2025-06-24 05:51:12,067 - INFO - Searching for additional context: - What standard experimental approaches are used to study intraspecies competition and nutrient depletion in gut microbiota models?
+2025-06-24 05:51:12,067 - INFO - Querying local embedded text vectors...
+2025-06-24 05:51:12,230 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 05:51:12,236 - INFO - Average relevance score: 0.914
+2025-06-24 05:51:47,714 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:51:47,724 - INFO - Response saved to: tldr.20250624_054935.files/research_context.tldr.20250624_054935.txt
+2025-06-24 05:51:47,724 - INFO - Response saved to: tldr.20250624_054935.files/research_results.tldr.20250624_054935.txt
+2025-06-24 05:51:47,724 - INFO - Generating integrated summary text...
+2025-06-24 05:52:16,311 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:52:16,318 - INFO - Response saved to: tldr.20250624_054935.files/executive_summary.tldr.20250624_054935.txt
+2025-06-24 05:52:16,318 - INFO - Finalizing response text...
+2025-06-24 05:53:06,405 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:53:06,428 - INFO - Response saved to: tldr.20250624_054935.files/polished_summary.tldr.20250624_054935.txt
+2025-06-24 05:53:06,431 - INFO - Saving final summary to PDF...
+2025-06-24 05:53:08,006 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-24 05:53:08,068 - INFO - Final summary saved to metabolic_mechanisms_competition_clostridioides.tldr.pdf
+2025-06-24 05:53:08,068 - INFO - Response saved to: tldr.20250624_054935.files/full_context.tldr.20250624_054935.txt
+2025-06-24 05:53:08,069 - INFO - Session Cost: $0.19
+2025-06-24 05:53:08,069 - INFO - Session Token Usage: gpt-4o-mini i:60273, o:1973, gpt-4o i:63222, o:11072, o4-mini i:1608, o:1290

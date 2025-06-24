@@ -130,6 +130,7 @@ class TldrUI:
             await async_func(*args, **kwargs)
         except Exception as e:
             import traceback
+
             error_details = traceback.format_exc()
             self.status = "Error during processing"
             st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
@@ -222,7 +223,7 @@ async def main():
         if documents is not None:
             st.markdown('<div class="process-button">', unsafe_allow_html=True)
             process_clicked = st.button("Upload Documents")
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
 
             if process_clicked:
                 with st.spinner("Processing documents..."):
@@ -255,7 +256,10 @@ async def main():
         )
 
         # Add a refine button
-        if st.button("Refine Query", disabled=not st.session_state.user_query or tldr_ui.processing):
+        if st.button(
+            "Refine Query",
+            disabled=not st.session_state.user_query or tldr_ui.processing,
+        ):
             with st.spinner("Refining query..."):
                 await tldr_ui.run_async_function(tldr_ui.tldr.refine_user_query, query)
                 st.session_state.refined_query = tldr_ui.tldr.query
@@ -291,7 +295,8 @@ async def main():
                             ]
                             if (
                                 st.session_state.selected_doc
-                                and st.session_state.selected_doc["source"] == doc["source"]
+                                and st.session_state.selected_doc["source"]
+                                == doc["source"]
                             ):
                                 st.session_state.selected_doc = None
                             st.rerun()
@@ -373,9 +378,7 @@ async def main():
         st.subheader("Summaries")
 
         # Summary tabs
-        tab1, tab2, tab3 = st.tabs(
-            ["Executive", "Research", "Polished"]
-        )
+        tab1, tab2, tab3 = st.tabs(["Executive", "Research", "Polished"])
 
         # Summary content
         with tab1:

@@ -1,4 +1,5 @@
 import os
+import math
 import asyncio
 from tenacity import (
     retry,
@@ -109,7 +110,7 @@ class CompletionHandler(ResearchAgent):
 
     @retry(
         wait=wait_random_exponential(min=1, max=60),
-        stop=stop_after_attempt(6),
+        stop=stop_after_attempt(10),
         retry=retry_if_exception_type(RateLimitError),
     )
     async def perform_api_call(
@@ -142,7 +143,9 @@ class CompletionHandler(ResearchAgent):
         self.update_spending()
         self.update_session_totals()
 
-    async def _extract_sleep_time(self, error_message, adjust=0.5):
+    async def _extract_sleep_time(
+        self, error_message: str, adjust: float = 0.25, dec: int = 2
+    ) -> float:
         """
         Extract the sleep time from the error message.
 
@@ -157,9 +160,13 @@ class CompletionHandler(ResearchAgent):
             sleep_time = float(
                 error_message.split("Please try again in ")[1].split(".")[0]
             )
-            sleep_time += adjust
         except Exception as e:
             raise e
 
-        return sleep_time
+        return self.round_up_to_decimal_place(sleep_time + adjust, dec)
 
+    @staticmethod
+    def round_up_to_decimal_place(num: float, dec_places: int = 2) -> float:
+        """Rounds a number up to a specified number of decimal places."""
+        places = 10**dec_places
+        return math.ceil(num * places) / places
