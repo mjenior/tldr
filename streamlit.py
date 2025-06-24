@@ -327,10 +327,12 @@ async def main():
             if process_clicked:
                 with st.spinner("Processing documents..."):
                     st.session_state.documents = tldr_ui.process_files(documents)
-                    input_files = [f['source'] for f in st.session_state.documents]
+                    input_files = [f["source"] for f in st.session_state.documents]
                     if context:
                         st.session_state.context_files = tldr_ui.process_files(context)
-                        context_files = [f['source'] for f in st.session_state.context_files]
+                        context_files = [
+                            f["source"] for f in st.session_state.context_files
+                        ]
                     else:
                         st.session_state.context_files = None
                         context_files = None
@@ -443,7 +445,7 @@ async def main():
         with action_col1:
             if st.button(
                 "Research",
-                disabled = st.session_state.documents is None
+                disabled=st.session_state.documents is None
                 or tldr_ui.processing is True,
             ):
                 with st.spinner("Researching gaps..."):
@@ -458,7 +460,9 @@ async def main():
                 disabled=st.session_state.documents is None
                 or tldr_ui.processing is True,
             ):
-                with st.spinner("Synthesizing summaries, research, and new added context..."):
+                with st.spinner(
+                    "Synthesizing summaries, research, and new added context..."
+                ):
                     await tldr_ui.session_integrate_summaries(context_size=context_size)
                 # Update session
                 st.session_state.executive = tldr_ui.tldr.executive_summary
@@ -480,7 +484,9 @@ async def main():
         st.subheader("Summaries")
 
         # Summary tabs
-        tab1, tab2, tab3, tab4 = st.tabs(["Added Context","Research", "Executive", "Polished"])
+        tab1, tab2, tab3, tab4 = st.tabs(
+            ["Added Context", "Research", "Executive", "Polished"]
+        )
 
         # Summary content
         with tab1:

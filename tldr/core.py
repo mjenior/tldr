@@ -328,9 +328,10 @@ class TldrEngine(CompletionHandler):
             search_context = self.search_embedded_context(
                 query=q_ans_pair["prompt"], num_results=1
             )
+            search_context = "\n".join(search_context)
             current_context = f'Question:\n{q_ans_pair["prompt"]}\n'
             current_context += f'Answer:\n{q_ans_pair["response"]}\n'
-            current_context += f'Local RAG Context:\n{"\n".join(search_context)}\n'
+            current_context += f"Local RAG Context:\n{search_context}\n"
             research_context.append(current_context)
 
         # Assemble full research context
