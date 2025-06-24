@@ -15,7 +15,7 @@ patch minor major:
 
 format:
 	pixi run black tldr/*.py
-	pixi run black ui.py
+	pixi run black streamlit.py
 
 build: format
 	pixi lock

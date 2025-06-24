@@ -1,0 +1,9 @@
+2025-06-24 12:28:22,126 - INFO - Systems instructions loaded successfully.
+2025-06-24 12:28:22,197 - INFO - Initialized OpenAI client: version=1.86.0, context size=medium
+2025-06-24 12:28:57,802 - INFO - Searching for reference documents...
+2025-06-24 12:28:58,801 - INFO - Identified 1 reference documents.
+2025-06-24 12:28:58,801 - INFO - Generating embeddings for reference documents...
+2025-06-24 12:29:00,333 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-24 12:29:00,357 - INFO - Loading faiss.
+2025-06-24 12:29:00,455 - INFO - Successfully loaded faiss.
+2025-06-24 12:29:00,470 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.

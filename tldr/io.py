@@ -194,10 +194,9 @@ class FileHandler:
         """
         base_dir = os.path.dirname(os.path.abspath(__file__))
         instructions_path = os.path.join(base_dir, file_path)
-        instructions = {}
         try:
             with open(instructions_path, "r", encoding="utf-8") as file:
-                instructions = yaml.safe_load(file)
+                self.instructions = yaml.safe_load(file)
         except FileNotFoundError:
             print(f"Instructions file not found: '{instructions_path}'")
         except yaml.YAMLError as e:
@@ -206,7 +205,6 @@ class FileHandler:
             print(
                 f"An unexpected error occurred while reading '{instructions_path}': {e}"
             )
-        self.instructions = instructions
         self.logger.info("Systems instructions loaded successfully.")
 
     def save_response_text(

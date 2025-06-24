@@ -146,9 +146,6 @@ class TldrEngine(CompletionHandler):
         if query is None or query.strip() == "":
             self.query = ""
             return
-        elif len(query) > 0:
-            self.query = self._lint_query(query)
-            return
         else:
             self.logger.info("Refining user query...")
 
