@@ -1,6 +1,7 @@
 """
 TLDR Summary Generator - Streamlit Web Interface
 """
+version = "1.0.33"
 
 import os
 import sys
@@ -102,9 +103,13 @@ class TldrUI:
 
         st.session_state.status = "Ready"
         st.session_state.processing = False
-        st.session_state.total_spend = round(self.tldr.total_spend, 2) + 0.01
+        st.session_state.total_spend = self.round_up(self.tldr.total_spend)
         st.session_state.input_token_count = self.tldr.total_input_tokens
         st.session_state.output_token_count = self.tldr.total_output_tokens
+
+    def round_up(self, num, to=0.01):
+        """Round up to the nearest specified decimal place"""
+        return round(num + to / 2, -int(math.log10(to)))
 
     async def session_load_all_content(
         self, input_files, context_files, context_size="medium"
@@ -292,22 +297,22 @@ async def main():
 
         # Select options
         st.subheader("Options")
-        tone = st.selectbox("Polished summary tone", ["stylized", "formal"], index=0)
+        tone = st.selectbox("Polished summary tone", ["stylized", "formal"], index=0,
+            help="The tone of the polished summary (Stylized follows writing style of certain prominent authors).")
         context_size = st.selectbox(
             "Context window", ["small", "medium", "large"], index=1, 
-                help="The context window size for the summarization and research effort."
-        )
+                help="The context window size for the summarization and research effort.")
         # Status
         st.divider()
         st.subheader("Status")
-        st.text(f"Status: {tldr_ui.status}")
+        st.text(f"System: {tldr_ui.status}")
         st.text(f"Input Token Count: {st.session_state.input_token_count}")
         st.text(f"Output Token Count: {st.session_state.output_token_count}")
-        st.text(f"Total Spend: ~${st.session_state.total_spend}")
+        st.text(f"Approx. Total Spend: ${st.session_state.total_spend}")
 
     # Main content area
-    st.title("📝 TLDR Summary Generator")
-    st.markdown("Generate concise summaries from your documents with AI assistance")
+    st.title(f"📝 Too Long; Didn't Read (TLDR) - v{version}")
+    st.markdown("Generate concise summaries, research knowledge gaps, and synthesize information from your documents with AI assistance")
 
     # Create two main columns directly
     col1, col2 = st.columns([1, 1], gap="medium")
@@ -315,9 +320,10 @@ async def main():
     # Left column - Document input and controls
     with col1:
         st.markdown(
-            """**Target Documents:** The primary files you want to summarize.  
-**Additional Context:** Optional supplementary documents to provide more context for the summarization.
-**Focused Query:** The specific question or topic you want to focus on."""
+            """> **Input**
+- **Target Documents:** The primary files you want to summarize.  
+- **Additional Context:** Optional supplementary documents to provide more context for the summarization.
+- **Focused Query:** The specific question or topic you want to focus on."""
         )
 
         # Upload files
@@ -327,7 +333,7 @@ async def main():
         # Process uploaded files
         if documents is not None:
             st.markdown('<div class="process-button">', unsafe_allow_html=True)
-            process_clicked = st.button("Upload Documents", disabled=st.session_state.documents is not None)
+            process_clicked = st.button("Upload Documents", disabled=st.session_state.documents is None)
             st.markdown("</div>", unsafe_allow_html=True)
 
             if process_clicked:
@@ -500,7 +506,6 @@ async def main():
                 st.session_state.polished = tldr_ui.tldr.polished_summary
 
         st.subheader("Summaries")
-
         # Summary tabs
         tab1, tab2, tab3, tab4 = st.tabs(
             ["Added Context", "Research", "Executive", "Polished"]
@@ -534,57 +539,32 @@ async def main():
         # Action buttons for summary - using a single row
         st.write("")
 
-        # Create a container for buttons
-        btn_container = st.container()
+        st.subheader("Output")
+        # Create three columns for buttons
+        output_col1, output_col2 = st.columns(2)
 
-        # Use f-strings for button layout with proper escaping
-        disabled_attr = "disabled" if st.session_state.summarized is False else ""
-        btn_html = f"""
-        <style>
-            .button-container {{
-                display: flex;
-                gap: 10px;
-                width: 100%;
-            }}
-            .button-container button {{
-                flex: 1;
-            }}
-        </style>
-        <div class="button-container">
-            <button class="stButton" onclick="copyToClipboard()" {disabled_attr}>📋 Copy to Clipboard</button>
-            <button class="stButton" onclick="saveAsPDF()" {disabled_attr}>💾 Save as PDF</button>
-        </div>
-        <script>
-            function copyToClipboard() {{
-                // This will be handled by Streamlit's button
-            }}
-            function saveAsPDF() {{
-                // This will be handled by Streamlit's button
-            }}
-        </script>
-        """
+        with output_col1:
+            
+            # Add the actual buttons (invisible, just for the click handlers)
+            if st.button(
+                "📋 Copy to Clipboard",
+                key="copy_btn_hidden",
+                disabled=not st.session_state.selected_doc and st.session_state.summarized is False,
+                help="Copy text to clipboard",
+            ):
+                st.session_state.clipboard = st.session_state.selected_doc["summary"]
+                st.toast("Copied to clipboard!")
 
-        # Add the HTML to the container
-        btn_container.markdown(btn_html, unsafe_allow_html=True)
-
-        # Add the actual buttons (invisible, just for the click handlers)
-        if st.button(
-            "📋 Copy to Clipboard",
-            key="copy_btn_hidden",
-            disabled=st.session_state.summarized is False,
-            help="Copy summary to clipboard",
-        ):
-            st.session_state.clipboard = st.session_state.reference_summaries
-            st.toast("Copied to clipboard!")
-
-        if st.button(
-            "💾 Save as PDF",
-            key="pdf_btn_hidden",
-            disabled=not st.session_state.polished or not st.session_state.executive,
-            help="Save summary as PDF",
-        ):
-            await tldr_ui.tldr.save_to_pdf(st.session_state.polished)
-            st.toast("PDF saved!")
+        with output_col2:
+            if st.button(
+                "💾 Save as PDF",
+                key="pdf_btn_hidden",
+                disabled=not st.session_state.polished or not st.session_state.executive,
+                help="Save summary as PDF",
+            ):
+                with st.spinner("Generating PDF..."):
+                    await tldr_ui.tldr.save_to_pdf(st.session_state.polished)
+                st.toast("PDF saved!")
 
     # Status bar
     status_bar = st.container()
@@ -594,7 +574,7 @@ async def main():
             <div class='status-bar'>
                 <span>Status: {tldr_ui.status}</span>
                 <span>Author: Matt Jenior</span>
-                <span>Version: 1.0.0 - 2025</span>
+                <span>Version: {version} - 2025</span>
             </div>
             """,
             unsafe_allow_html=True,
