@@ -294,7 +294,8 @@ async def main():
         st.subheader("Options")
         tone = st.selectbox("Polished summary tone", ["stylized", "formal"], index=0)
         context_size = st.selectbox(
-            "Context size", ["small", "medium", "large"], index=1
+            "Context window", ["small", "medium", "large"], index=1, 
+                help="The context window size for the summarization and research effort."
         )
         # Status
         st.divider()
@@ -313,6 +314,11 @@ async def main():
 
     # Left column - Document input and controls
     with col1:
+        st.markdown(
+            """**Target Documents:** The primary files you want to summarize.  
+**Additional Context:** Optional supplementary documents to provide more context for the summarization.
+**Focused Query:** The specific question or topic you want to focus on."""
+        )
 
         # Upload files
         documents = tldr_ui.document_uploader("Target Documents", "document_uploader")
@@ -321,7 +327,7 @@ async def main():
         # Process uploaded files
         if documents is not None:
             st.markdown('<div class="process-button">', unsafe_allow_html=True)
-            process_clicked = st.button("Upload Documents")
+            process_clicked = st.button("Upload Documents", disabled=st.session_state.documents is not None)
             st.markdown("</div>", unsafe_allow_html=True)
 
             if process_clicked:
@@ -351,7 +357,7 @@ async def main():
                         st.session_state.added_context = tldr_ui.tldr.added_context
 
         # Query input
-        st.subheader("Query")
+        st.subheader("Focused Query")
         st.text_area(
             "What would you like to know from these documents?",
             height=70,
@@ -414,7 +420,7 @@ async def main():
         )
 
         # Generate initial summaries
-        if st.button("Generate Reference Summaries"):
+        if st.button("Generate Reference Summaries", disabled=st.session_state.documents is None):
             with st.spinner("Summarizing documents..."):
 
                 # Generate document summaries
@@ -428,12 +434,11 @@ async def main():
         if st.session_state.selected_doc:
             st.subheader(f"Content of {st.session_state.selected_doc['source']}")
             # Display content in a scrollable text area
-            st.text_area(
-                "Document Content",
-                value=st.session_state.selected_doc["content"],
-                height=300,
-                key=f"content_{st.session_state.selected_doc['source']}",
-                disabled=True,
+            st.markdown(
+                f'<div style="border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px; max-height: 300px; overflow-y: auto;">'
+                f'{st.session_state.selected_doc["content"].replace("\n", "<br>")}'
+                "</div>",
+                unsafe_allow_html=True,
             )
 
             st.subheader("Document Summary")
