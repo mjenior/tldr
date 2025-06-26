@@ -334,7 +334,7 @@ async def main():
         # Process uploaded files
         if documents is not None:
             st.markdown('<div class="process-button">', unsafe_allow_html=True)
-            process_clicked = st.button("Upload Documents", disabled=st.session_state.documents is None)
+            process_clicked = st.button("Upload Documents")
             st.markdown("</div>", unsafe_allow_html=True)
 
             if process_clicked:
@@ -411,7 +411,44 @@ async def main():
                             ):
                                 st.session_state.selected_doc = None
 
-            
+        # Display selected document content
+        if st.session_state.selected_doc:
+            st.subheader(f"Content of {st.session_state.selected_doc['source']}")
+            # Display content in a scrollable text area
+            if "content" in st.session_state.selected_doc and st.session_state.selected_doc["content"]:
+                content = st.session_state.selected_doc["content"]
+                if isinstance(content, str):
+                    content_html = content.replace("\n", "<br>")
+                    st.markdown(
+                        f'<div style="border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px; max-height: 300px; overflow-y: auto;">'
+                        f'{content_html}'
+                        "</div>",
+                        unsafe_allow_html=True,
+                    )
+                elif isinstance(content, dict):
+                    # If content is a dictionary, try to find the actual text content
+                    text_content = None
+                    for key in ["text", "content", "raw_text", "body"]:
+                        if key in content and isinstance(content[key], str):
+                            text_content = content[key]
+                            break
+                    
+                    if text_content:
+                        content_html = text_content.replace("\n", "<br>")
+                        st.markdown(
+                            f'<div style="border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px; max-height: 300px; overflow-y: auto;">'
+                            f'{content_html}'
+                            "</div>",
+                            unsafe_allow_html=True,
+                        )
+                    else:
+                        # Show the structure for debugging
+                        st.write("Content structure:")
+                        st.json(content)
+                else:
+                    st.warning("Document content is not in a readable format.")
+            else:
+                st.info("Please upload and process the documents first to view content.")
 
     # Right column - Summaries and actions
     with col2:
@@ -425,7 +462,6 @@ async def main():
 - **Polish**: Polishes the final summary for tone and style.
 """
         )
-
         # Generate initial summaries
         if st.button("Generate Reference Summaries", disabled=st.session_state.documents is None):
             with st.spinner("Summarizing documents..."):
@@ -437,32 +473,23 @@ async def main():
                 for doc in st.session_state.documents:
                     doc["summary"] = tldr_ui.tldr.content[doc["source"]]["summary"]
 
+        st.subheader("Document Summaries")
         # Display selected document content
-        if st.session_state.selected_doc:
-            st.subheader(f"Content of {st.session_state.selected_doc['source']}")
-            # Display content in a scrollable text area
-            content_html = st.session_state.selected_doc["content"].replace("\n", "<br>")
-            st.markdown(
-                f'<div style="border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px; max-height: 300px; overflow-y: auto;">'
-                f'{content_html}'
-                "</div>",
-                unsafe_allow_html=True,
-            )
-
-            st.subheader("Document Summary")
-            if st.session_state.summarized is True:
-                st.info("Select a document to view its summary")
-                # Display document summary in a scrollable container
-                summary = st.session_state.selected_doc.get(
+        if st.session_state.selected_doc and st.session_state.summarized is True:
+            st.subheader(f"Summary of {st.session_state.selected_doc['source']}")
+            # Display summary in a scrollable text area
+            summary = st.session_state.selected_doc.get(
                     "summary", "No summary available"
                 )
-                st.markdown(
-                    f'<div style="border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px; max-height: 300px; overflow-y: auto;">'
-                    f"{summary}"
-                    "</div>",
-                    unsafe_allow_html=True,
+            st.markdown(
+                f'<div style="border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px; max-height: 300px; overflow-y: auto;">'
+                f"{summary}"
+                "</div>",
+                unsafe_allow_html=True,
                 )
-
+        else:
+            st.info("Generate reference summaries first to view document summaries.")
+           
         st.subheader("Actions")
         # Create three columns for buttons
         action_col1, action_col2, action_col3 = st.columns(3)
@@ -507,7 +534,7 @@ async def main():
                 # Update session
                 st.session_state.polished = tldr_ui.tldr.polished_summary
 
-        st.subheader("Summaries")
+        st.subheader("TLDR Text")
         # Summary tabs
         tab1, tab2, tab3, tab4 = st.tabs(
             ["Added Context", "Research", "Executive", "Polished"]

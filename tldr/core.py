@@ -258,7 +258,15 @@ class TldrEngine(CompletionHandler):
                 web_search=web_search,
             )
             self.logger.info(f"File type determined: {source_type['response']}")
-            return source_type["response"]
+            file_type = source_type["response"].lower()
+            if "publication" in file_type:
+                return "publication"
+            elif "document" in file_type:
+                return "document"
+            elif "readme" in file_type:
+                return "readme"
+            else:
+                return "other"
         else:
             return "web_search"
 
