@@ -1,6 +1,6 @@
 [project]
 name = "tldr"
-version = "1.0.34"
+version = "1.0.35"
 
 description = "Reads and summarizes top points from a provided series of articles using the OpenAI API."
 readme = "README.md"

@@ -1,4 +1,4 @@
-VERSION = "1.0.34"
+VERSION = "1.0.35"
 
 # Default target
 .DEFAULT_GOAL := help
@@ -17,7 +17,7 @@ format:
 	pixi run black tldr/*.py
 	pixi run black streamlit.py
 
-build: format
+build: 
 	pixi lock
 	pixi run python -m build
 

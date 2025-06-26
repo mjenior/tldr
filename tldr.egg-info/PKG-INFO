@@ -1,8 +1,37 @@
+Metadata-Version: 2.4
+Name: tldr
+Version: 1.0.34
+Summary: Reads and summarizes top points from a provided series of articles using the OpenAI API.
+Project-URL: Homepage, https://github.com/mjenior/tldr
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE.txt
+Requires-Dist: openai>=1.78.1
+Requires-Dist: python-docx>=1.0.0
+Requires-Dist: pypdf2>=2.0.0
+Requires-Dist: beautifulsoup4>=4.12.2
+Requires-Dist: pillow>=10.2.0
+Requires-Dist: pyyaml>=6.0.1
+Requires-Dist: jsonschema>=4.21.1
+Requires-Dist: reportlab>=4.0.8
+Requires-Dist: black>=24.1.1
+Requires-Dist: langchain_community>=0.1.1
+Requires-Dist: langchain_openai>=0.1.1
+Requires-Dist: langchain>=0.1.1
+Requires-Dist: scipy>=1.9.0
+Requires-Dist: numpy>=1.26.3
+Requires-Dist: deepeval>=0.1.1
+Requires-Dist: streamlit>=1.42.0
+Requires-Dist: faiss-cpu>=1.7.4
+Requires-Dist: tenacity>=8.2.3
+Requires-Dist: langchain-google-genai>=0.1.1
+Dynamic: license-file
+
 # tldr
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-Version: 1.0.35
+Version: 1.0.34
 
 ## Overview
 

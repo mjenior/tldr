@@ -5,6 +5,7 @@ version = "1.0.33"
 
 import os
 import sys
+import math
 import asyncio
 import traceback
 from pathlib import Path
@@ -440,9 +441,10 @@ async def main():
         if st.session_state.selected_doc:
             st.subheader(f"Content of {st.session_state.selected_doc['source']}")
             # Display content in a scrollable text area
+            content_html = st.session_state.selected_doc["content"].replace("\n", "<br>")
             st.markdown(
                 f'<div style="border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px; max-height: 300px; overflow-y: auto;">'
-                f'{st.session_state.selected_doc["content"].replace("\n", "<br>")}'
+                f'{content_html}'
                 "</div>",
                 unsafe_allow_html=True,
             )

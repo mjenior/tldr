@@ -1,4 +1,4 @@
-__version__ = "1.0.34"
+__version__ = "1.0.35"
 
 from .core import TldrEngine
 from .tldr import pipeline
