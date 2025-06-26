@@ -33,15 +33,16 @@ This architecture allows for a clear separation of concerns and makes the system
 
 ## Installation
 
-This project uses `pixi` for environment and dependency management.
+This project uses [pixi](https://pixi.sh/latest/) for environment and dependency management through `make`.
 
 ```bash
 # Install from source
 git clone https://github.com/mattjenior/tldr.git
 cd tldr
+make install
 
-# Install dependencies and activate the environment
-pixi install
+# In most cases, installation can also be done with pip
+pip install -e .
 ```
 
 ## Requirements
@@ -60,12 +61,27 @@ Key Python packages are listed in the `pixi.toml` file and include:
 -   `chromadb`
 -   `lancedb`
 -   `numpy`
+-   `deepeval`
+-   `streamlit`
+-   `faiss`
+-   `tenacity`
+-   `langchain`
+
 
 ## Usage
 
+### Web Interface (Streamlit)
+
+TLDR is most easily used via a web interface.
+
+```bash
+# Run the web interface
+streamlit run streamlit.py
+```
+
 ### Command Line
 
-The tool is primarily used via the command line.
+The tool can also be used via the command line very simply.
 
 ```bash
 # Basic usage - summarize all text files in the current directory
