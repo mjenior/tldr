@@ -398,19 +398,32 @@ async def main():
                             ):
                                 st.session_state.selected_doc = None
 
-            # Generate initial summaries
-            if st.button("Generate Reference Summaries"):
-                with st.spinner("Summarizing documents..."):
-
-                    # Generate document summaries
-                    await tldr_ui.session_summarize_resources(context_size=context_size)
-                    # And update the session state
-                    st.session_state.summarized = True
-                    for doc in st.session_state.documents:
-                        doc["summary"] = tldr_ui.tldr.content[doc["source"]]["summary"]
+            
 
     # Right column - Summaries and actions
     with col2:
+        # Explanations for actions
+        st.markdown(
+            """> **Actions**
+- **Generate Reference Summaries**: Summarizes the initial set of documents to create a baseline.
+- **Refine Query**: Refines your initial query for better search results.
+- **Apply Research**: Applies external research to the compiled document summaries.
+- **Integrate Summaries**: Integrates all summaries with research and additional context into a cohesive whole.
+- **Polish**: Polishes the final summary for tone and style.
+"""
+        )
+
+        # Generate initial summaries
+        if st.button("Generate Reference Summaries"):
+            with st.spinner("Summarizing documents..."):
+
+                # Generate document summaries
+                await tldr_ui.session_summarize_resources(context_size=context_size)
+                # And update the session state
+                st.session_state.summarized = True
+                for doc in st.session_state.documents:
+                    doc["summary"] = tldr_ui.tldr.content[doc["source"]]["summary"]
+
         # Display selected document content
         if st.session_state.selected_doc:
             st.subheader(f"Content of {st.session_state.selected_doc['source']}")
