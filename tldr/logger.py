@@ -34,6 +34,31 @@ class StreamlitLogHandler(logging.Handler):
         self.logs = []
 
 
+class StreamlitStdout:
+    def __init__(self, streamlit_handler):
+        self.streamlit_handler = streamlit_handler
+        self.buffer = ""
+
+    def write(self, message):
+        self.buffer += message
+        if "\n" in self.buffer:
+            lines = self.buffer.split("\n")
+            for line in lines[:-1]:
+                if line.strip():
+                    # Create a log record and emit it through the handler
+                    record = logging.LogRecord(
+                        'stdout', logging.INFO, '', 0, line, (), None)
+                    self.streamlit_handler.emit(record)
+            self.buffer = lines[-1]
+
+    def flush(self):
+        if self.buffer:
+            record = logging.LogRecord(
+                'stdout', logging.INFO, '', 0, self.buffer, (), None)
+            self.streamlit_handler.emit(record)
+        self.buffer = ""
+
+
 class LogHandler(FileHandler):
     """
     Manages logging and tracks API usage costs for the application.
@@ -59,38 +84,12 @@ class LogHandler(FileHandler):
         logger (logging.Logger): The logger instance for the application.
     """
 
-    def __init__(self, verbose = True):
+    def __init__(self, verbose=True):
         super().__init__()
         self.verbose = verbose
         self.model = "gpt-4o-mini"
         self.streamlit_handler: Optional[StreamlitLogHandler] = None
-        
-        # Configure the root logger
         self.logger = logging.getLogger()
-        self.logger.setLevel(logging.INFO)
-        
-        # Remove any existing handlers to avoid duplicates
-        for handler in self.logger.handlers[:]:
-            self.logger.removeHandler(handler)
-            
-        # Add console handler
-        console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setLevel(logging.INFO)
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-        console_handler.setFormatter(formatter)
-        self.logger.addHandler(console_handler)
-        
-        # Add Streamlit handler if in Streamlit context
-        try:
-            import streamlit as st
-            if 'output_lines' not in st.session_state:
-                st.session_state.output_lines = []
-            self.streamlit_handler = StreamlitLogHandler()
-            self.streamlit_handler.setLevel(logging.INFO)
-            self.streamlit_handler.setFormatter(formatter)
-            self.logger.addHandler(self.streamlit_handler)
-        except ImportError:
-            pass  # Not running in Streamlit context
 
         # Define spending dictionaries
         self.model_rates_perM = {
@@ -117,32 +116,37 @@ class LogHandler(FileHandler):
         """
         Configures the root logger for the application.
         """
-        # Get root logger
-        self.logger = logging.getLogger()
-
         # Prevent duplicate handlers
         if self.logger.handlers:
-            for handler in self.logger.handlers:
+            for handler in self.logger.handlers[:]:
                 self.logger.removeHandler(handler)
 
-        # Set the verbosity
         self.logger.setLevel(logging.INFO if self.verbose else logging.WARNING)
-
-        # Console handler
-        handler = logging.StreamHandler(sys.stdout)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-        handler.setFormatter(formatter)
-        self.logger.addHandler(handler)
+
+        # Add Streamlit handler and redirect stdout if in Streamlit context
+        try:
+            import streamlit as st
+            # Check if we are in a streamlit environment
+            self.streamlit_handler = StreamlitLogHandler()
+            self.streamlit_handler.setFormatter(formatter)
+            self.logger.addHandler(self.streamlit_handler)
+            sys.stdout = StreamlitStdout(self.streamlit_handler) # Redirect stdout
+            self.logger.info("Streamlit environment detected, redirecting stdout to logs.")
+        except (ImportError, RuntimeError):
+            # Fallback to console handler if not in streamlit
+            console_handler = logging.StreamHandler(sys.stdout)
+            console_handler.setFormatter(formatter)
+            self.logger.addHandler(console_handler)
 
         # File handler
+        log_file = os.path.join(self.output_directory, f"{self.run_tag}.log")
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setFormatter(formatter)
+        self.logger.addHandler(file_handler)
         self.logger.info(
             f"Intermediate files being written to: {self.output_directory}"
         )
-        log_file = os.path.join(self.output_directory, f"{self.run_tag}.log")
-        file_handler = logging.FileHandler(log_file)
-        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-        file_handler.setFormatter(formatter)
-        self.logger.addHandler(file_handler)
 
     def update_spending(self):
         """Calculates approximate cost (USD) of LLM tokens generated to a given decimal place"""
