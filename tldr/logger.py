@@ -122,34 +122,25 @@ class LogHandler(FileHandler):
         
         # Create formatter
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-        
-        # Always add console handler for basic output
+
+        # Always create StreamlitLogHandler for potential Streamlit use
+        self.streamlit_handler = StreamlitLogHandler()
+        self.streamlit_handler.setFormatter(formatter)
+        self.logger.addHandler(self.streamlit_handler)
+
+        # Always add console handler for stdout logging
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setFormatter(formatter)
         self.logger.addHandler(console_handler)
         
-        # Try to add Streamlit handler if available
-        try:
-            # Check if we are in a streamlit environment
-            self.streamlit_handler = StreamlitLogHandler()
-            self.streamlit_handler.setFormatter(formatter)
-            self.logger.addHandler(self.streamlit_handler)
-            sys.stdout = StreamlitStdout(self.streamlit_handler)
-            self.logger.info("Streamlit environment detected, enabling Streamlit logging.")
-        except (ImportError, RuntimeError):
-            self.logger.info("Streamlit not detected, using console logging only.")
+        # File handler
+        log_file = os.path.join(self.output_directory, f"{self.run_tag}.log")
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setFormatter(formatter)
+        self.logger.addHandler(file_handler)
         
-        # Add file handler if output directory is set
-        if hasattr(self, 'output_directory') and hasattr(self, 'run_tag'):
-            try:
-                log_file = os.path.join(self.output_directory, f"{self.run_tag}.log")
-                file_handler = logging.FileHandler(log_file)
-                file_handler.setFormatter(formatter)
-                self.logger.addHandler(file_handler)
-                self.logger.info(f"Logging to file: {log_file}")
-                self.logger.info(f"Intermediate files being written to: {self.output_directory}")
-            except Exception as e:
-                self.logger.error(f"Failed to set up file logging: {str(e)}")
+        self.logger.info("Logging system initialized")
+        self.logger.info(f"Intermediate files being written to: {self.output_directory}")
 
     def update_spending(self):
         """Calculates approximate cost (USD) of LLM tokens generated to a given decimal place"""

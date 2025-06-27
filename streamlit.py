@@ -98,6 +98,20 @@ class TldrUI:
         self.status = "Ready"
         self.processing = False
 
+    def log_message(self, message, level="INFO"):
+        """Helper method to log messages to both console and Streamlit interface"""
+        formatted_message = f"{level}: {message}"
+        print(f"TLDR: {message}")  # Console logging
+        
+        # Log to TldrEngine logger if available
+        if hasattr(self, 'tldr') and hasattr(self.tldr, 'logger'):
+            if level.upper() == "ERROR":
+                self.tldr.logger.error(message)
+            elif level.upper() == "WARNING":
+                self.tldr.logger.warning(message)
+            else:
+                self.tldr.logger.info(message)
+
     def reset_session_status(self):
         self.status = "Ready"
         self.processing = False
@@ -119,14 +133,14 @@ class TldrUI:
         try:
             self.status = "Processing..."
             self.processing = True
-            print(f"TLDR: Starting to load content from {len(input_files)} files...")
+            self.log_message(f"Starting to load content from {len(input_files)} files...")
             await self.tldr.load_all_content(input_files, context_files, context_size)
-            print(f"TLDR: Content loading completed successfully")
+            self.log_message("Content loading completed successfully")
         except Exception as e:
             error_details = traceback.format_exc()
             self.status = "Error during processing"
-            print(f"TLDR ERROR: {str(e)}")
-            print(f"TLDR ERROR DETAILS: {error_details}")
+            self.log_message(f"ERROR: {str(e)}", "ERROR")
+            self.log_message(f"ERROR DETAILS: {error_details}", "ERROR")
             st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
             st.stop()
 
@@ -138,13 +152,13 @@ class TldrUI:
         try:
             self.status = "Processing..."
             self.processing = True
-            print(f"TLDR: Refining query: '{query[:100]}...'")
+            self.log_message(f"Refining query: '{query[:100]}...'")
             await self.tldr.refine_user_query(query, context_size)
-            print(f"TLDR: Query refinement completed")
+            self.log_message("Query refinement completed")
         except Exception as e:
             error_details = traceback.format_exc()
             self.status = "Error during processing"
-            print(f"TLDR ERROR: {str(e)}")
+            self.log_message(f"ERROR: {str(e)}", "ERROR")
             st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
             st.stop()
 
@@ -156,13 +170,13 @@ class TldrUI:
         try:
             self.status = "Processing..."
             self.processing = True
-            print(f"TLDR: Starting research phase (this may take several minutes)...")
+            self.log_message("Starting research phase (this may take several minutes)...")
             await self.tldr.apply_research(context_size)
-            print(f"TLDR: Research phase completed successfully")
+            self.log_message("Research phase completed successfully")
         except Exception as e:
             error_details = traceback.format_exc()
             self.status = "Error during processing"
-            print(f"TLDR ERROR: {str(e)}")
+            self.log_message(f"ERROR: {str(e)}", "ERROR")
             st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
             st.stop()
 
@@ -174,13 +188,13 @@ class TldrUI:
         try:
             self.status = "Processing..."
             self.processing = True
-            print(f"TLDR: Starting document summarization...")
+            self.log_message("Starting document summarization...")
             await self.tldr.summarize_resources(context_size)
-            print(f"TLDR: Document summarization completed successfully")
+            self.log_message("Document summarization completed successfully")
         except Exception as e:
             error_details = traceback.format_exc()
             self.status = "Error during processing"
-            print(f"TLDR ERROR: {str(e)}")
+            self.log_message(f"ERROR: {str(e)}", "ERROR")
             st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
             st.stop()
 
@@ -192,13 +206,13 @@ class TldrUI:
         try:
             self.status = "Processing..."
             self.processing = True
-            print(f"TLDR: Starting summary integration...")
+            self.log_message("Starting summary integration...")
             await self.tldr.integrate_summaries(context_size)
-            print(f"TLDR: Summary integration completed successfully")
+            self.log_message("Summary integration completed successfully")
         except Exception as e:
             error_details = traceback.format_exc()
             self.status = "Error during processing"
-            print(f"TLDR ERROR: {str(e)}")
+            self.log_message(f"ERROR: {str(e)}", "ERROR")
             st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
             st.stop()
 
@@ -210,13 +224,13 @@ class TldrUI:
         try:
             self.status = "Processing..."
             self.processing = True
-            print(f"TLDR: Starting response polishing with {tone} tone...")
+            self.log_message(f"Starting response polishing with {tone} tone...")
             await self.tldr.polish_response(tone, context_size)
-            print(f"TLDR: Response polishing completed successfully")
+            self.log_message("Response polishing completed successfully")
         except Exception as e:
             error_details = traceback.format_exc()
             self.status = "Error during processing"
-            print(f"TLDR ERROR: {str(e)}")
+            self.log_message(f"ERROR: {str(e)}", "ERROR")
             st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
             st.stop()
 
@@ -228,13 +242,13 @@ class TldrUI:
         try:
             self.status = "Processing..."
             self.processing = True
-            print(f"TLDR: Saving to PDF (polished={polished})...")
+            self.log_message(f"Saving to PDF (polished={polished})...")
             await self.tldr.save_to_pdf(polished)
-            print(f"TLDR: PDF saved successfully")
+            self.log_message("PDF saved successfully")
         except Exception as e:
             error_details = traceback.format_exc()
             self.status = "Error during processing"
-            print(f"TLDR ERROR: {str(e)}")
+            self.log_message(f"ERROR: {str(e)}", "ERROR")
             st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
             st.stop()
 
@@ -276,10 +290,7 @@ class TldrUI:
         # Log the uploaded files
         if uploaded_files and len(uploaded_files) > 0:
             file_names = ", ".join([f"'{file.name}'" for file in uploaded_files])
-            log_message = f"Uploaded {len(uploaded_files)} file(s) to {key}: {file_names}"
-            print(f"TLDR: {log_message}")  # Console logging
-            if hasattr(self, 'tldr') and hasattr(self.tldr, 'logger'):
-                self.tldr.logger.info(log_message)
+            self.log_message(f"Uploaded {len(uploaded_files)} file(s) to {key}: {file_names}")
         
         return uploaded_files
 
@@ -323,25 +334,23 @@ async def main():
         st.session_state.tldr_ui = TldrUI()
         st.session_state.tldr_ui.tldr = TldrEngine()
         
-        # Ensure console logging is always enabled
+        # Log initialization success
+        print("TLDR: TldrEngine initialized successfully")
+        print("TLDR: StreamlitLogHandler is ready for log capture")
+        
+        # Verify logger setup
         if hasattr(st.session_state.tldr_ui.tldr, 'logger'):
             logger = st.session_state.tldr_ui.tldr.logger
+            print(f"TLDR: Logger has {len(logger.handlers)} handlers configured")
             
-            # Check if there's already a console handler
-            has_console_handler = False
-            for handler in logger.handlers:
-                if isinstance(handler, logging.StreamHandler) and handler.stream in (sys.stdout, sys.stderr):
-                    has_console_handler = True
-                    break
+            # Make sure we have at least console and streamlit handlers
+            handler_types = [type(h).__name__ for h in logger.handlers]
+            print(f"TLDR: Handler types: {handler_types}")
             
-            # Add console handler if not present
-            if not has_console_handler:
-                console_handler = logging.StreamHandler(sys.stdout)
-                console_handler.setLevel(logging.INFO)
-                formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-                console_handler.setFormatter(formatter)
-                logger.addHandler(console_handler)
-                logger.info("Console logging enabled for TLDR engine")
+            # Test logging
+            st.session_state.tldr_ui.log_message("TLDR system initialized and ready for use")
+        else:
+            print("TLDR WARNING: No logger found on TldrEngine")
                 
     tldr_ui = st.session_state.tldr_ui
 
@@ -378,12 +387,6 @@ async def main():
 
     # Left column - Document input and controls
     with col1:
-        st.markdown(
-            """> **Input**
-- **Target Documents:** The primary files you want to summarize.  
-- **Additional Context:** Optional supplementary documents to provide more context for the summarization."""
-        )
-
         # Upload files
         documents = tldr_ui.document_uploader(
             "Target Documents", 
@@ -530,6 +533,7 @@ async def main():
                     doc["summary"] = tldr_ui.tldr.content[doc["source"]]["summary"]
 
         st.subheader("Document Summaries")
+        st.text("Select a document from the list of uploaded documents to view its summary.")
         # Display selected document content
         if st.session_state.selected_doc and st.session_state.summarized is True:
             st.subheader(f"Summary of {st.session_state.selected_doc['source']}")
@@ -756,58 +760,49 @@ async def main():
         new_logs = []
         
         # Method 1: Check for StreamlitLogHandler if it exists
-        if hasattr(tldr_ui.tldr, 'logger') and hasattr(tldr_ui.tldr.logger, 'streamlit_handler'):
-            streamlit_handler = tldr_ui.tldr.logger.streamlit_handler
-            if streamlit_handler is not None and hasattr(streamlit_handler, 'get_logs'):
-                logs = streamlit_handler.get_logs()
+        if hasattr(tldr_ui.tldr, 'streamlit_handler') and tldr_ui.tldr.streamlit_handler is not None:
+            try:
+                logs = tldr_ui.tldr.streamlit_handler.get_logs()
                 if logs:
                     new_logs.extend(logs)
+                    # Clear the handler logs after reading to prevent duplication
+                    tldr_ui.tldr.streamlit_handler.clear_logs()
+            except Exception as e:
+                print(f"Error reading streamlit handler logs: {e}")
         
-        # Method 2: Check for any handlers with log records
-        elif hasattr(tldr_ui.tldr, 'logger') and hasattr(tldr_ui.tldr.logger, 'handlers'):
+        # Method 2: Check for any log records from the logger directly
+        if hasattr(tldr_ui.tldr, 'logger') and hasattr(tldr_ui.tldr.logger, 'handlers'):
             for handler in tldr_ui.tldr.logger.handlers:
-                if hasattr(handler, 'stream') and hasattr(handler.stream, 'getvalue'):
-                    # String buffer handler
-                    log_content = handler.stream.getvalue()
-                    if log_content:
-                        new_logs.extend(log_content.strip().split('\n'))
-                elif hasattr(handler, 'records'):
-                    # Custom handler with records attribute
-                    for record in handler.records:
-                        new_logs.append(f"{record.levelname}: {record.getMessage()}")
+                if hasattr(handler, 'logs') and hasattr(handler, 'get_logs'):
+                    # This is likely our StreamlitLogHandler
+                    try:
+                        handler_logs = handler.get_logs()
+                        if handler_logs:
+                            new_logs.extend(handler_logs)
+                            handler.clear_logs()
+                    except Exception as e:
+                        print(f"Error reading handler logs: {e}")
         
-        # Method 3: Add some example logs if TldrEngine has processing status
+        # Method 3: Add processing status logs
+        if tldr_ui.processing:
+            status_msg = f"INFO: {tldr_ui.status}"
+            if status_msg not in st.session_state.output_lines:
+                new_logs.append(status_msg)
+                # Also print to console
+                print(status_msg)
+        
+        # Method 4: Add completion status logs when processing finishes
         if hasattr(tldr_ui.tldr, 'total_input_tokens') and tldr_ui.tldr.total_input_tokens > 0:
-            status_log = f"INFO: Processing complete - Input tokens: {tldr_ui.tldr.total_input_tokens}, Output tokens: {tldr_ui.tldr.total_output_tokens}"
+            status_log = f"INFO: Processing complete - Input tokens: {tldr_ui.tldr.total_input_tokens}, Output tokens: {tldr_ui.tldr.total_output_tokens}, Total spend: ${tldr_ui.tldr.total_spend:.4f}"
             if status_log not in st.session_state.output_lines:
                 new_logs.append(status_log)
                 # Also print to console
                 print(status_log)
         
-        # Add system status logs
-        if tldr_ui.processing:
-            status_msg = f"INFO: {tldr_ui.status}"
-            new_logs.append(status_msg)
-            # Also print to console
-            print(status_msg)
-        
-        # Method 4: Force log important operations to both console and Streamlit
-        current_time = asyncio.get_event_loop().time() if hasattr(st.session_state, 'last_log_time') else 0
-        if not hasattr(st.session_state, 'last_log_time'):
-            st.session_state.last_log_time = current_time
-            
-        # Add periodic status updates
-        if current_time - st.session_state.last_log_time > 5:  # Every 5 seconds
-            if hasattr(tldr_ui.tldr, 'logger'):
-                status_update = f"DEBUG: System active - Processing: {tldr_ui.processing}, Status: {tldr_ui.status}"
-                new_logs.append(status_update)
-                print(status_update)  # Also print to console
-                st.session_state.last_log_time = current_time
-        
         # Update session state with new logs
         if new_logs:
             st.session_state.output_lines.extend(new_logs)
-            # Keep only last 100 lines
+            # Keep only last 100 lines to prevent memory issues
             st.session_state.output_lines = st.session_state.output_lines[-100:]
         
         # Display the logs in a scrollable container
