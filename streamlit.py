@@ -504,7 +504,8 @@ async def main():
                 with st.spinner("Researching gaps..."):
                     await tldr_ui.session_apply_research(context_size=context_size)
                 # Update session
-                st.session_state.research_results = tldr_ui.tldr.research_results
+                st.session_state.research_results = tldr_ui.tldr.research_context
+                st.session_state.added_context = tldr_ui.tldr.added_context
 
         # Synthesis
         with action_col2:
@@ -519,7 +520,7 @@ async def main():
                     await tldr_ui.session_integrate_summaries(context_size=context_size)
                 # Update session
                 st.session_state.executive = tldr_ui.tldr.executive_summary
-
+    
         # Polish
         with action_col3:
             if st.button(
@@ -537,31 +538,31 @@ async def main():
         st.subheader("TLDR Text")
         # Summary tabs
         tab1, tab2, tab3, tab4 = st.tabs(
-            ["Added Context", "Research", "Executive", "Polished"]
+            ["Added Context", "Research Results", "Executive Summary", "Polished Summary"]
         )
 
         # Summary content
         with tab1:
             st.text_area(
-                "Added Context",
+                "Additional context provided during executive summary generation",
                 height=400,
                 key="added_context",
             )
         with tab2:
             st.text_area(
-                "Research Results",
+                "Research results from knowledge gaps identified in document summaries",
                 height=400,
                 key="research_results",
             )
         with tab3:
             st.text_area(
-                "Executive Summary",
+                "Executive summary of combined document summaries and research results",
                 height=400,
                 key="executive",
             )
         with tab4:
             st.text_area(
-                "Polished Summary",
+                "Polished executive summary with improved formatting and tone",
                 height=400,
                 key="polished",
             )

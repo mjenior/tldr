@@ -345,6 +345,7 @@ class TldrEngine(CompletionHandler):
         # Assemble full research context
         divider = "\n#--------------------------------------------------------#\n"
         research_str = divider.join(research_context)
+        self.research_context = research_str
 
         # Update added context with new research
         await self.format_context(research_str, label="research_context")
