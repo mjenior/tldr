@@ -514,6 +514,7 @@ async def main():
                 "Research",
                 disabled=st.session_state.documents is None
                 or tldr_ui.processing is True,
+                help="Apply external research to the compiled document summaries",
             ):
                 with st.spinner("Researching knowledge gaps..."):
                     await tldr_ui.session_apply_research(context_size=context_size)
@@ -521,9 +522,10 @@ async def main():
         # Synthesis
         with action_col2:
             if st.button(
-                "Synthesis",
+                "Synthesize",
                 disabled=st.session_state.documents is None
                 or tldr_ui.processing is True,
+                help="Synthesize summaries, research, and new added context",
             ):
                 with st.spinner(
                     "Synthesizing summaries, research, and new added context..."
@@ -536,6 +538,7 @@ async def main():
                 "Polish",
                 disabled=st.session_state.executive is None
                 or tldr_ui.processing is True,
+                help="Polish the finalized summary",
             ):
                 with st.spinner("Polishing finalized summary..."):
                     await tldr_ui.session_polish_response(
