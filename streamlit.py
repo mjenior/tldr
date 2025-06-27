@@ -295,7 +295,7 @@ class TldrUI:
         return uploaded_files
 
 
-async def main():
+async def run_tldr_streamlit():
 
     # Initialize console logging from the start
     print(f"TLDR v{version}: Starting Streamlit application")
@@ -839,8 +839,9 @@ async def main():
 
 def start_ui():
     """Command-line entry point to run the tldr streamlit UI."""
-    asyncio.run(main())
+    asyncio.run(run_tldr_streamlit())
 
 
 if __name__ == "__main__":
     start_ui()
+    

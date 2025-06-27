@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 1.0.35 - Streamlit Interface and Code Refactoring
+* Added Streamlit-based web interface for easier interaction
+* Refactored file handling into a dedicated `FileHandler` class
+* Improved code organization and maintainability
+* Removed unused dependencies and cleaned up imports
+* Enhanced documentation and type hints
+
+
 ## Version 1.0.30 - Major Features and Improvements
 * Added intelligent file type determination and logging
 * Added context file search and automated refinement
