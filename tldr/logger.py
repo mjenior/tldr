@@ -116,37 +116,40 @@ class LogHandler(FileHandler):
         """
         Configures the root logger for the application.
         """
-        # Prevent duplicate handlers
-        if self.logger.handlers:
-            for handler in self.logger.handlers[:]:
-                self.logger.removeHandler(handler)
-
+        # Reset logger to ensure clean state
+        self.logger.handlers = []
         self.logger.setLevel(logging.INFO if self.verbose else logging.WARNING)
+        
+        # Create formatter
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-
-        # Add Streamlit handler and redirect stdout if in Streamlit context
+        
+        # Always add console handler for basic output
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setFormatter(formatter)
+        self.logger.addHandler(console_handler)
+        
+        # Try to add Streamlit handler if available
         try:
             import streamlit as st
-            # Check if we are in a streamlit environment
             self.streamlit_handler = StreamlitLogHandler()
             self.streamlit_handler.setFormatter(formatter)
             self.logger.addHandler(self.streamlit_handler)
-            sys.stdout = StreamlitStdout(self.streamlit_handler) # Redirect stdout
-            self.logger.info("Streamlit environment detected, redirecting stdout to logs.")
+            sys.stdout = StreamlitStdout(self.streamlit_handler)
+            self.logger.info("Streamlit environment detected, enabling Streamlit logging.")
         except (ImportError, RuntimeError):
-            # Fallback to console handler if not in streamlit
-            console_handler = logging.StreamHandler(sys.stdout)
-            console_handler.setFormatter(formatter)
-            self.logger.addHandler(console_handler)
-
-        # File handler
-        log_file = os.path.join(self.output_directory, f"{self.run_tag}.log")
-        file_handler = logging.FileHandler(log_file)
-        file_handler.setFormatter(formatter)
-        self.logger.addHandler(file_handler)
-        self.logger.info(
-            f"Intermediate files being written to: {self.output_directory}"
-        )
+            self.logger.info("Streamlit not detected, using console logging only.")
+        
+        # Add file handler if output directory is set
+        if hasattr(self, 'output_directory') and hasattr(self, 'run_tag'):
+            try:
+                log_file = os.path.join(self.output_directory, f"{self.run_tag}.log")
+                file_handler = logging.FileHandler(log_file)
+                file_handler.setFormatter(formatter)
+                self.logger.addHandler(file_handler)
+                self.logger.info(f"Logging to file: {log_file}")
+                self.logger.info(f"Intermediate files being written to: {self.output_directory}")
+            except Exception as e:
+                self.logger.error(f"Failed to set up file logging: {str(e)}")
 
     def update_spending(self):
         """Calculates approximate cost (USD) of LLM tokens generated to a given decimal place"""

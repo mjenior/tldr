@@ -761,5 +761,11 @@ async def main():
         )
 
 
-if __name__ == "__main__":
+
+def start_ui():
+    """Command-line entry point to run the tldr streamlit UI."""
     asyncio.run(main())
+
+
+if __name__ == "__main__":
+    start_ui()
