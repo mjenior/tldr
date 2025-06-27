@@ -1,0 +1,17 @@
+2025-06-27 05:38:48,034 - INFO - Systems instructions loaded successfully.
+2025-06-27 05:38:48,056 - INFO - Initialized OpenAI client: version=1.84.0, context size=medium
+2025-06-27 05:39:39,202 - INFO - Searching for reference documents...
+2025-06-27 05:39:40,810 - INFO - Identified 2 reference documents.
+2025-06-27 05:39:40,810 - INFO - Generating embeddings for reference documents...
+2025-06-27 05:39:41,569 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 05:39:41,605 - INFO - Loading faiss with AVX2 support.
+2025-06-27 05:39:41,618 - INFO - Successfully loaded faiss with AVX2 support.
+2025-06-27 05:39:41,620 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-27 05:39:47,123 - INFO - Generating summaries for selected resources...
+2025-06-27 05:39:47,123 - INFO - Determining file type of tldr.20250627_053848.files/jenior-et-al.pdf...
+2025-06-27 05:40:03,309 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 05:40:03,355 - INFO - File type determined: publication
+2025-06-27 05:40:03,356 - INFO - Determining file type of tldr.20250627_053848.files/leslie-et-al.pdf...
+2025-06-27 05:40:11,368 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 05:40:11,369 - INFO - File type determined: publication
+2025-06-27 05:41:05,107 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"

@@ -2,8 +2,36 @@ import os
 import sys
 import math
 import logging
+from typing import List, Optional
 
 from .io import FileHandler
+
+class StreamlitLogHandler(logging.Handler):
+    """Custom logging handler that updates Streamlit UI with log messages."""
+    
+    def __init__(self):
+        super().__init__()
+        self.logs: List[str] = []
+        self.max_logs = 1000  # Maximum number of logs to keep in memory
+    
+    def emit(self, record):
+        """Emit a log record."""
+        try:
+            msg = self.format(record)
+            self.logs.append(msg)
+            # Keep only the most recent logs
+            if len(self.logs) > self.max_logs:
+                self.logs = self.logs[-self.max_logs:]
+        except Exception:
+            self.handleError(record)
+    
+    def get_logs(self) -> List[str]:
+        """Get the current list of log messages."""
+        return self.logs
+    
+    def clear_logs(self):
+        """Clear all stored log messages."""
+        self.logs = []
 
 
 class LogHandler(FileHandler):
@@ -18,7 +46,6 @@ class LogHandler(FileHandler):
     It inherits from `FileHandler` to leverage file I/O capabilities.
 
     Attributes:
-        model (str): The default model for which to track usage.
         verbose (bool): A flag to control the verbosity of logging.
         model_rates_perM (dict): A dictionary mapping model names to their
             cost per million tokens for input and output.
@@ -32,10 +59,38 @@ class LogHandler(FileHandler):
         logger (logging.Logger): The logger instance for the application.
     """
 
-    def __init__(self):
+    def __init__(self, verbose = True):
         super().__init__()
+        self.verbose = verbose
         self.model = "gpt-4o-mini"
-        self.verbose = True
+        self.streamlit_handler: Optional[StreamlitLogHandler] = None
+        
+        # Configure the root logger
+        self.logger = logging.getLogger()
+        self.logger.setLevel(logging.INFO)
+        
+        # Remove any existing handlers to avoid duplicates
+        for handler in self.logger.handlers[:]:
+            self.logger.removeHandler(handler)
+            
+        # Add console handler
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(logging.INFO)
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        console_handler.setFormatter(formatter)
+        self.logger.addHandler(console_handler)
+        
+        # Add Streamlit handler if in Streamlit context
+        try:
+            import streamlit as st
+            if 'output_lines' not in st.session_state:
+                st.session_state.output_lines = []
+            self.streamlit_handler = StreamlitLogHandler()
+            self.streamlit_handler.setLevel(logging.INFO)
+            self.streamlit_handler.setFormatter(formatter)
+            self.logger.addHandler(self.streamlit_handler)
+        except ImportError:
+            pass  # Not running in Streamlit context
 
         # Define spending dictionaries
         self.model_rates_perM = {

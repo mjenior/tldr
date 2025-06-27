@@ -9,10 +9,11 @@ import math
 import asyncio
 import traceback
 from pathlib import Path
-from typing import List, Union, BinaryIO
+from typing import List
 
 import streamlit as st
 from streamlit.runtime.uploaded_file_manager import UploadedFile
+from datetime import datetime, timedelta
 
 # from streamlit.delta_generator import DeltaGenerator
 
@@ -238,9 +239,11 @@ class TldrUI:
             )
         return file_info
 
-    def document_uploader(self, header: str, key: str):
-        """Document uploader"""
+    def document_uploader(self, header: str, key: str, description: str = None):
+        """Document uploader with logging of uploaded files"""
         st.subheader(header)
+        if description is not None:
+            st.write(description)
 
         uploaded_files = st.file_uploader(
             "Upload documents (PDF, TXT, DOCX)",
@@ -248,6 +251,13 @@ class TldrUI:
             accept_multiple_files=True,
             key=key,
         )
+        
+        # Log the uploaded files
+        if uploaded_files and len(uploaded_files) > 0:
+            file_names = ", ".join([f"'{file.name}'" for file in uploaded_files])
+            if hasattr(self, 'tldr') and hasattr(self.tldr, 'logger'):
+                self.tldr.logger.info(f"Uploaded {len(uploaded_files)} file(s) to {key}: {file_names}")
+        
         return uploaded_files
 
 
@@ -328,8 +338,14 @@ async def main():
         )
 
         # Upload files
-        documents = tldr_ui.document_uploader("Target Documents", "document_uploader")
-        context = tldr_ui.document_uploader("Additional Context", "context_uploader")
+        documents = tldr_ui.document_uploader(
+            "Target Documents", 
+            "document_uploader", 
+            "Selected documents to focus on for summaries and research")
+        context = tldr_ui.document_uploader(
+            "Additional Context", 
+            "context_uploader", 
+            "Documents to provide supplementary context")
 
         # Process uploaded files
         if documents is not None:
@@ -501,11 +517,8 @@ async def main():
                 disabled=st.session_state.documents is None
                 or tldr_ui.processing is True,
             ):
-                with st.spinner("Researching gaps..."):
+                with st.spinner("Researching knowledge gaps..."):
                     await tldr_ui.session_apply_research(context_size=context_size)
-                # Update session
-                st.session_state.research_results = tldr_ui.tldr.research_context
-                st.session_state.added_context = tldr_ui.tldr.added_context
 
         # Synthesis
         with action_col2:
@@ -518,8 +531,6 @@ async def main():
                     "Synthesizing summaries, research, and new added context..."
                 ):
                     await tldr_ui.session_integrate_summaries(context_size=context_size)
-                # Update session
-                st.session_state.executive = tldr_ui.tldr.executive_summary
     
         # Polish
         with action_col3:
@@ -532,8 +543,6 @@ async def main():
                     await tldr_ui.session_polish_response(
                         tone=tone, context_size=context_size
                     )
-                # Update session
-                st.session_state.polished = tldr_ui.tldr.polished_summary
 
         st.subheader("TLDR Text")
         # Summary tabs
@@ -542,31 +551,126 @@ async def main():
         )
 
         # Summary content
+        # Initialize edit mode state if not exists
+        if 'edit_mode' not in st.session_state:
+            st.session_state.edit_mode = {
+                'added_context': False,
+                'research_context': False,
+                'executive_summary': False,
+                'polished_summary': False
+            }
+        
+        # Initialize edit buffers if not exists
+        if 'edit_buffers' not in st.session_state:
+            st.session_state.edit_buffers = {
+                'added_context': "",
+                'research_context': "",
+                'executive_summary': "",
+                'polished_summary': ""
+            }
+        
+        # Update edit buffers from TldrEngine if not in edit mode
+        if hasattr(tldr_ui, 'tldr'):
+            if not st.session_state.edit_mode['added_context'] and hasattr(tldr_ui.tldr, 'added_context'):
+                st.session_state.edit_buffers['added_context'] = tldr_ui.tldr.added_context or ""
+            if not st.session_state.edit_mode['research_context'] and hasattr(tldr_ui.tldr, 'research_context'):
+                st.session_state.edit_buffers['research_context'] = tldr_ui.tldr.research_context or ""
+            if not st.session_state.edit_mode['executive_summary'] and hasattr(tldr_ui.tldr, 'executive_summary'):
+                st.session_state.edit_buffers['executive_summary'] = tldr_ui.tldr.executive_summary or ""
+            if not st.session_state.edit_mode['polished_summary'] and hasattr(tldr_ui.tldr, 'polished_summary'):
+                st.session_state.edit_buffers['polished_summary'] = tldr_ui.tldr.polished_summary or ""
+        
+        # Added Context Tab
         with tab1:
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                if st.button("✏️ Edit", key="edit_added_context"):
+                    st.session_state.edit_mode['added_context'] = True
+            with col2:
+                if st.session_state.edit_mode['added_context'] and st.button("💾 Save", key="save_added_context"):
+                    st.session_state.edit_mode['added_context'] = False
+                    if hasattr(tldr_ui, 'tldr'):
+                        tldr_ui.tldr.added_context = st.session_state.edit_buffers['added_context']
+            
             st.text_area(
                 "Additional context provided during executive summary generation",
                 height=400,
-                key="added_context",
+                value=st.session_state.edit_buffers['added_context'],
+                key="added_context_area",
+                disabled=not st.session_state.edit_mode['added_context'],
+                on_change=lambda: st.session_state.edit_buffers.update({
+                    'added_context': st.session_state.added_context_area
+                })
             )
+        
+        # Research Results Tab
         with tab2:
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                if st.button("✏️ Edit", key="edit_research_context"):
+                    st.session_state.edit_mode['research_context'] = True
+            with col2:
+                if st.session_state.edit_mode['research_context'] and st.button("💾 Save", key="save_research_context"):
+                    st.session_state.edit_mode['research_context'] = False
+                    if hasattr(tldr_ui, 'tldr'):
+                        tldr_ui.tldr.research_context = st.session_state.edit_buffers['research_context']
+            
             st.text_area(
                 "Research results from knowledge gaps identified in document summaries",
                 height=400,
-                key="research_results",
+                value=st.session_state.edit_buffers['research_context'],
+                key="research_results_area",
+                disabled=not st.session_state.edit_mode['research_context'],
+                on_change=lambda: st.session_state.edit_buffers.update({
+                    'research_context': st.session_state.research_results_area
+                })
             )
+        
+        # Executive Summary Tab
         with tab3:
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                if st.button("✏️ Edit", key="edit_exec_summary"):
+                    st.session_state.edit_mode['executive_summary'] = True
+            with col2:
+                if st.session_state.edit_mode['executive_summary'] and st.button("💾 Save", key="save_exec_summary"):
+                    st.session_state.edit_mode['executive_summary'] = False
+                    if hasattr(tldr_ui, 'tldr'):
+                        tldr_ui.tldr.executive_summary = st.session_state.edit_buffers['executive_summary']
+            
             st.text_area(
                 "Executive summary of combined document summaries and research results",
                 height=400,
-                key="executive",
+                value=st.session_state.edit_buffers['executive_summary'],
+                key="executive_area",
+                disabled=not st.session_state.edit_mode['executive_summary'],
+                on_change=lambda: st.session_state.edit_buffers.update({
+                    'executive_summary': st.session_state.executive_area
+                })
             )
+        
+        # Polished Summary Tab
         with tab4:
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                if st.button("✏️ Edit", key="edit_polished"):
+                    st.session_state.edit_mode['polished_summary'] = True
+            with col2:
+                if st.session_state.edit_mode['polished_summary'] and st.button("💾 Save", key="save_polished"):
+                    st.session_state.edit_mode['polished_summary'] = False
+                    if hasattr(tldr_ui, 'tldr'):
+                        tldr_ui.tldr.polished_summary = st.session_state.edit_buffers['polished_summary']
+            
             st.text_area(
                 "Polished executive summary with improved formatting and tone",
                 height=400,
-                key="polished",
+                value=st.session_state.edit_buffers['polished_summary'],
+                key="polished_area",
+                disabled=not st.session_state.edit_mode['polished_summary'],
+                on_change=lambda: st.session_state.edit_buffers.update({
+                    'polished_summary': st.session_state.polished_area
+                })
             )
-        # Action buttons for summary - using a single row
         st.write("")
 
         st.subheader("Output")
@@ -574,7 +678,6 @@ async def main():
         output_col1, output_col2 = st.columns(2)
 
         with output_col1:
-            
             # Add the actual buttons (invisible, just for the click handlers)
             if st.button(
                 "📋 Copy to Clipboard",
@@ -595,6 +698,52 @@ async def main():
                 with st.spinner("Generating PDF..."):
                     await tldr_ui.tldr.save_to_pdf(st.session_state.polished)
                 st.toast("PDF saved!")
+
+    # Status and Output section
+    with st.expander("🔍 Processing Logs", expanded=False):
+        # Initialize session state for logs if needed
+        if 'output_lines' not in st.session_state:
+            st.session_state.output_lines = []
+        
+        # Get the StreamlitLogHandler if it exists
+        streamlit_handler = None
+        if hasattr(tldr_ui.tldr, 'logger') and hasattr(tldr_ui.tldr.logger, 'streamlit_handler'):
+            streamlit_handler = tldr_ui.tldr.logger.streamlit_handler
+        
+        # Clear logs button
+        if st.button("Clear Logs"):
+            if streamlit_handler is not None:
+                streamlit_handler.clear_logs()
+            st.session_state.output_lines = []
+        
+        # Update logs from the handler
+        if streamlit_handler is not None:
+            logs = streamlit_handler.get_logs()
+            if logs:
+                st.session_state.output_lines = logs[-100:]  # Keep last 100 lines
+        
+        # Display the logs in a scrollable container
+        log_container = st.container(height=400)
+        with log_container:
+            if st.session_state.output_lines:
+                # Display logs in reverse order (newest first)
+                for log in reversed(st.session_state.output_lines):
+                    st.text(log)
+                
+                # Auto-scroll to bottom
+                st.markdown(
+                    """
+                    <script>
+                        const logs = document.querySelectorAll('.stText');
+                        if (logs.length > 0) {
+                            logs[logs.length - 1].scrollIntoView();
+                        }
+                    </script>
+                    """,
+                    unsafe_allow_html=True
+                )
+            else:
+                st.info("No logs available. Processing will generate logs here.")
 
     # Status bar
     status_bar = st.container()

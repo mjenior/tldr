@@ -1,0 +1,23 @@
+2025-06-27 05:34:56,433 - INFO - Systems instructions loaded successfully.
+2025-06-27 05:34:56,454 - INFO - Initialized OpenAI client: version=1.84.0, context size=medium
+2025-06-27 05:35:37,984 - ERROR - Task exception was never retrieved
+future: <Task finished name='Task-2060' coro=<WebSocketProtocol13.write_message.<locals>.wrapper() done, defined at /home/matt-jenior/miniconda3/lib/python3.12/site-packages/tornado/websocket.py:1086> exception=WebSocketClosedError()>
+Traceback (most recent call last):
+  File "/home/matt-jenior/miniconda3/lib/python3.12/site-packages/streamlit/web/bootstrap.py", line 347, in run
+    if asyncio.get_running_loop().is_running():
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: no running event loop
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/matt-jenior/miniconda3/lib/python3.12/site-packages/tornado/websocket.py", line 1088, in wrapper
+    await fut
+tornado.iostream.StreamClosedError: Stream is closed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/matt-jenior/miniconda3/lib/python3.12/site-packages/tornado/websocket.py", line 1090, in wrapper
+    raise WebSocketClosedError()
+tornado.websocket.WebSocketClosedError

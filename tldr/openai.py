@@ -110,8 +110,8 @@ class CompletionHandler(ResearchAgent):
 
     @retry(
         wait=wait_random_exponential(min=1, max=60),
-        stop=stop_after_attempt(10),
-        retry=retry_if_exception_type(RateLimitError),
+        stop=stop_after_attempt(3),  # Reduced from 10 to 3 to fail faster
+        retry=retry_if_exception_type((RateLimitError, asyncio.TimeoutError, Exception)),
     )
     async def perform_api_call(
         self,
@@ -124,17 +124,48 @@ class CompletionHandler(ResearchAgent):
     ):
         """
         Helper function to encapsulate the actual API call logic.
+        
+        Args:
+            prompt: The input prompt to send to the API
+            prompt_type: Type of prompt (determines model and instructions)
+            web_search: Whether to enable web search
+            context_size: Size of the context window
+            source: Source of the content (for tracking)
+            **kwargs: Additional parameters to pass to the API
+            
+        Returns:
+            Dict containing the prompt, response, and source
+            
+        Raises:
+            asyncio.TimeoutError: If the API call times out
+            Exception: For other API errors
         """
-        call_params = self.assemble_messages(
-            prompt, prompt_type, web_search, context_size
-        )
-
-        # Run completion query
-        response = await self.client.responses.create(**call_params, **kwargs)
-
-        # Update usage and return prompt and response pair
-        self.update_usage(call_params["model"], response)
-        return {"prompt": prompt, "response": response.output_text, "source": source}
+        try:
+            call_params = self.assemble_messages(
+                prompt, prompt_type, web_search, context_size
+            )
+            
+            # Add timeout to the API call (30 seconds)
+            timeout_seconds = 30
+            
+            # Run completion query with timeout
+            try:
+                response = await asyncio.wait_for(
+                    self.client.responses.create(**call_params, **kwargs),
+                    timeout=timeout_seconds
+                )
+                
+                # Update usage and return prompt and response pair
+                self.update_usage(call_params["model"], response)
+                return {"prompt": prompt, "response": response.output_text, "source": source}
+                
+            except asyncio.TimeoutError:
+                self.logger.error(f"API call timed out after {timeout_seconds} seconds")
+                raise
+                
+        except Exception as e:
+            self.logger.error(f"Error in perform_api_call: {str(e)}")
+            raise
 
     def update_usage(self, model, response):
         """Update usage statistics."""

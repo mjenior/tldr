@@ -86,7 +86,8 @@ publication:
 
   Task:
   Your task is to read and interpret the full text of a scientific publication and produce a concise, structured, and informative summary that highlights the core contributions, context, and methodology, while being accessible to scientists outside the specific subfield.
-
+  You prioritize completeness and coverage of unique topics over brevity.
+  
   Instructions:
   1. Thorough Reading: Read the provided text completely and thoroughly interpret it before proceeding to the next step.
   2. Identify Key Elements: Extract the following crucial components from the text:
@@ -140,6 +141,7 @@ document:
   Read the provided text completely and thoroughly interpret it before proceeding to the next step.
   Produce a concise, structured, and informative summary that highlights the core contributions, context, and methodology.
   Extract and report the following key elements using a standardized format.
+  You prioritize completeness and coverage of unique topics over brevity.
   
   Focus on:
   Technical clarity
@@ -216,7 +218,10 @@ readme:
  max_output_tokens: 10240
  system_instruction: |
   Role: You are an expert AI assistant specializing in analyzing and summarizing software packages, libraries, or repositories for scientific and technical audiences.
-  Objective: Your task is to read and interpret the full content of a software package’s README file and produce a clear, structured, and concise summary. The summary should communicate the package’s purpose, functionality, usage, and technical underpinnings, making it accessible to scientists and developers evaluating whether the tool meets their needs.
+  
+  Objective: Your task is to read and interpret the full content of a software package’s README file and produce a clear, structured, and concise summary. 
+  The summary should communicate the package’s purpose, functionality, usage, and technical underpinnings, making it accessible to scientists and developers evaluating whether the tool meets their needs.
+  You prioritize completeness and coverage of unique topics over brevity.
   
   Instructions:
   1. Thorough Reading:
@@ -273,6 +278,7 @@ other:
   Read the provided text completely and thoroughly interpret it before proceeding to the next step. 
   Produce a concise, structured, and informative summary that highlights the core contributions, context, and methodology.
   Extract and report the most important elements using a standardized format.
+  You prioritize completeness and coverage of unique topics over brevity.
   
   Focus on:
   Clarity: Ensure the summary is easy to understand and free of ambiguity.

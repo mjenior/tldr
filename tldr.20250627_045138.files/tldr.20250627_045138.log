@@ -1,0 +1,99 @@
+2025-06-27 04:51:39,002 - INFO - Systems instructions loaded successfully.
+2025-06-27 04:51:39,035 - INFO - Initialized OpenAI client: version=1.84.0, context size=medium
+2025-06-27 04:51:57,840 - INFO - Searching for reference documents...
+2025-06-27 04:51:59,418 - INFO - Identified 2 reference documents.
+2025-06-27 04:51:59,418 - INFO - Generating embeddings for reference documents...
+2025-06-27 04:52:00,821 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 04:52:00,992 - INFO - Loading faiss with AVX2 support.
+2025-06-27 04:52:01,043 - INFO - Successfully loaded faiss with AVX2 support.
+2025-06-27 04:52:01,047 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-27 04:52:16,370 - INFO - Refining user query...
+2025-06-27 04:52:27,554 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:52:27,567 - INFO - Refined query: What specific nutrients or substances does Clostridium difficile utilize during infection, and how do these contribute to its survival and virulence? Additionally, how does the gut environment, including the presence of other microorganisms and dietary components, affect the growth and metabolism of C. diff during an infection? Are there particular host factors or medication influences that impact its nutrient acquisition?
+2025-06-27 04:52:27,567 - INFO - Response saved to: tldr.20250627_045138.files/refined_query.tldr.20250627_045138.txt
+2025-06-27 04:52:38,389 - INFO - Generating summaries for selected resources...
+2025-06-27 04:52:38,389 - INFO - Determining file type of tldr.20250627_045138.files/jenior-et-al.pdf...
+2025-06-27 04:52:38,391 - INFO - Retrying request to /responses in 0.377820 seconds
+2025-06-27 04:52:40,918 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:52:40,924 - INFO - File type determined: **publication**
+2025-06-27 04:52:40,924 - INFO - Determining file type of tldr.20250627_045138.files/leslie-et-al.pdf...
+2025-06-27 04:52:42,443 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:52:42,444 - INFO - File type determined: publication
+2025-06-27 04:52:57,464 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:53:57,240 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:53:57,241 - INFO - Response saved to: tldr.20250627_045138.files/reference_summaries.tldr.20250627_045138.txt
+2025-06-27 04:54:33,256 - INFO - Identifying knowledge gaps...
+2025-06-27 04:54:33,258 - INFO - Retrying request to /responses in 0.422498 seconds
+2025-06-27 04:55:24,338 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:55:24,339 - INFO - Applying web research agent to knowledge gaps...
+2025-06-27 04:55:32,770 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:55:32,932 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:55:33,816 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:55:34,902 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:55:34,969 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:55:38,435 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:55:38,526 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:55:40,619 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:55:41,953 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:55:46,852 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:55:47,522 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:56:10,994 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:56:14,549 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:57:13,932 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 04:57:13,959 - INFO - Searching for additional context in reference docs...
+2025-06-27 04:57:13,959 - INFO - Potential knowledge gap: What specific transporters and enzymes enable Clostridium difficile to import and catabolize N-acetylneuraminate during infection?
+2025-06-27 04:57:13,959 - INFO - Querying local embedded text vectors...
+2025-06-27 04:57:14,262 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 04:57:14,272 - INFO - Average relevance score: 0.516
+2025-06-27 04:57:14,272 - INFO - Potential knowledge gap: Which cytidine uptake systems and catabolic pathways exist in C. difficile, and how do they modulate toxin or sporulation gene expression?
+2025-06-27 04:57:14,272 - INFO - Querying local embedded text vectors...
+2025-06-27 04:57:14,751 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 04:57:14,753 - INFO - Average relevance score: 0.759
+2025-06-27 04:57:14,753 - INFO - Potential knowledge gap: How is the pentose phosphate pathway regulated in C. difficile under virulence‐inducing conditions?
+2025-06-27 04:57:14,753 - INFO - Querying local embedded text vectors...
+2025-06-27 04:57:15,389 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 04:57:15,390 - INFO - Average relevance score: 0.677
+2025-06-27 04:57:15,390 - INFO - Potential knowledge gap: What host‐derived bile acids influence C. difficile spore germination, growth, and toxin production, and by what metabolic mechanisms?
+2025-06-27 04:57:15,390 - INFO - Querying local embedded text vectors...
+2025-06-27 04:57:15,646 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 04:57:15,647 - INFO - Average relevance score: 0.689
+2025-06-27 04:57:15,647 - INFO - Potential knowledge gap: Which dietary carbohydrates or fibers have been shown to promote or inhibit C. difficile expansion in the gut?
+2025-06-27 04:57:15,647 - INFO - Querying local embedded text vectors...
+2025-06-27 04:57:16,139 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 04:57:16,141 - INFO - Average relevance score: 0.468
+2025-06-27 04:57:16,141 - INFO - Potential knowledge gap: How do commensal gut bacteria alter the concentrations of amino acids like glycine and proline, and how does this affect C. difficile spore germination and outgrowth?
+2025-06-27 04:57:16,141 - INFO - Querying local embedded text vectors...
+2025-06-27 04:57:16,293 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 04:57:16,294 - INFO - Average relevance score: 0.684
+2025-06-27 04:57:16,294 - INFO - Potential knowledge gap: What host factors (e.g., mucin composition or glycoprotein turnover) determine the availability of sialic acids for C. difficile metabolism?
+2025-06-27 04:57:16,295 - INFO - Querying local embedded text vectors...
+2025-06-27 04:57:16,940 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 04:57:16,941 - INFO - Average relevance score: 0.547
+2025-06-27 04:57:16,941 - INFO - Potential knowledge gap: How do commonly used antibiotics (such as clindamycin or vancomycin) reshape the gut nutrient landscape relevant to C. difficile’s carbon and nitrogen sources?
+2025-06-27 04:57:16,942 - INFO - Querying local embedded text vectors...
+2025-06-27 04:57:17,326 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 04:57:17,327 - INFO - Average relevance score: 0.498
+2025-06-27 04:57:17,327 - INFO - Potential knowledge gap: What metabolic cross‐feeding interactions occur between C. difficile and other gut microbes, specifically regarding metabolites such as succinate or short‐chain fatty acids?
+2025-06-27 04:57:17,328 - INFO - Querying local embedded text vectors...
+2025-06-27 04:57:17,505 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 04:57:17,506 - INFO - Average relevance score: 0.616
+2025-06-27 04:57:17,506 - INFO - Potential knowledge gap: How does gut inflammation or immune‐mediated oxidative stress alter nutrient availability and redox conditions that impact C. difficile metabolism?
+2025-06-27 04:57:17,506 - INFO - Querying local embedded text vectors...
+2025-06-27 04:57:18,112 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 04:57:18,114 - INFO - Average relevance score: 0.662
+2025-06-27 04:57:18,114 - INFO - Potential knowledge gap: Which host hormones or signaling molecules have been reported to influence C. difficile growth or toxin production through metabolic regulation?
+2025-06-27 04:57:18,114 - INFO - Querying local embedded text vectors...
+2025-06-27 04:57:19,613 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 04:57:19,615 - INFO - Average relevance score: 0.591
+2025-06-27 04:57:19,615 - INFO - Potential knowledge gap: What are the key transcriptional regulators linking nutrient sensing to virulence gene expression in C. difficile?
+2025-06-27 04:57:19,615 - INFO - Querying local embedded text vectors...
+2025-06-27 04:57:19,791 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 04:57:19,792 - INFO - Average relevance score: 0.798
+2025-06-27 04:57:19,792 - INFO - Potential knowledge gap: How does the gut oxygen gradient affect the allocation of metabolic fluxes in C. difficile between fermentation pathways?
+2025-06-27 04:57:19,792 - INFO - Querying local embedded text vectors...
+2025-06-27 04:57:20,023 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 04:57:20,025 - INFO - Average relevance score: 0.651
+2025-06-27 04:57:20,025 - INFO - Potential knowledge gap: Which amino acid transport systems are essential for C. difficile survival in the gut, and is there evidence for preferential uptake of certain amino acids?
+2025-06-27 04:57:20,025 - INFO - Querying local embedded text vectors...
+2025-06-27 04:57:20,226 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 04:57:20,228 - INFO - Average relevance score: 0.743

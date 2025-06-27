@@ -8,6 +8,7 @@ provided information. It manages interactions with a completion API and handles 
 output of intermediate and final results.
 """
 
+import re
 import asyncio
 from .openai import CompletionHandler
 
@@ -163,6 +164,9 @@ class TldrEngine(CompletionHandler):
         result = self.save_response_text(self.query, label="refined_query")
         self.logger.info(f"Response saved to: {result}")
 
+        self.logger.info(f"Finished refining user query")
+        
+
     async def summarize_resources(self, context_size="medium"):
         """Generate component and synthesis summary text"""
         self.logger.info("Generating summaries for selected resources...")
@@ -183,6 +187,8 @@ class TldrEngine(CompletionHandler):
         )
         self.logger.info(f"Response saved to: {result}")
 
+        self.logger.info(f"Finished summarizing resources")
+
     async def integrate_summaries(self, context_size="medium"):
         """Generate integrated executive summary text"""
         self.logger.info("Generating integrated summary text...")
@@ -201,6 +207,8 @@ class TldrEngine(CompletionHandler):
             executive_summary["response"], label="executive_summary"
         )
         self.logger.info(f"Response saved to: {result}")
+
+        self.logger.info(f"Finished integrating summaries")
 
     async def polish_response(self, tone="stylized", context_size="medium"):
         """Refine final response text"""
@@ -224,6 +232,8 @@ class TldrEngine(CompletionHandler):
             label="polished_summary",
         )
         self.logger.info(f"Response saved to: {result}")
+
+        self.logger.info(f"Finished polishing response")
 
     async def save_to_pdf(self, smart_title=True, polished=True):
         """Saves polished summary string to formatted PDF document."""
@@ -258,15 +268,8 @@ class TldrEngine(CompletionHandler):
                 web_search=web_search,
             )
             self.logger.info(f"File type determined: {source_type['response']}")
-            file_type = source_type["response"].lower()
-            if "publication" in file_type:
-                return "publication"
-            elif "document" in file_type:
-                return "document"
-            elif "readme" in file_type:
-                return "readme"
-            else:
-                return "other"
+            file_type = re.sub(r"[^a-zA-Z]", "", source_type["response"].lower())
+            return file_type
         else:
             return "web_search"
 
@@ -351,3 +354,5 @@ class TldrEngine(CompletionHandler):
         await self.format_context(research_str, label="research_context")
         result = self.save_response_text(research_str, label="research_results")
         self.logger.info(f"Response saved to: {result}")
+
+        self.logger.info(f"Finished research knowledge gaps")
