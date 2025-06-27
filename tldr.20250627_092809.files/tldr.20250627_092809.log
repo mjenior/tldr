@@ -1,0 +1,35 @@
+2025-06-27 09:28:09,378 - INFO - Intermediate files being written to: tldr.20250627_092809.files
+2025-06-27 09:28:09,418 - INFO - Systems instructions loaded successfully.
+2025-06-27 09:28:09,616 - INFO - Initialized OpenAI client: version=1.79.0, context size=medium
+2025-06-27 09:28:09,616 - INFO - Console logging enabled for TLDR engine
+2025-06-27 09:28:17,032 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:28:26,868 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:28:26,879 - INFO - Searching for reference documents...
+2025-06-27 09:28:30,287 - INFO - Identified 2 reference documents.
+2025-06-27 09:28:30,287 - INFO - Generating embeddings for reference documents...
+2025-06-27 09:28:31,350 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:28:31,372 - INFO - Loading faiss with AVX512 support.
+2025-06-27 09:28:31,373 - INFO - Could not load library with AVX512 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
+2025-06-27 09:28:31,373 - INFO - Loading faiss with AVX2 support.
+2025-06-27 09:28:31,408 - INFO - Successfully loaded faiss with AVX2 support.
+2025-06-27 09:28:31,415 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-27 09:28:34,215 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:28:37,873 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:28:37,885 - INFO - Generating summaries for selected resources...
+2025-06-27 09:28:37,886 - INFO - Determining file type of tldr.20250627_092809.files/jenior-et-al.pdf...
+2025-06-27 09:28:49,527 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:28:49,542 - INFO - File type determined: publication
+2025-06-27 09:28:49,543 - INFO - Determining file type of tldr.20250627_092809.files/leslie-et-al.pdf...
+2025-06-27 09:28:51,309 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:28:51,311 - INFO - File type determined: publication
+2025-06-27 09:29:07,400 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:29:21,313 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:29:21,313 - ERROR - Error in perform_api_call
+2025-06-27 09:29:53,385 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:29:53,388 - INFO - Response saved to: tldr.20250627_092809.files/reference_summaries.tldr.20250627_092809.txt
+2025-06-27 09:29:53,388 - INFO - Finished summarizing resources
+2025-06-27 09:29:57,716 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:30:03,287 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:30:06,737 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:31:13,339 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'

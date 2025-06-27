@@ -1,0 +1,60 @@
+2025-06-27 09:09:53,280 - INFO - Intermediate files being written to: tldr.20250627_090953.files
+2025-06-27 09:09:53,322 - INFO - Systems instructions loaded successfully.
+2025-06-27 09:09:53,562 - INFO - Initialized OpenAI client: version=1.79.0, context size=medium
+2025-06-27 09:10:02,940 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:10:04,616 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:10:04,623 - INFO - Searching for reference documents...
+2025-06-27 09:10:07,470 - INFO - Identified 2 reference documents.
+2025-06-27 09:10:07,470 - INFO - Generating embeddings for reference documents...
+2025-06-27 09:10:09,103 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:10:09,125 - INFO - Loading faiss with AVX512 support.
+2025-06-27 09:10:09,126 - INFO - Could not load library with AVX512 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
+2025-06-27 09:10:09,126 - INFO - Loading faiss with AVX2 support.
+2025-06-27 09:10:09,287 - INFO - Successfully loaded faiss with AVX2 support.
+2025-06-27 09:10:09,294 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-27 09:10:20,061 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:10:25,884 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:10:25,904 - INFO - Generating summaries for selected resources...
+2025-06-27 09:10:25,904 - INFO - Determining file type of tldr.20250627_090953.files/jenior-et-al.pdf...
+2025-06-27 09:10:29,171 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:10:29,193 - INFO - File type determined: publication
+2025-06-27 09:10:29,193 - INFO - Determining file type of tldr.20250627_090953.files/leslie-et-al.pdf...
+2025-06-27 09:10:31,095 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:10:31,097 - INFO - File type determined: publication
+2025-06-27 09:10:49,354 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:11:01,105 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:11:01,105 - ERROR - Error in perform_api_call
+2025-06-27 09:11:24,680 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:11:24,683 - INFO - Response saved to: tldr.20250627_090953.files/reference_summaries.tldr.20250627_090953.txt
+2025-06-27 09:11:24,683 - INFO - Finished summarizing resources
+2025-06-27 09:11:44,773 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:11:44,794 - INFO - Identifying knowledge gaps...
+2025-06-27 09:11:44,798 - INFO - Retrying request to /responses in 0.445526 seconds
+2025-06-27 09:12:09,190 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:12:09,192 - INFO - Applying web research agent to knowledge gaps...
+2025-06-27 09:12:16,205 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:12:17,035 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:12:17,146 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:12:17,179 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:12:17,994 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:12:18,169 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:12:18,246 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:12:21,339 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:12:25,191 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:12:27,184 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:12:28,590 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:12:34,639 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:12:39,195 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:12:39,195 - ERROR - Error in perform_api_call
+2025-06-27 09:12:39,195 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:12:39,195 - ERROR - Error in perform_api_call
+2025-06-27 09:12:39,196 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:12:39,196 - ERROR - Error in perform_api_call
+2025-06-27 09:12:51,630 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:13:03,692 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:13:04,087 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:13:14,198 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:13:14,199 - ERROR - Error in perform_api_call
+2025-06-27 09:13:49,202 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:13:49,202 - ERROR - Error in perform_api_call
