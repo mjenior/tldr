@@ -283,6 +283,7 @@ class TldrUI:
             type=["pdf", "txt", "docx"],
             disabled=self.processing,
             help=description,
+            help=description,
             accept_multiple_files=True,
             key=key,
         )
@@ -400,6 +401,8 @@ async def run_tldr_streamlit():
         # Process uploaded files
         if documents is not None:
             st.markdown('<div class="process-button">', unsafe_allow_html=True)
+            process_clicked = st.button("Upload Documents",
+                help="Upload the documents you want to summarize and research.")
             process_clicked = st.button("Upload Documents",
                 help="Upload the documents you want to summarize and research.")
             st.markdown("</div>", unsafe_allow_html=True)
@@ -520,6 +523,9 @@ async def run_tldr_streamlit():
     # Right column - Summaries and actions
     with col2:
         # Generate initial summaries
+        if st.button("Generate Reference Summaries", 
+                     disabled=st.session_state.documents is None,
+                     help="Summarizes the initial set of documents to create a baseline."):
         if st.button("Generate Reference Summaries", 
                      disabled=st.session_state.documents is None,
                      help="Summarizes the initial set of documents to create a baseline."):

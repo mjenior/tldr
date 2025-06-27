@@ -123,10 +123,26 @@ class LogHandler(FileHandler):
         # Create formatter
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 
+<<<<<<< HEAD
         # Always create StreamlitLogHandler for potential Streamlit use
         self.streamlit_handler = StreamlitLogHandler()
         self.streamlit_handler.setFormatter(formatter)
         self.logger.addHandler(self.streamlit_handler)
+=======
+        # Add Streamlit handler and redirect stdout if in Streamlit context
+        try:
+            # Check if we are in a streamlit environment
+            self.streamlit_handler = StreamlitLogHandler()
+            self.streamlit_handler.setFormatter(formatter)
+            self.logger.addHandler(self.streamlit_handler)
+            sys.stdout = StreamlitStdout(self.streamlit_handler) # Redirect stdout
+            self.logger.info("Streamlit environment detected, redirecting stdout to logs.")
+        except (ImportError, RuntimeError):
+            # Fallback to console handler if not in streamlit
+            console_handler = logging.StreamHandler(sys.stdout)
+            console_handler.setFormatter(formatter)
+            self.logger.addHandler(console_handler)
+>>>>>>> 55d6b62 (log file bugs)
 
         # Always add console handler for stdout logging
         console_handler = logging.StreamHandler(sys.stdout)
