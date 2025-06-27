@@ -1,7 +1,7 @@
 """
 TLDR Summary Generator - Streamlit Web Interface
 """
-version = "1.0.33"
+version = "1.0.36"
 
 import os
 import sys
@@ -13,8 +13,6 @@ from typing import List
 
 import streamlit as st
 from streamlit.runtime.uploaded_file_manager import UploadedFile
-from datetime import datetime, timedelta
-
 # from streamlit.delta_generator import DeltaGenerator
 
 # Add the parent directory to path to import tldr

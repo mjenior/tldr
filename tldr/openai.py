@@ -109,8 +109,8 @@ class CompletionHandler(ResearchAgent):
         return params
 
     @retry(
-        wait=wait_random_exponential(min=1, max=60),
-        stop=stop_after_attempt(3),  # Reduced from 10 to 3 to fail faster
+        wait=wait_random_exponential(multiplier=2, min=5, max=30),
+        stop=stop_after_attempt(9),
         retry=retry_if_exception_type((RateLimitError, asyncio.TimeoutError, Exception)),
     )
     async def perform_api_call(
@@ -120,6 +120,7 @@ class CompletionHandler(ResearchAgent):
         web_search=False,
         context_size="medium",
         source=None,
+        timeout_seconds = 30,
         **kwargs,
     ):
         """
@@ -145,9 +146,6 @@ class CompletionHandler(ResearchAgent):
                 prompt, prompt_type, web_search, context_size
             )
             
-            # Add timeout to the API call (30 seconds)
-            timeout_seconds = 30
-            
             # Run completion query with timeout
             try:
                 response = await asyncio.wait_for(
@@ -164,8 +162,13 @@ class CompletionHandler(ResearchAgent):
                 raise
                 
         except Exception as e:
-            self.logger.error(f"Error in perform_api_call: {str(e)}")
-            raise
+            self.logger.error(f"Error in perform_api_call")
+            if "429 Too Many Requests" in str(e):
+                self.logger.error(f"Too many requests in time period to OpenAI API")
+                await self._429_sleep_time(str(e))
+            else:
+                raise e
+
 
     def update_usage(self, model, response):
         """Update usage statistics."""
@@ -174,7 +177,7 @@ class CompletionHandler(ResearchAgent):
         self.update_spending()
         self.update_session_totals()
 
-    async def _extract_sleep_time(
+    async def _429_sleep_time(
         self, error_message: str, adjust: float = 0.25, dec: int = 2
     ) -> float:
         """
@@ -194,7 +197,10 @@ class CompletionHandler(ResearchAgent):
         except Exception as e:
             raise e
 
-        return self.round_up_to_decimal_place(sleep_time + adjust, dec)
+        sleep_time = self.round_up_to_decimal_place(sleep_time + adjust, dec)
+        self.logger.error(f"Waiting for {sleep_time} seconds before retrying")
+        await asyncio.sleep(sleep_time)
+
 
     @staticmethod
     def round_up_to_decimal_place(num: float, dec_places: int = 2) -> float:
