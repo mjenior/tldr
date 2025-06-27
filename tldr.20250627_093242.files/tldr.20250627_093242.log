@@ -1,0 +1,174 @@
+2025-06-27 09:32:42,190 - INFO - Intermediate files being written to: tldr.20250627_093242.files
+2025-06-27 09:32:42,225 - INFO - Systems instructions loaded successfully.
+2025-06-27 09:32:42,397 - INFO - Initialized OpenAI client: version=1.79.0, context size=medium
+2025-06-27 09:32:42,397 - INFO - Console logging enabled for TLDR engine
+2025-06-27 09:41:01,633 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:41:05,248 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:41:05,257 - INFO - Searching for reference documents...
+2025-06-27 09:41:11,400 - INFO - Identified 2 reference documents.
+2025-06-27 09:41:11,400 - INFO - Generating embeddings for reference documents...
+2025-06-27 09:41:13,191 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:41:13,250 - INFO - Loading faiss with AVX512 support.
+2025-06-27 09:41:13,251 - INFO - Could not load library with AVX512 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
+2025-06-27 09:41:13,251 - INFO - Loading faiss with AVX2 support.
+2025-06-27 09:41:13,308 - INFO - Successfully loaded faiss with AVX2 support.
+2025-06-27 09:41:13,317 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-27 09:41:34,016 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:41:34,038 - INFO - Generating summaries for selected resources...
+2025-06-27 09:41:34,038 - INFO - Determining file type of tldr.20250627_093242.files/jenior-et-al.pdf...
+2025-06-27 09:41:40,177 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:41:40,225 - INFO - File type determined: publication
+2025-06-27 09:41:40,225 - INFO - Determining file type of tldr.20250627_093242.files/leslie-et-al.pdf...
+2025-06-27 09:41:42,506 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:41:42,512 - INFO - File type determined: publication
+2025-06-27 09:42:00,629 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:42:12,515 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:42:12,515 - ERROR - Error in perform_api_call
+2025-06-27 09:42:32,188 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:42:32,193 - INFO - Response saved to: tldr.20250627_093242.files/reference_summaries.tldr.20250627_093242.txt
+2025-06-27 09:42:32,193 - INFO - Finished summarizing resources
+2025-06-27 09:42:36,317 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:42:42,818 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:43:04,626 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:43:06,870 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:47:34,672 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:47:34,695 - INFO - Generating integrated summary text...
+2025-06-27 09:47:34,697 - INFO - Retrying request to /responses in 0.392904 seconds
+2025-06-27 09:47:54,348 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:47:54,352 - INFO - Response saved to: tldr.20250627_093242.files/executive_summary.tldr.20250627_093242.txt
+2025-06-27 09:47:54,354 - INFO - Finished integrating summaries
+2025-06-27 09:48:11,004 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-27 09:48:11,033 - INFO - Identifying knowledge gaps...
+2025-06-27 09:48:11,037 - INFO - Retrying request to /responses in 0.491996 seconds
+2025-06-27 09:48:41,035 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:48:41,035 - ERROR - Error in perform_api_call
+2025-06-27 09:49:03,403 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:03,405 - INFO - Applying web research agent to knowledge gaps...
+2025-06-27 09:49:10,719 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:11,138 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:11,261 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:11,419 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:11,436 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:11,447 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:11,597 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:11,720 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:12,080 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:12,607 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:15,241 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:16,286 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:17,487 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:18,034 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:19,763 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:24,816 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:25,630 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:29,081 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:49:33,408 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:49:33,408 - ERROR - Error in perform_api_call
+2025-06-27 09:49:33,409 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:49:33,409 - ERROR - Error in perform_api_call
+2025-06-27 09:49:49,810 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:50:08,413 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:50:08,413 - ERROR - Error in perform_api_call
+2025-06-27 09:50:43,415 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:50:43,415 - ERROR - Error in perform_api_call
+2025-06-27 09:51:06,934 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-27 09:51:06,936 - INFO - Searching for additional context in reference docs...
+2025-06-27 09:51:06,936 - INFO - Potential knowledge gap: What are the standard workflows and software tools used to construct genome-scale metabolic network reconstructions (GENREs) for bacterial species like Clostridioides difficile?
+2025-06-27 09:51:06,936 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:07,609 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:07,613 - INFO - Average relevance score: 0.568
+2025-06-27 09:51:07,613 - INFO - Potential knowledge gap: What is “gap‐filling” in metabolic network reconstruction, and which curated anaerobic reaction databases are commonly employed for this purpose?
+2025-06-27 09:51:07,613 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:08,449 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:08,451 - INFO - Average relevance score: 0.422
+2025-06-27 09:51:08,452 - INFO - Potential knowledge gap: How do computational models predict carbon source utilization in bacteria, and what validation metrics are typically used to assess prediction accuracy?
+2025-06-27 09:51:08,452 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:09,012 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:09,015 - INFO - Average relevance score: 0.631
+2025-06-27 09:51:09,016 - INFO - Potential knowledge gap: What experimental approaches constitute gene essentiality screens in Clostridioides difficile, and how are essential genes identified and validated?
+2025-06-27 09:51:09,016 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:10,307 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:10,311 - INFO - Average relevance score: 0.698
+2025-06-27 09:51:10,311 - INFO - Potential knowledge gap: How does the pentose phosphate pathway contribute to bacterial virulence mechanisms, particularly in Clostridioides difficile?
+2025-06-27 09:51:10,311 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:10,636 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:10,640 - INFO - Average relevance score: 0.589
+2025-06-27 09:51:10,641 - INFO - Potential knowledge gap: What metabolic pathways enable Clostridioides difficile to utilize cytidine, and what enzymes are involved?
+2025-06-27 09:51:10,641 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:10,884 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:10,894 - INFO - Average relevance score: 0.648
+2025-06-27 09:51:10,912 - INFO - Potential knowledge gap: What is N-acetylneuraminate, and how is it metabolized by Clostridioides difficile?
+2025-06-27 09:51:10,912 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:13,356 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:13,359 - INFO - Average relevance score: 0.401
+2025-06-27 09:51:13,359 - INFO - Potential knowledge gap: What methods are used to integrate transcriptomic data into genome-scale metabolic models to generate context-specific metabolic flux predictions?
+2025-06-27 09:51:13,359 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:14,316 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:14,318 - INFO - Average relevance score: 0.753
+2025-06-27 09:51:14,318 - INFO - Potential knowledge gap: Which functional assays and growth tests are commonly used to experimentally validate predictions from metabolic network models in anaerobic bacteria?
+2025-06-27 09:51:14,318 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:14,608 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:14,613 - INFO - Average relevance score: 0.495
+2025-06-27 09:51:14,613 - INFO - Potential knowledge gap: What types of regulatory networks (e.g., transcriptional regulators, two-component systems) are typically incorporated into metabolic models to capture virulence control?
+2025-06-27 09:51:14,613 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:14,878 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:14,881 - INFO - Average relevance score: 0.54
+2025-06-27 09:51:14,881 - INFO - Potential knowledge gap: What annotation gaps commonly exist around nucleotide and carboxylic acid metabolites in Clostridioides difficile metabolic reconstructions?
+2025-06-27 09:51:14,881 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:15,243 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:15,252 - INFO - Average relevance score: 0.637
+2025-06-27 09:51:15,253 - INFO - Potential knowledge gap: What criteria and experimental data are used to select additional strains or conditions for expanding GENRE analyses to generalize metabolic findings?
+2025-06-27 09:51:15,253 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:15,432 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:15,440 - INFO - Average relevance score: 0.833
+2025-06-27 09:51:15,441 - INFO - Potential knowledge gap: How does glycine function as a cogerminant in Clostridioides difficile spore germination, and what molecular receptors and signaling pathways are involved?
+2025-06-27 09:51:15,441 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:15,717 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:15,719 - INFO - Average relevance score: 0.595
+2025-06-27 09:51:15,720 - INFO - Potential knowledge gap: What ex vivo assays are used to measure Clostridioides difficile spore germination and how are they performed?
+2025-06-27 09:51:15,720 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:16,350 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:16,354 - INFO - Average relevance score: 0.517
+2025-06-27 09:51:16,354 - INFO - Potential knowledge gap: Which metabolomics techniques are applied to quantify amino acids, such as glycine, in gut lumen or fecal samples?
+2025-06-27 09:51:16,354 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:16,539 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:16,540 - INFO - Average relevance score: 0.617
+2025-06-27 09:51:16,541 - INFO - Potential knowledge gap: What characteristics define a “less virulent” Clostridioides difficile strain used for precolonization, and how is virulence level assessed experimentally?
+2025-06-27 09:51:16,541 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:16,803 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:16,807 - INFO - Average relevance score: 0.732
+2025-06-27 09:51:16,808 - INFO - Potential knowledge gap: How does competitive exclusion via nutrient depletion operate in gut microbial communities, and what models describe this phenomenon?
+2025-06-27 09:51:16,808 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:16,973 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:16,975 - INFO - Average relevance score: 0.815
+2025-06-27 09:51:16,976 - INFO - Potential knowledge gap: In murine models of Clostridioides difficile infection, what methods assess colonization resistance and microbiota restoration?
+2025-06-27 09:51:16,976 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:17,235 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:17,237 - INFO - Average relevance score: 0.694
+2025-06-27 09:51:17,237 - INFO - Potential knowledge gap: How do bile salts and amino acids like glycine synergize to trigger Clostridioides difficile spore germination at the molecular level?
+2025-06-27 09:51:17,238 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:17,406 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:17,409 - INFO - Average relevance score: 0.515
+2025-06-27 09:51:17,409 - INFO - Potential knowledge gap: What known variations exist in nutrient competition capabilities among different Clostridioides difficile strains, and how are these differences measured?
+2025-06-27 09:51:17,409 - INFO - Querying local embedded text vectors...
+2025-06-27 09:51:17,670 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-27 09:51:17,674 - INFO - Average relevance score: 0.78
+2025-06-27 09:51:47,677 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:51:47,680 - ERROR - Error in perform_api_call
+2025-06-27 09:52:22,683 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:52:22,684 - ERROR - Error in perform_api_call
+2025-06-27 09:52:57,629 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:52:57,630 - ERROR - Error in perform_api_call
+2025-06-27 09:53:34,208 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:53:34,209 - ERROR - Error in perform_api_call
+2025-06-27 09:54:13,949 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:54:13,949 - ERROR - Error in perform_api_call
+2025-06-27 09:55:12,785 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:55:12,785 - ERROR - Error in perform_api_call
+2025-06-27 09:55:59,059 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:55:59,059 - ERROR - Error in perform_api_call
+2025-06-27 09:56:38,160 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:56:38,160 - ERROR - Error in perform_api_call
+2025-06-27 09:57:13,472 - ERROR - API call timed out after 30 seconds
+2025-06-27 09:57:13,473 - ERROR - Error in perform_api_call

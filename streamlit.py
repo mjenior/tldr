@@ -260,16 +260,15 @@ class TldrUI:
             )
         return file_info
 
-    def document_uploader(self, header: str, key: str, description: str = None):
+    def document_uploader(self, header: str, key: str, description: str = ""):
         """Document uploader with logging of uploaded files"""
         st.subheader(header)
-        if description is not None:
-            st.write(description)
 
         uploaded_files = st.file_uploader(
             "Upload documents (PDF, TXT, DOCX)",
             type=["pdf", "txt", "docx"],
             disabled=self.processing,
+            help=description,
             accept_multiple_files=True,
             key=key,
         )
@@ -382,8 +381,7 @@ async def main():
         st.markdown(
             """> **Input**
 - **Target Documents:** The primary files you want to summarize.  
-- **Additional Context:** Optional supplementary documents to provide more context for the summarization.
-- **Focused Query:** The specific question or topic you want to focus on."""
+- **Additional Context:** Optional supplementary documents to provide more context for the summarization."""
         )
 
         # Upload files
@@ -399,7 +397,8 @@ async def main():
         # Process uploaded files
         if documents is not None:
             st.markdown('<div class="process-button">', unsafe_allow_html=True)
-            process_clicked = st.button("Upload Documents")
+            process_clicked = st.button("Upload Documents",
+                help="Upload the documents you want to summarize and research.")
             st.markdown("</div>", unsafe_allow_html=True)
 
             if process_clicked:
@@ -517,18 +516,10 @@ async def main():
 
     # Right column - Summaries and actions
     with col2:
-        # Explanations for actions
-        st.markdown(
-            """> **Actions**
-- **Generate Reference Summaries**: Summarizes the initial set of documents to create a baseline.
-- **Refine Query**: Refines your initial query for better search results.
-- **Apply Research**: Applies external research to the compiled document summaries.
-- **Integrate Summaries**: Integrates all summaries with research and additional context into a cohesive whole.
-- **Polish**: Polishes the final summary for tone and style.
-"""
-        )
         # Generate initial summaries
-        if st.button("Generate Reference Summaries", disabled=st.session_state.documents is None):
+        if st.button("Generate Reference Summaries", 
+                     disabled=st.session_state.documents is None,
+                     help="Summarizes the initial set of documents to create a baseline."):
             with st.spinner("Summarizing documents..."):
 
                 # Generate document summaries

@@ -130,7 +130,7 @@ class LogHandler(FileHandler):
         
         # Try to add Streamlit handler if available
         try:
-            import streamlit as st
+            # Check if we are in a streamlit environment
             self.streamlit_handler = StreamlitLogHandler()
             self.streamlit_handler.setFormatter(formatter)
             self.logger.addHandler(self.streamlit_handler)
