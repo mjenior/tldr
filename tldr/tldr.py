@@ -51,6 +51,9 @@ async def pipeline():
         recursive=args.recursive_search,
     )
 
+    # Establish initial context
+    await tldr.initial_context_search(context_size=args.context_size)
+
     # Summarize documents
     await tldr.summarize_resources(context_size=args.context_size)
 

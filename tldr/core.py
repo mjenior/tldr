@@ -81,19 +81,38 @@ class TldrEngine(CompletionHandler):
             )
 
         # Create embeddings
-        await self._create_embeddings(context_size=context_size)
+        await self.encode_text_to_vector_store()
 
-    async def _create_embeddings(self, context_size="medium", platform="openai"):
-        """Create local embeddings for reference documents"""
+    @staticmethod
+    def strip_leading_bullet(text):
+        """Removes a single leading bullet point and whitespace from a string."""
+        text = text.lstrip()
+        if text and text[0] in "*-+•":
+            return text[1:].lstrip()
+        return text
 
-        # Create local embeddings
-        self.encode_text_to_vector_store(platform=platform)
+    async def initial_context_search(self, context_size="medium"):
+        """Search for context in the vector store"""
+        # Break up multiple queries
+        if self.query.count("?") >= 2:
+            queries = [self.strip_leading_bullet(query) for query in self.query.split("?")]
+        else:
+            queries = [self.query]
 
-        # Search for added initial context
-        if self.query is not None and self.query != "":
-            context_search = self.search_embedded_context(query=self.query)
+        # Address each query separately
+        for query in queries:
+            # Search embeddings
+            self.logger.info("Searching for initial context in provided documents...")
+            context_search = self.search_embedded_context(query=query)
             await self.format_context(
                 context_search, context_size=context_size, label="context_search"
+            )
+            # Search web
+            self.logger.info("Searching for initial context on the web...")
+            context_research = await self.perform_api_call(prompt=query,
+            prompt_type="web_search", context_size=context_size, web_search=True)
+            await self.format_context(
+                context_research, context_size=context_size, label="context_research"
             )
 
     async def finish_session(self):
@@ -320,7 +339,7 @@ class TldrEngine(CompletionHandler):
         research_questions = research_questions["response"].split("\n")
         research_question_dict = {}
         for i, question in enumerate(research_questions):
-            question = question.strip().lstrip("-").lstrip("•").strip()
+            question = self.strip_leading_bullet(question)
             research_question_dict[f"Question_{i}"] = {"content": question}
 
         # Search web for to fill gaps

@@ -128,6 +128,21 @@ class TldrUI:
         # Update session state
         self.reset_session_status()
 
+    async def session_initial_context_search(self, context_size="medium"):
+        """Run an async function with processing status updates"""
+        try:
+            self.status = "Processing..."
+            self.processing = True
+            await self.tldr.initial_context_search(context_size)
+        except Exception as e:
+            error_details = traceback.format_exc()
+            self.status = "Error during processing"
+            st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
+            st.stop()
+
+        # Update session state
+        self.reset_session_status()
+
     async def session_refine_query(self, query, context_size="medium"):
         """Run an async function with processing status updates"""
         try:
@@ -178,7 +193,7 @@ class TldrUI:
         try:
             self.status = "Processing..."
             self.processing = True
-            self.tldr.integrate_summaries(context_size)
+            await self.tldr.integrate_summaries(context_size)
         except Exception as e:
             error_details = traceback.format_exc()
             self.status = "Error during processing"
