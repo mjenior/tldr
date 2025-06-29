@@ -1,19 +1,18 @@
 """
 TLDR Summary Generator - Streamlit Web Interface
 """
-version = "1.0.36"
+version = "1.0.37"
 
 import os
 import sys
 import math
 import asyncio
 import traceback
-import logging
 from pathlib import Path
 from typing import List
 
 import streamlit as st
-from streamlit.runtime.uploaded_file_manager import UploadedFile
+#from streamlit.runtime.uploaded_file_manager import UploadedFile
 # from streamlit.delta_generator import DeltaGenerator
 
 # Add the parent directory to path to import tldr
@@ -101,174 +100,61 @@ class TldrUI:
     def log_message(self, message, level="INFO"):
         """Helper method to log messages to both console and Streamlit interface"""
         formatted_message = f"{level}: {message}"
-        print(f"TLDR: {message}")  # Console logging
+        print(f"TLDR: {formatted_message}")  # Console logging
         
         # Log to TldrEngine logger if available
         if hasattr(self, 'tldr') and hasattr(self.tldr, 'logger'):
             if level.upper() == "ERROR":
-                self.tldr.logger.error(message)
+                self.tldr.logger.error(formatted_message)
             elif level.upper() == "WARNING":
-                self.tldr.logger.warning(message)
+                self.tldr.logger.warning(formatted_message)
             else:
-                self.tldr.logger.info(message)
+                self.tldr.logger.info(formatted_message)
+    
+    def start_processing_status(self, message: str):
+        """Helper method to update processing status"""
+        self.log_message(message)
+        self.status = "Processing..."
+        self.processing = True
+        st.session_state.status = self.status
+        st.session_state.processing = self.processing
 
-    def reset_session_status(self):
+    def end_processing_status(self):
+        """Reset session status and update session state"""
+        self.log_message("Completed successfully")
+
+        # Restore session to ready state
         self.status = "Ready"
         self.processing = False
-
-        st.session_state.status = "Ready"
-        st.session_state.processing = False
+        st.session_state.status = self.status
+        st.session_state.processing = self.processing
         st.session_state.total_spend = self.round_up(self.tldr.total_spend)
         st.session_state.input_token_count = self.tldr.total_input_tokens
         st.session_state.output_token_count = self.tldr.total_output_tokens
 
-    def round_up(self, num, to=0.01):
-        """Round up to the nearest specified decimal place"""
+    def session_error(self, error_message: str):
+        error_details = traceback.format_exc()
+        self.status = "Error during processing"
+        self.log_message(f"Error: {error_message}", "ERROR")
+        self.log_message(f"Error details: {error_details}", "ERROR")
+        st.error(f"An error occurred: {error_message}\n\nError details:\n{error_details}")
+        st.stop()
+
+    @staticmethod
+    def round_up(num, to=0.01):
+        """Round up to the nearest specified decimal"""
         return round(num + to / 2, -int(math.log10(to)))
 
-    async def session_load_all_content(
-        self, input_files, context_files, context_size="medium"
-    ):
-        """Run an async function with processing status updates"""
+    async def execute_session_process(self, log_message, function, **args):
+        """Generic execution of an async function with processing status updates"""
+        self.start_processing_status(log_message)
+        
         try:
-            self.status = "Processing..."
-            self.processing = True
-            self.log_message(f"Starting to load content from {len(input_files)} files...")
-            await self.tldr.load_all_content(input_files, context_files, context_size)
-            self.log_message("Content loading completed successfully")
+            await function(**args)
         except Exception as e:
-            error_details = traceback.format_exc()
-            self.status = "Error during processing"
-            self.log_message(f"ERROR: {str(e)}", "ERROR")
-            self.log_message(f"ERROR DETAILS: {error_details}", "ERROR")
-            st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
-            st.stop()
+            self.session_error(str(e))
 
-        # Update session state
-        self.reset_session_status()
-
-    async def session_initial_context_search(self, context_size="medium"):
-        """Run an async function with processing status updates"""
-        try:
-            self.status = "Processing..."
-            self.processing = True
-            await self.tldr.initial_context_search(context_size)
-        except Exception as e:
-            error_details = traceback.format_exc()
-            self.status = "Error during processing"
-            st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
-            st.stop()
-
-        # Update session state
-        self.reset_session_status()
-
-    async def session_refine_query(self, query, context_size="medium"):
-        """Run an async function with processing status updates"""
-        try:
-            self.status = "Processing..."
-            self.processing = True
-            self.log_message(f"Refining query: '{query[:100]}...'")
-            await self.tldr.refine_user_query(query, context_size)
-            self.log_message("Query refinement completed")
-        except Exception as e:
-            error_details = traceback.format_exc()
-            self.status = "Error during processing"
-            self.log_message(f"ERROR: {str(e)}", "ERROR")
-            st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
-            st.stop()
-
-        # Update session state
-        self.reset_session_status()
-
-    async def session_apply_research(self, context_size="medium"):
-        """Run an async function with processing status updates"""
-        try:
-            self.status = "Processing..."
-            self.processing = True
-            self.log_message("Starting research phase (this may take several minutes)...")
-            await self.tldr.apply_research(context_size)
-            self.log_message("Research phase completed successfully")
-        except Exception as e:
-            error_details = traceback.format_exc()
-            self.status = "Error during processing"
-            self.log_message(f"ERROR: {str(e)}", "ERROR")
-            st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
-            st.stop()
-
-        # Update session state
-        self.reset_session_status()
-
-    async def session_summarize_resources(self, context_size="medium"):
-        """Run an async function with processing status updates"""
-        try:
-            self.status = "Processing..."
-            self.processing = True
-            self.log_message("Starting document summarization...")
-            await self.tldr.summarize_resources(context_size)
-            self.log_message("Document summarization completed successfully")
-        except Exception as e:
-            error_details = traceback.format_exc()
-            self.status = "Error during processing"
-            self.log_message(f"ERROR: {str(e)}", "ERROR")
-            st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
-            st.stop()
-
-        # Update session state
-        self.reset_session_status()
-
-    async def session_integrate_summaries(self, context_size="medium"):
-        """Run an async function with processing status updates"""
-        try:
-            self.status = "Processing..."
-            self.processing = True
-            self.log_message("Starting summary integration...")
-            await self.tldr.integrate_summaries(context_size)
-            self.log_message("Summary integration completed successfully")
-        except Exception as e:
-            error_details = traceback.format_exc()
-            self.status = "Error during processing"
-            self.log_message(f"ERROR: {str(e)}", "ERROR")
-            st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
-            st.stop()
-
-        # Update session state
-        self.reset_session_status()
-
-    async def session_polish_response(self, tone="stylized", context_size="medium"):
-        """Run an async function with processing status updates"""
-        try:
-            self.status = "Processing..."
-            self.processing = True
-            self.log_message(f"Starting response polishing with {tone} tone...")
-            await self.tldr.polish_response(tone, context_size)
-            self.log_message("Response polishing completed successfully")
-        except Exception as e:
-            error_details = traceback.format_exc()
-            self.status = "Error during processing"
-            self.log_message(f"ERROR: {str(e)}", "ERROR")
-            st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
-            st.stop()
-
-        # Update session state
-        self.reset_session_status()
-
-    async def session_save_to_pdf(self, polished=True):
-        """Run an async function with processing status updates"""
-        try:
-            self.status = "Processing..."
-            self.processing = True
-            self.log_message(f"Saving to PDF (polished={polished})...")
-            await self.tldr.save_to_pdf(polished)
-            self.log_message("PDF saved successfully")
-        except Exception as e:
-            error_details = traceback.format_exc()
-            self.status = "Error during processing"
-            self.log_message(f"ERROR: {str(e)}", "ERROR")
-            st.error(f"An error occurred: {str(e)}\n\nError details:\n{error_details}")
-            st.stop()
-
-        # Update session state
-        self.reset_session_status()
+        self.end_processing_status()
 
     def process_files(self, files) -> List[dict]:
         """Process uploaded files and return file info"""
@@ -298,7 +184,6 @@ class TldrUI:
             type=["pdf", "txt", "docx"],
             disabled=self.processing,
             help=description,
-            help=description,
             accept_multiple_files=True,
             key=key,
         )
@@ -324,12 +209,16 @@ async def run_tldr_streamlit():
         st.session_state.context_files = None
     if "added_context" not in st.session_state:
         st.session_state.added_context = None
+    if "executive_summary" not in st.session_state:
+        st.session_state.executive_summary = None
     if "executive" not in st.session_state:
-        st.session_state.executive = None
+        st.session_state.executive = False
     if "research_results" not in st.session_state:
         st.session_state.research_results = None
     if "polished" not in st.session_state:
-        st.session_state.polished = None
+        st.session_state.polished = False
+    if "polished_summary" not in st.session_state:
+        st.session_state.polished_summary = None
     if "summarized" not in st.session_state:
         st.session_state.summarized = False
     if "selected_doc" not in st.session_state:
@@ -370,10 +259,13 @@ async def run_tldr_streamlit():
                 
     tldr_ui = st.session_state.tldr_ui
 
-    # Handle refined query update
+    # Handle refined query and initial context updates
     if "refined_query" in st.session_state:
         st.session_state.user_query = st.session_state.refined_query
         del st.session_state.refined_query
+    if "initial_context" in st.session_state:
+        st.session_state.added_context = st.session_state.initial_context
+        del st.session_state.initial_context
 
     # Sidebar for settings
     with st.sidebar:
@@ -416,10 +308,8 @@ async def run_tldr_streamlit():
         # Process uploaded files
         if documents is not None:
             st.markdown('<div class="process-button">', unsafe_allow_html=True)
-            process_clicked = st.button("Upload Documents",
-                help="Upload the documents you want to summarize and research.")
-            process_clicked = st.button("Upload Documents",
-                help="Upload the documents you want to summarize and research.")
+            process_clicked = st.button("Process References",
+                help="Process the documents you want to summarize and research.")
             st.markdown("</div>", unsafe_allow_html=True)
 
             if process_clicked:
@@ -436,7 +326,9 @@ async def run_tldr_streamlit():
                         context_files = None
 
                     # Collect all content
-                    await tldr_ui.session_load_all_content(
+                    await tldr_ui.execute_session_process(
+                        log_message=f"Starting to load content from {len(input_files)} files...",
+                        function=tldr_ui.tldr.load_all_content,
                         input_files=input_files,
                         context_files=context_files,
                         context_size=context_size,
@@ -455,19 +347,41 @@ async def run_tldr_streamlit():
             height=70,
             key="user_query",
         )
+        query_col1, query_col2 = st.columns(2)
 
         # Query refine button, display refined text once returned
-        if st.button(
-            "Refine Query",
-            disabled=not st.session_state.user_query or tldr_ui.processing,
-        ):
-            with st.spinner("Refining query..."):
-                await tldr_ui.session_refine_query(st.session_state.user_query)
-                st.session_state.refined_query = tldr_ui.tldr.query
-                st.rerun()
+        with query_col1:
+            if st.button(
+                "Refine Query",
+                disabled=st.session_state.user_query is None or tldr_ui.processing is True,
+            ):
+                with st.spinner("Refining query..."):
+                    await tldr_ui.execute_session_process(
+                        log_message=f"Refining query: {st.session_state.user_query}",
+                        function=tldr_ui.tldr.refine_query,
+                        query=st.session_state.user_query,
+                    )
+                    st.session_state.refined_query = tldr_ui.tldr.query
+                    st.rerun()
+
+        with query_col2:
+            if st.button(
+                "Search for Context",
+                disabled=st.session_state.user_query is None or tldr_ui.processing is True or st.session_state.documents is None,
+            ):
+                with st.spinner("Searching for initial context..."):
+                    await tldr_ui.execute_session_process(
+                        log_message=f"Searching for context: {st.session_state.user_query}",
+                        function=tldr_ui.tldr.initial_context_search,
+                        query=st.session_state.user_query,
+                    )
+                    st.session_state.initial_context = tldr_ui.tldr.added_context
+                    st.rerun()
 
         # Display file listdoc
-        if st.session_state.documents is not None:
+        if st.session_state.documents is None:
+            st.info("Upload documents first to view their contents.")
+        else:
             st.subheader("Uploaded Files")
 
             # Display file list with selection
@@ -496,44 +410,43 @@ async def run_tldr_streamlit():
                             ):
                                 st.session_state.selected_doc = None
 
-        # Display selected document content
-        if st.session_state.selected_doc:
-            st.subheader(f"Content of {st.session_state.selected_doc['source']}")
-            # Display content in a scrollable text area
-            if "content" in st.session_state.selected_doc and st.session_state.selected_doc["content"]:
-                content = st.session_state.selected_doc["content"]
-                if isinstance(content, str):
-                    content_html = content.replace("\n", "<br>")
-                    st.markdown(
-                        f'<div style="border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px; max-height: 300px; overflow-y: auto;">'
-                        f'{content_html}'
-                        "</div>",
-                        unsafe_allow_html=True,
-                    )
-                elif isinstance(content, dict):
-                    # If content is a dictionary, try to find the actual text content
-                    text_content = None
-                    for key in ["text", "content", "raw_text", "body"]:
-                        if key in content and isinstance(content[key], str):
-                            text_content = content[key]
-                            break
-                    
-                    if text_content:
-                        content_html = text_content.replace("\n", "<br>")
+            # Display selected document content 
+            if st.session_state.selected_doc is None:
+                st.info("Select a document to view its content.")
+            elif st.session_state.selected_doc is not None:
+                # Display content in a scrollable text area
+                if "content" in st.session_state.selected_doc and st.session_state.selected_doc["content"]:
+                    content = st.session_state.selected_doc["content"]
+                    if isinstance(content, str):
+                        content_html = content.replace("\n", "<br>")
                         st.markdown(
                             f'<div style="border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px; max-height: 300px; overflow-y: auto;">'
                             f'{content_html}'
                             "</div>",
                             unsafe_allow_html=True,
                         )
+                    elif isinstance(content, dict):
+                        # If content is a dictionary, try to find the actual text content
+                        text_content = None
+                        for key in ["text", "content", "raw_text", "body"]:
+                            if key in content and isinstance(content[key], str):
+                                text_content = content[key]
+                                break
+                        
+                        if text_content:
+                            content_html = text_content.replace("\n", "<br>")
+                            st.markdown(
+                                f'<div style="border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px; max-height: 300px; overflow-y: auto;">'
+                                f'{content_html}'
+                                "</div>",
+                                unsafe_allow_html=True,
+                            )
+                        else:
+                            # Show the structure for debugging
+                            st.write("Content structure:")
+                            st.json(content)
                     else:
-                        # Show the structure for debugging
-                        st.write("Content structure:")
-                        st.json(content)
-                else:
-                    st.warning("Document content is not in a readable format.")
-            else:
-                st.info("Please upload and process the documents first to view content.")
+                        st.warning("Document content is not in a readable format.")
 
     # Right column - Summaries and actions
     with col2:
@@ -544,17 +457,21 @@ async def run_tldr_streamlit():
             with st.spinner("Summarizing documents..."):
 
                 # Generate document summaries
-                await tldr_ui.session_summarize_resources(context_size=context_size)
+                await tldr_ui.execute_session_process(
+                    log_message="Summarizing documents...",
+                    function=tldr_ui.tldr.summarize_resources,
+                    context_size=context_size,
+                )
                 # And update the session state
-                st.session_state.summarized = True
                 for doc in st.session_state.documents:
                     doc["summary"] = tldr_ui.tldr.content[doc["source"]]["summary"]
+                st.session_state.summarized = True
+                st.session_state.executive = True
 
-        st.subheader("Document Summaries")
-        st.text("Select a document from the list of uploaded documents to view its summary.")
         # Display selected document content
-        if st.session_state.selected_doc and st.session_state.summarized is True:
-            st.subheader(f"Summary of {st.session_state.selected_doc['source']}")
+        if st.session_state.summarized is True:
+            st.subheader("Document Summaries")
+            st.text("Select a document from the list of uploaded documents to view its summary.")
             # Display summary in a scrollable text area
             summary = st.session_state.selected_doc.get(
                     "summary", "No summary available"
@@ -565,8 +482,8 @@ async def run_tldr_streamlit():
                 "</div>",
                 unsafe_allow_html=True,
                 )
-        #else:
-        #    st.info("Generate reference summaries first to view document summaries.")
+        else:
+            st.info("Generate reference summaries first to view document summaries.")
            
         st.subheader("Actions")
         # Create three columns for buttons
@@ -581,7 +498,11 @@ async def run_tldr_streamlit():
                 help="Apply external research to the compiled document summaries",
             ):
                 with st.spinner("Researching knowledge gaps (longest step, please be patient)..."):
-                    await tldr_ui.session_apply_research(context_size=context_size)
+                    await tldr_ui.execute_session_process(
+                        log_message="Researching knowledge gaps...",
+                        function=tldr_ui.tldr.apply_research,
+                        context_size=context_size,
+                    )
 
         # Synthesis
         with action_col2:
@@ -594,26 +515,40 @@ async def run_tldr_streamlit():
                 with st.spinner(
                     "Synthesizing summaries, research, and new added context..."
                 ):
-                    await tldr_ui.session_integrate_summaries(context_size=context_size)
+                    await tldr_ui.execute_session_process(
+                        log_message="Synthesizing summaries, research, and new added context...",
+                        function=tldr_ui.tldr.integrate_summaries,
+                        context_size=context_size,
+                    )
     
         # Polish
         with action_col3:
             if st.button(
                 "Polish",
-                disabled=st.session_state.executive is None
+                disabled=st.session_state.executive is False
                 or tldr_ui.processing is True,
                 help="Polish the finalized summary",
             ):
                 with st.spinner("Polishing finalized summary..."):
-                    await tldr_ui.session_polish_response(
+                    await tldr_ui.execute_session_process(
+                        log_message="Polishing finalized summary...",
+                        function=tldr_ui.tldr.polish_response,
                         tone=tone, context_size=context_size
                     )
+                    st.session_state.polished = True
 
         st.subheader("TLDR Text")
         # Summary tabs
-        tab1, tab2, tab3, tab4 = st.tabs(
+        tabs = st.tabs(
             ["Added Context", "Research Results", "Executive Summary", "Polished Summary"]
         )
+        tab_names = ['added_context', 'research_context', 'executive_summary', 'polished_summary']
+        
+        # Update active tab in session state
+        for i, tab in enumerate(tabs):
+            with tab:
+                # This will run when the tab is active
+                st.session_state.active_tab = tab_names[i]
 
         # Summary content
         # Initialize edit mode state if not exists
@@ -645,124 +580,102 @@ async def run_tldr_streamlit():
             if not st.session_state.edit_mode['polished_summary'] and hasattr(tldr_ui.tldr, 'polished_summary'):
                 st.session_state.edit_buffers['polished_summary'] = tldr_ui.tldr.polished_summary or ""
         
-        # Added Context Tab
-        with tab1:
-            col1, col2 = st.columns([1, 1])
-            with col1:
-                if st.button("✏️ Edit", key="edit_added_context"):
-                    st.session_state.edit_mode['added_context'] = True
-            with col2:
-                if st.session_state.edit_mode['added_context'] and st.button("💾 Save", key="save_added_context"):
-                    st.session_state.edit_mode['added_context'] = False
-                    if hasattr(tldr_ui, 'tldr'):
-                        tldr_ui.tldr.added_context = st.session_state.edit_buffers['added_context']
-            
-            st.text_area(
-                "Additional context provided during executive summary generation",
-                height=400,
-                value=st.session_state.edit_buffers['added_context'],
-                key="added_context_area",
-                disabled=not st.session_state.edit_mode['added_context'],
-                on_change=lambda: st.session_state.edit_buffers.update({
-                    'added_context': st.session_state.added_context_area
-                })
-            )
-        
-        # Research Results Tab
-        with tab2:
-            col1, col2 = st.columns([1, 1])
-            with col1:
-                if st.button("✏️ Edit", key="edit_research_context"):
-                    st.session_state.edit_mode['research_context'] = True
-            with col2:
-                if st.session_state.edit_mode['research_context'] and st.button("💾 Save", key="save_research_context"):
-                    st.session_state.edit_mode['research_context'] = False
-                    if hasattr(tldr_ui, 'tldr'):
-                        tldr_ui.tldr.research_context = st.session_state.edit_buffers['research_context']
-            
-            st.text_area(
-                "Research results from knowledge gaps identified in document summaries",
-                height=400,
-                value=st.session_state.edit_buffers['research_context'],
-                key="research_results_area",
-                disabled=not st.session_state.edit_mode['research_context'],
-                on_change=lambda: st.session_state.edit_buffers.update({
-                    'research_context': st.session_state.research_results_area
-                })
-            )
-        
-        # Executive Summary Tab
-        with tab3:
-            col1, col2 = st.columns([1, 1])
-            with col1:
-                if st.button("✏️ Edit", key="edit_exec_summary"):
-                    st.session_state.edit_mode['executive_summary'] = True
-            with col2:
-                if st.session_state.edit_mode['executive_summary'] and st.button("💾 Save", key="save_exec_summary"):
-                    st.session_state.edit_mode['executive_summary'] = False
-                    if hasattr(tldr_ui, 'tldr'):
-                        tldr_ui.tldr.executive_summary = st.session_state.edit_buffers['executive_summary']
-            
-            st.text_area(
-                "Executive summary of combined document summaries and research results",
-                height=400,
-                value=st.session_state.edit_buffers['executive_summary'],
-                key="executive_area",
-                disabled=not st.session_state.edit_mode['executive_summary'],
-                on_change=lambda: st.session_state.edit_buffers.update({
-                    'executive_summary': st.session_state.executive_area
-                })
-            )
-        
-        # Polished Summary Tab
-        with tab4:
-            col1, col2 = st.columns([1, 1])
-            with col1:
-                if st.button("✏️ Edit", key="edit_polished"):
-                    st.session_state.edit_mode['polished_summary'] = True
-            with col2:
-                if st.session_state.edit_mode['polished_summary'] and st.button("💾 Save", key="save_polished"):
-                    st.session_state.edit_mode['polished_summary'] = False
-                    if hasattr(tldr_ui, 'tldr'):
-                        tldr_ui.tldr.polished_summary = st.session_state.edit_buffers['polished_summary']
-            
-            st.text_area(
-                "Polished executive summary with improved formatting and tone",
-                height=400,
-                value=st.session_state.edit_buffers['polished_summary'],
-                key="polished_area",
-                disabled=not st.session_state.edit_mode['polished_summary'],
-                on_change=lambda: st.session_state.edit_buffers.update({
-                    'polished_summary': st.session_state.polished_area
-                })
-            )
+        # Tab contents
+        tab_contents = [
+            {
+                'title': "Additional context provided during research",
+                'key': 'added_context',
+                'help_text': "Edit additional context"
+            },
+            {
+                'title': "Research results from external sources",
+                'key': 'research_context',
+                'help_text': "Edit research context"
+            },
+            {
+                'title': "Executive summary of combined document summaries and research results",
+                'key': 'executive_summary',
+                'help_text': "Edit executive summary"
+            },
+            {
+                'title': "Polished executive summary with improved formatting and tone",
+                'key': 'polished_summary',
+                'help_text': "Edit polished summary"
+            }
+        ]
+
+        # Create tab contents
+        for i, tab in enumerate(tabs):
+            with tab:
+                tab_info = tab_contents[i]
+                col1, col2 = st.columns([1, 1])
+                with col1:
+                    if st.button(f"✏️ Edit", key=f"edit_{tab_info['key']}"):
+                        st.session_state.edit_mode[tab_info['key']] = True
+                with col2:
+                    if st.session_state.edit_mode[tab_info['key']] and st.button("💾 Save", key=f"save_{tab_info['key']}"):
+                        st.session_state.edit_mode[tab_info['key']] = False
+                        setattr(tldr_ui.tldr, tab_info['key'], st.session_state.edit_buffers[tab_info['key']])
+
+                st.text_area(
+                    tab_info['title'],
+                    value=st.session_state.edit_buffers[tab_info['key']],
+                    key=f"{tab_info['key']}_area",
+                    disabled=not st.session_state.edit_mode[tab_info['key']],
+                    on_change=lambda k=tab_info['key']: st.session_state.edit_buffers.update({
+                        k: st.session_state[f"{k}_area"]
+                    })
+                )
         st.write("")
 
-        st.subheader("Output")
+        st.subheader("Handle Output")
         # Create three columns for buttons
-        output_col1, output_col2 = st.columns(2)
+        output_col1, output_col2, output_col3 = st.columns(3)
 
         with output_col1:
-            # Add the actual buttons (invisible, just for the click handlers)
+            # Determine which tab is active and get its content
+            active_tab = st.session_state.get('active_tab', 'executive_summary')
+            tab_content = st.session_state.edit_buffers.get(active_tab, "")
+            
             if st.button(
                 "📋 Copy to Clipboard",
                 key="copy_btn_hidden",
-                disabled=not st.session_state.selected_doc and st.session_state.summarized is False,
-                help="Copy text to clipboard",
+                disabled=not tab_content.strip(),
+                help="Copy current tab's content to clipboard",
             ):
-                st.session_state.clipboard = st.session_state.selected_doc["summary"]
+                st.session_state.clipboard = tab_content
                 st.toast("Copied to clipboard!")
 
         with output_col2:
             if st.button(
-                "💾 Save as PDF",
-                key="pdf_btn_hidden",
-                disabled=not st.session_state.polished or not st.session_state.executive,
+                "💾 Save Executive Summary as PDF",
+                key="executive_pdf_btn_hidden",
+                disabled=st.session_state.executive is False,
                 help="Save summary as PDF",
             ):
                 with st.spinner("Generating PDF..."):
-                    await tldr_ui.tldr.save_to_pdf(st.session_state.polished)
+                    await tldr_ui.execute_session_process(
+                        log_message="Saving to PDF...",
+                        function=tldr_ui.tldr.save_to_pdf,
+                        polished=False,
+                    )
                 st.toast("PDF saved!")
+
+        with output_col3:
+            if st.button(
+                "💾 Save Polished Summary as PDF",
+                key="polished_pdf_btn_hidden",
+                disabled=st.session_state.polished is False,
+                help="Save summary as PDF",
+            ):
+                with st.spinner("Generating PDF..."):
+                    await tldr_ui.execute_session_process(
+                        log_message="Saving to PDF...",
+                        function=tldr_ui.tldr.save_to_pdf,
+                        polished=True,
+                    )
+                st.toast("PDF saved!")
+
 
     # Status and Output section
     with st.expander("🔍 Processing Logs", expanded=False):

@@ -76,12 +76,55 @@ class TldrEngine(CompletionHandler):
         # Fetch and reformat additional context if provided
         if context_files is not None and context_files != []:
             all_context = self.fetch_content(user_files=context_files, label="context")
+            all_context = self.join_text_objects(all_context)
             await self.format_context(
-                "".join(all_context), context_size=context_size, label="context_files"
+                all_context, 
+                context_size=context_size, 
+                label="context_files"
             )
+        else:
+            all_context = None
 
         # Create embeddings
-        await self.encode_text_to_vector_store()
+        await self.encode_text_to_vector_store(extra_text=all_context)
+
+    @staticmethod
+    def join_text_objects(collection, separator="\n\n"):
+        """Joins a collection of text objects into a single string.
+        
+        Args:
+            collection: A string, dictionary, or iterable of strings/dictionaries to join
+            separator: String to place between each item (default: "\n\n")
+            
+        Returns:
+            str: A single string with all items joined by the separator
+            
+        Raises:
+            TypeError: If any item cannot be converted to string
+        """
+        def to_strings(items):
+            result = []
+            for item in items:
+                if isinstance(item, dict):
+                    result.extend(to_strings(item.values()))
+                elif item is not None:
+                    result.append(str(item))
+            return result
+
+        if collection is None:
+            return ""
+            
+        if isinstance(collection, str):
+            return collection
+            
+        if isinstance(collection, dict):
+            collection = list(collection.values())
+            
+        if not isinstance(collection, (list, tuple)):
+            collection = [collection]
+            
+        string_items = to_strings(collection)
+        return separator.join(string_items)
 
     @staticmethod
     def strip_leading_bullet(text):
@@ -112,7 +155,7 @@ class TldrEngine(CompletionHandler):
             context_research = await self.perform_api_call(prompt=query,
             prompt_type="web_search", context_size=context_size, web_search=True)
             await self.format_context(
-                context_research, context_size=context_size, label="context_research"
+                self.join_text_objects(context_research), context_size=context_size, label="context_research"
             )
 
     async def finish_session(self):
@@ -200,7 +243,7 @@ class TldrEngine(CompletionHandler):
         for i, summary in enumerate(reference_summaries):
             self.content[summary["source"]]["summary"] = summary["response"]
             all_summaries.append(f"Reference {i} Summary:\n{summary['response']}\n")
-        self.all_summaries = "\n\n".join(all_summaries)
+        self.all_summaries = self.join_text_objects(all_summaries)
         result = self.save_response_text(
             self.all_summaries, label="reference_summaries"
         )
@@ -358,7 +401,7 @@ class TldrEngine(CompletionHandler):
             search_context = self.search_embedded_context(
                 query=q_ans_pair["prompt"], num_results=1
             )
-            search_context = "\n".join(search_context)
+            search_context = self.join_text_objects(search_context)
             current_context = f'Question:\n{q_ans_pair["prompt"]}\n'
             current_context += f'Answer:\n{q_ans_pair["response"]}\n'
             current_context += f"Local RAG Context:\n{search_context}\n"
@@ -366,7 +409,7 @@ class TldrEngine(CompletionHandler):
 
         # Assemble full research context
         divider = "\n#--------------------------------------------------------#\n"
-        research_str = divider.join(research_context)
+        research_str = self.join_text_objects(research_context, divider)
         self.research_context = research_str
 
         # Update added context with new research

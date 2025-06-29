@@ -57,8 +57,9 @@ class ResearchAgent(LogHandler):
         self.sigma = sigma
         self.platform = platform
 
-    def encode_text_to_vector_store(
+    async def encode_text_to_vector_store(
         self,
+        extra_text: str = None,
         chunk_size: int = 1000,
         chunk_overlap: int = 200,
         platform: str = "openai",
@@ -66,8 +67,7 @@ class ResearchAgent(LogHandler):
         """
         Encodes a string into a FAISS vector store using OpenAI embeddings.
         """
-        self.logger.info(f"Generating embeddings for reference documents...")
-        all_content = "\n".join(self.content).split("\n")
+        self.logger.info("Generating embeddings for reference documents...")
         chunk_size = 1000 if chunk_size <= 0 else chunk_size
         chunk_overlap = 200 if chunk_overlap < 0 else chunk_overlap
 
@@ -78,8 +78,32 @@ class ResearchAgent(LogHandler):
                 length_function=len,
                 is_separator_regex=False,
             )
-            # create_documents expects a list of strings
-            docs = text_splitter.create_documents(all_content)
+            
+            # Handle the content properly
+            if not hasattr(self, 'content') or not self.content:
+                content_text = ""
+            elif isinstance(self.content, dict):
+                # If content is a dict, get the values
+                content_values = list(self.content.values())
+                if all(isinstance(x, str) for x in content_values):
+                    content_text = "\n\n".join(str(x) for x in content_values if x)
+                else:
+                    content_text = self.join_text_objects(content_values)
+            elif isinstance(self.content, (list, tuple)):
+                content_text = self.join_text_objects(self.content)
+            else:
+                content_text = str(self.content)
+                
+            # Add extra text if provided
+            if extra_text:
+                content_text = f"{content_text}\n\n{extra_text}" if content_text else extra_text
+                
+            # Ensure we have content to process
+            if not content_text.strip():
+                raise ValueError("No content available to encode into vector store")
+                
+            # Create documents - wrap in list as create_documents expects a list of strings
+            docs = text_splitter.create_documents([content_text])
 
             # Assign metadata to each chunk (Langchain Document objects)
             for doc in docs:
@@ -94,11 +118,51 @@ class ResearchAgent(LogHandler):
             )
             vector_store = FAISS.from_documents(docs, embeddings)
             self.check_vector_store(vector_store)
+            return vector_store  # Make sure to return the vector store
 
         except Exception as e:
+            self.logger.error(f"Error in encode_text_to_vector_store: {str(e)}")
             raise RuntimeError(
                 f"An error occurred during the encoding process: {str(e)}"
             )
+    
+    @staticmethod
+    def join_text_objects(collection, separator="\n\n"):
+        """Joins a collection of text objects into a single string.
+        
+        Args:
+            collection: A string, dictionary, or iterable of strings/dictionaries to join
+            separator: String to place between each item (default: "\n\n")
+            
+        Returns:
+            str: A single string with all items joined by the separator
+            
+        Raises:
+            TypeError: If any item cannot be converted to string
+        """
+        def to_strings(items):
+            result = []
+            for item in items:
+                if isinstance(item, dict):
+                    result.extend(to_strings(item.values()))
+                elif item is not None:
+                    result.append(str(item))
+            return result
+
+        if collection is None:
+            return ""
+            
+        if isinstance(collection, str):
+            return collection
+            
+        if isinstance(collection, dict):
+            collection = list(collection.values())
+            
+        if not isinstance(collection, (list, tuple)):
+            collection = [collection]
+            
+        string_items = to_strings(collection)
+        return separator.join(string_items)
 
     def check_vector_store(self, chunks: FAISS):
         """
