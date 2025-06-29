@@ -1,0 +1,110 @@
+2025-06-29 06:40:52,507 - INFO - Logging system initialized
+2025-06-29 06:40:52,508 - INFO - Intermediate files being written to: tldr.20250629_064052.files
+2025-06-29 06:40:52,552 - INFO - Systems instructions loaded successfully.
+2025-06-29 06:40:52,631 - INFO - Initialized OpenAI client: version=1.86.0, context size=medium
+2025-06-29 06:40:52,631 - INFO - INFO: TLDR system initialized and ready for use
+2025-06-29 06:41:01,105 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 06:41:05,123 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 06:41:05,133 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 06:41:06,924 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 06:41:06,930 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 06:41:06,978 - INFO - INFO: Starting to load content from 2 files...
+2025-06-29 06:41:06,979 - INFO - Searching for reference documents...
+2025-06-29 06:41:11,626 - INFO - Identified 2 reference documents.
+2025-06-29 06:41:11,626 - INFO - Searching for context documents...
+2025-06-29 06:41:12,705 - INFO - Identified 1 context documents.
+2025-06-29 06:41:18,909 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:41:19,000 - INFO - Response saved to: tldr.20250629_064052.files/context_files.tldr.20250629_064052.txt
+2025-06-29 06:41:19,001 - INFO - Generating embeddings for reference documents...
+2025-06-29 06:41:20,941 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 06:41:21,267 - INFO - Loading faiss.
+2025-06-29 06:41:21,505 - INFO - Successfully loaded faiss.
+2025-06-29 06:41:21,588 - INFO - INFO: Completed successfully
+2025-06-29 06:41:38,260 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 06:41:38,264 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 06:41:39,386 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 06:41:39,389 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 06:41:39,403 - INFO - INFO: Refining query: What does C. diff eat during infection?
+2025-06-29 06:41:39,404 - INFO - Refining user query...
+2025-06-29 06:41:39,417 - INFO - Retrying request to /responses in 0.429800 seconds
+2025-06-29 06:41:41,942 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:41:41,951 - INFO - Refined query: - What specific nutrients or substances does Clostridioides difficile metabolize during an infection?
+- How does the diet of C. difficile differ from that of other gut bacteria in the same environment?
+- What role do environmental factors, such as antibiotic use or gut microbiome composition, play in the dietary needs of C. difficile?
+- Are there any specific treatment options that target the metabolic processes of C. difficile?
+- What implications do the dietary habits of C. difficile have for managing infections and preventing recurrence?
+2025-06-29 06:41:41,952 - INFO - Response saved to: tldr.20250629_064052.files/refined_query.tldr.20250629_064052.txt
+2025-06-29 06:41:41,954 - INFO - Finished refining user query
+2025-06-29 06:41:41,955 - INFO - INFO: Completed successfully
+2025-06-29 06:41:42,164 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 06:41:42,167 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 06:41:44,350 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 06:41:44,352 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 06:41:44,361 - INFO - INFO: Searching for context: - What specific nutrients or substances does Clostridioides difficile metabolize during an infection?
+- How does the diet of C. difficile differ from that of other gut bacteria in the same environment?
+- What role do environmental factors, such as antibiotic use or gut microbiome composition, play in the dietary needs of C. difficile?
+- Are there any specific treatment options that target the metabolic processes of C. difficile?
+- What implications do the dietary habits of C. difficile have for managing infections and preventing recurrence?
+2025-06-29 06:41:44,362 - INFO - Searching for initial context in provided documents...
+2025-06-29 06:41:44,362 - INFO - Querying local embedded text vectors...
+2025-06-29 06:41:44,975 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 06:41:45,018 - INFO - Average relevance score: 3.467
+2025-06-29 06:41:45,032 - INFO - Retrying request to /responses in 0.496558 seconds
+2025-06-29 06:41:49,321 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:41:49,328 - INFO - Response saved to: tldr.20250629_064052.files/context_search.tldr.20250629_064052.txt
+2025-06-29 06:41:49,329 - INFO - Searching for initial context on the web...
+2025-06-29 06:41:59,627 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:42:07,848 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:42:07,856 - INFO - Response saved to: tldr.20250629_064052.files/context_research.tldr.20250629_064052.txt
+2025-06-29 06:42:07,861 - INFO - Searching for initial context in provided documents...
+2025-06-29 06:42:07,862 - INFO - Querying local embedded text vectors...
+2025-06-29 06:42:08,096 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 06:42:08,114 - INFO - Average relevance score: 3.553
+2025-06-29 06:42:16,576 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:42:16,592 - INFO - Response saved to: tldr.20250629_064052.files/context_search.tldr.20250629_064052.txt
+2025-06-29 06:42:16,594 - INFO - Searching for initial context on the web...
+2025-06-29 06:42:27,544 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:42:34,164 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:42:34,176 - INFO - Response saved to: tldr.20250629_064052.files/context_research.tldr.20250629_064052.txt
+2025-06-29 06:42:34,180 - INFO - Searching for initial context in provided documents...
+2025-06-29 06:42:34,181 - INFO - Querying local embedded text vectors...
+2025-06-29 06:42:34,677 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 06:42:34,697 - INFO - Average relevance score: 3.62
+2025-06-29 06:42:41,540 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:42:41,558 - INFO - Response saved to: tldr.20250629_064052.files/context_search.tldr.20250629_064052.txt
+2025-06-29 06:42:41,562 - INFO - Searching for initial context on the web...
+2025-06-29 06:42:46,247 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:42:53,005 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:42:53,024 - INFO - Response saved to: tldr.20250629_064052.files/context_research.tldr.20250629_064052.txt
+2025-06-29 06:42:53,024 - INFO - Searching for initial context in provided documents...
+2025-06-29 06:42:53,025 - INFO - Querying local embedded text vectors...
+2025-06-29 06:42:53,517 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 06:42:53,540 - INFO - Average relevance score: 3.32
+2025-06-29 06:43:02,737 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:43:02,745 - INFO - Response saved to: tldr.20250629_064052.files/context_search.tldr.20250629_064052.txt
+2025-06-29 06:43:02,746 - INFO - Searching for initial context on the web...
+2025-06-29 06:43:07,648 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:43:15,628 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:43:15,649 - INFO - Response saved to: tldr.20250629_064052.files/context_research.tldr.20250629_064052.txt
+2025-06-29 06:43:15,651 - INFO - Searching for initial context in provided documents...
+2025-06-29 06:43:15,653 - INFO - Querying local embedded text vectors...
+2025-06-29 06:43:16,147 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 06:43:16,159 - INFO - Average relevance score: 3.376
+2025-06-29 06:43:25,159 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:43:25,181 - INFO - Response saved to: tldr.20250629_064052.files/context_search.tldr.20250629_064052.txt
+2025-06-29 06:43:25,189 - INFO - Searching for initial context on the web...
+2025-06-29 06:43:31,162 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:43:39,715 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:43:39,727 - INFO - Response saved to: tldr.20250629_064052.files/context_research.tldr.20250629_064052.txt
+2025-06-29 06:43:39,727 - INFO - Searching for initial context in provided documents...
+2025-06-29 06:43:39,727 - INFO - Querying local embedded text vectors...
+2025-06-29 06:43:40,572 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 06:43:40,588 - INFO - Average relevance score: 1.045
+2025-06-29 06:43:47,174 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 06:43:47,183 - INFO - Response saved to: tldr.20250629_064052.files/context_search.tldr.20250629_064052.txt
+2025-06-29 06:43:47,184 - INFO - Searching for initial context on the web...
+2025-06-29 06:43:47,185 - ERROR - Error in perform_api_call
+2025-06-29 06:43:52,191 - ERROR - Error in perform_api_call
+2025-06-29 06:43:57,200 - ERROR - Error in perform_api_call
+2025-06-29 06:44:03,007 - ERROR - Error in perform_api_call
+2025-06-29 06:44:10,491 - ERROR - Error in perform_api_call

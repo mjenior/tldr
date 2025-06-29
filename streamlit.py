@@ -358,7 +358,7 @@ async def run_tldr_streamlit():
                 with st.spinner("Refining query..."):
                     await tldr_ui.execute_session_process(
                         log_message=f"Refining query: {st.session_state.user_query}",
-                        function=tldr_ui.tldr.refine_query,
+                        function=tldr_ui.tldr.refine_user_query,
                         query=st.session_state.user_query,
                     )
                     st.session_state.refined_query = tldr_ui.tldr.query
@@ -369,11 +369,11 @@ async def run_tldr_streamlit():
                 "Search for Context",
                 disabled=st.session_state.user_query is None or tldr_ui.processing is True or st.session_state.documents is None,
             ):
-                with st.spinner("Searching for initial context..."):
+                with st.spinner("Searching docs and web for more context (please wait)..."):
                     await tldr_ui.execute_session_process(
                         log_message=f"Searching for context: {st.session_state.user_query}",
                         function=tldr_ui.tldr.initial_context_search,
-                        query=st.session_state.user_query,
+                        context_size=context_size,
                     )
                     st.session_state.initial_context = tldr_ui.tldr.added_context
                     st.rerun()
@@ -497,7 +497,7 @@ async def run_tldr_streamlit():
                 or tldr_ui.processing is True,
                 help="Apply external research to the compiled document summaries",
             ):
-                with st.spinner("Researching knowledge gaps (longest step, please be patient)..."):
+                with st.spinner("Researching knowledge gaps (please wait)..."):
                     await tldr_ui.execute_session_process(
                         log_message="Researching knowledge gaps...",
                         function=tldr_ui.tldr.apply_research,

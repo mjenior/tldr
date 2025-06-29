@@ -162,7 +162,7 @@ class CompletionHandler(ResearchAgent):
                 raise
                 
         except Exception as e:
-            self.logger.error(f"Error in perform_api_call")
+            self.logger.error(f"Error in perform_api_call: {str(e)}")
             if "429 Too Many Requests" in str(e):
                 self.logger.error(f"Too many requests in time period to OpenAI API")
                 await self._429_sleep_time(str(e))

@@ -1,0 +1,5 @@
+- What nutrients or environmental factors sustain C. diff during an infection in the human gut?
+- How does the diet of the host influence the growth and activity of C. diff?
+- Are there specific substances that C. diff metabolizes or utilizes that contribute to its pathogenicity?
+- What role do gut microbiota play in supporting or inhibiting C. diff during an infection?
+- How does antibiotic treatment impact the availability of resources for C. diff?

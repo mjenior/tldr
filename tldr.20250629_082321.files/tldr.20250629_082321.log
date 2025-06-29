@@ -1,0 +1,123 @@
+2025-06-29 08:23:21,511 - INFO - Logging system initialized
+2025-06-29 08:23:21,513 - INFO - Intermediate files being written to: tldr.20250629_082321.files
+2025-06-29 08:23:21,555 - INFO - Systems instructions loaded successfully.
+2025-06-29 08:23:21,626 - INFO - Initialized OpenAI client: version=1.86.0, context size=medium
+2025-06-29 08:23:21,626 - INFO - INFO: TLDR system initialized and ready for use
+2025-06-29 08:23:44,949 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 08:23:54,986 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 08:23:54,991 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 08:23:57,625 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 08:23:57,629 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 08:23:57,643 - INFO - INFO: Starting to load content from 2 files...
+2025-06-29 08:23:57,644 - INFO - Searching for reference documents...
+2025-06-29 08:24:02,287 - INFO - Identified 2 reference documents.
+2025-06-29 08:24:02,288 - INFO - Searching for context documents...
+2025-06-29 08:24:03,301 - INFO - Identified 1 context documents.
+2025-06-29 08:24:05,204 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 08:24:05,327 - INFO - Response saved to: tldr.20250629_082321.files/context_files.tldr.20250629_082321.txt
+2025-06-29 08:24:05,327 - INFO - Generating embeddings for reference documents...
+2025-06-29 08:24:06,537 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 08:24:06,561 - INFO - Loading faiss.
+2025-06-29 08:24:06,689 - INFO - Successfully loaded faiss.
+2025-06-29 08:24:06,698 - INFO - INFO: Completed successfully
+2025-06-29 08:24:10,490 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 08:24:10,504 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 08:24:30,346 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 08:24:30,360 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 08:24:31,328 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 08:24:31,336 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 08:24:31,356 - INFO - INFO: Refining query: What does C. diff eat during infection?
+2025-06-29 08:24:31,360 - INFO - Refining user query...
+2025-06-29 08:24:31,372 - INFO - Retrying request to /responses in 0.423209 seconds
+2025-06-29 08:24:33,566 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 08:24:33,573 - INFO - Refined query: - What nutrients or environmental factors sustain C. diff during an infection in the human gut?
+- How does the diet of the host influence the growth and activity of C. diff?
+- Are there specific substances that C. diff metabolizes or utilizes that contribute to its pathogenicity?
+- What role do gut microbiota play in supporting or inhibiting C. diff during an infection?
+- How does antibiotic treatment impact the availability of resources for C. diff?
+2025-06-29 08:24:33,579 - INFO - Response saved to: tldr.20250629_082321.files/refined_query.tldr.20250629_082321.txt
+2025-06-29 08:24:33,581 - INFO - Finished refining user query
+2025-06-29 08:24:33,584 - INFO - INFO: Completed successfully
+2025-06-29 08:24:33,810 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 08:24:33,813 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 08:24:47,527 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 08:24:47,540 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 08:24:47,562 - INFO - INFO: Searching for context: - What nutrients or environmental factors sustain C. diff during an infection in the human gut?
+- How does the diet of the host influence the growth and activity of C. diff?
+- Are there specific substances that C. diff metabolizes or utilizes that contribute to its pathogenicity?
+- What role do gut microbiota play in supporting or inhibiting C. diff during an infection?
+- How does antibiotic treatment impact the availability of resources for C. diff?
+2025-06-29 08:24:47,563 - INFO - Searching for more context in provided documents and web...
+2025-06-29 08:24:47,563 - INFO - Querying local embedded text vectors...
+2025-06-29 08:24:47,798 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 08:24:47,810 - INFO - Average relevance score: 1.0
+2025-06-29 08:24:47,818 - INFO - Retrying request to /responses in 0.483931 seconds
+2025-06-29 08:24:57,016 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 08:24:57,069 - INFO - Querying local embedded text vectors...
+2025-06-29 08:24:58,454 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 08:24:58,496 - INFO - Average relevance score: 1.0
+2025-06-29 08:25:07,874 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 08:25:07,890 - INFO - Querying local embedded text vectors...
+2025-06-29 08:25:08,389 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 08:25:08,416 - INFO - Average relevance score: 1.0
+2025-06-29 08:25:17,018 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 08:25:17,024 - INFO - Querying local embedded text vectors...
+2025-06-29 08:25:17,616 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 08:25:17,628 - INFO - Average relevance score: 1.0
+2025-06-29 08:25:27,077 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 08:25:27,085 - INFO - Querying local embedded text vectors...
+2025-06-29 08:25:27,678 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 08:25:27,686 - INFO - Average relevance score: 1.0
+2025-06-29 08:25:57,719 - ERROR - API call timed out after 30 seconds
+2025-06-29 08:25:57,720 - ERROR - Error in perform_api_call
+2025-06-29 08:26:10,356 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 08:26:10,368 - INFO - Querying local embedded text vectors...
+2025-06-29 08:26:11,141 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 08:26:11,148 - INFO - Average relevance score: 1.0
+2025-06-29 08:26:11,149 - ERROR - Error in perform_api_call
+2025-06-29 08:26:16,155 - ERROR - Error in perform_api_call
+2025-06-29 08:26:21,161 - ERROR - Error in perform_api_call
+2025-06-29 08:26:28,857 - ERROR - Error in perform_api_call
+2025-06-29 08:26:39,346 - ERROR - Error in perform_api_call
+2025-06-29 08:26:53,236 - ERROR - Error in perform_api_call
+2025-06-29 08:27:07,018 - ERROR - Error in perform_api_call
+2025-06-29 08:27:26,466 - ERROR - Error in perform_api_call
+2025-06-29 08:27:55,286 - ERROR - Error in perform_api_call
+2025-06-29 08:27:55,300 - ERROR - ERROR: Error: RetryError[<Future at 0x762a23bfa270 state=finished raised ValueError>]
+2025-06-29 08:27:55,301 - ERROR - ERROR: Error details: Traceback (most recent call last):
+  File "/home/matt-jenior/repos/tldr/.pixi/envs/default/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/matt-jenior/repos/tldr/tldr/openai.py", line 170, in perform_api_call
+    raise e
+  File "/home/matt-jenior/repos/tldr/tldr/openai.py", line 145, in perform_api_call
+    call_params = self.assemble_messages(
+                  ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/matt-jenior/repos/tldr/tldr/openai.py", line 68, in assemble_messages
+    raise ValueError("Message cannot be empty.")
+ValueError: Message cannot be empty.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/matt-jenior/repos/tldr/streamlit.py", line 153, in execute_session_process
+    await function(**args)
+  File "/home/matt-jenior/repos/tldr/tldr/core.py", line 118, in initial_context_search
+    current_research = await self.perform_api_call(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/matt-jenior/repos/tldr/.pixi/envs/default/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/matt-jenior/repos/tldr/.pixi/envs/default/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/matt-jenior/repos/tldr/.pixi/envs/default/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/matt-jenior/repos/tldr/.pixi/envs/default/lib/python3.12/site-packages/tenacity/_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/matt-jenior/repos/tldr/.pixi/envs/default/lib/python3.12/site-packages/tenacity/__init__.py", line 421, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x762a23bfa270 state=finished raised ValueError>]
+

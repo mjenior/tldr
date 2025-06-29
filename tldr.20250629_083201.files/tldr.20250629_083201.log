@@ -1,0 +1,77 @@
+2025-06-29 08:32:01,733 - INFO - Logging system initialized
+2025-06-29 08:32:01,734 - INFO - Intermediate files being written to: tldr.20250629_083201.files
+2025-06-29 08:32:01,783 - INFO - Systems instructions loaded successfully.
+2025-06-29 08:32:01,850 - INFO - Initialized OpenAI client: version=1.86.0, context size=medium
+2025-06-29 08:32:01,850 - INFO - INFO: TLDR system initialized and ready for use
+2025-06-29 08:32:07,893 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 08:32:12,057 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 08:32:12,071 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 08:32:17,424 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 08:32:17,434 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 08:32:17,494 - INFO - INFO: Starting to load content from 2 files...
+2025-06-29 08:32:17,495 - INFO - Searching for reference documents...
+2025-06-29 08:32:21,871 - INFO - Identified 2 reference documents.
+2025-06-29 08:32:21,871 - INFO - Searching for context documents...
+2025-06-29 08:32:22,925 - INFO - Identified 1 context documents.
+2025-06-29 08:32:24,483 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 08:32:24,601 - INFO - Response saved to: tldr.20250629_083201.files/context_files.tldr.20250629_083201.txt
+2025-06-29 08:32:24,601 - INFO - Generating embeddings for reference documents...
+2025-06-29 08:32:25,301 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 08:32:25,328 - INFO - Loading faiss.
+2025-06-29 08:32:25,442 - INFO - Successfully loaded faiss.
+2025-06-29 08:32:25,452 - INFO - INFO: Completed successfully
+2025-06-29 08:32:58,497 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 08:32:58,504 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 08:33:00,114 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 08:33:00,126 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 08:33:00,152 - INFO - INFO: Refining query: What does C. diff eat during infection?
+2025-06-29 08:33:00,154 - INFO - Refining user query...
+2025-06-29 08:33:00,163 - INFO - Retrying request to /responses in 0.459167 seconds
+2025-06-29 08:33:03,003 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 08:33:03,011 - INFO - Refined query: - What are the main nutrients or substrates that Clostridioides difficile (C. diff) utilizes during an infection in the human gut?
+- How does the diet of the host influence the metabolic activity and growth of C. diff during an infection?
+- Are there specific environmental conditions in the gut that promote the growth of C. diff and its ability to thrive during an infection?
+- In what ways does C. diff interact with other gut microbiota in terms of competition for nutrients during an infection? 
+- What is the role of bile acids and other by-products of digestion in supporting the survival and activity of C. diff during an infection?
+2025-06-29 08:33:03,013 - INFO - Response saved to: tldr.20250629_083201.files/refined_query.tldr.20250629_083201.txt
+2025-06-29 08:33:03,014 - INFO - Finished refining user query
+2025-06-29 08:33:03,015 - INFO - INFO: Completed successfully
+2025-06-29 08:33:03,249 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 08:33:03,252 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 08:33:07,286 - INFO - INFO: Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-06-29 08:33:07,298 - INFO - INFO: Uploaded 1 file(s) to context_uploader: 'marshall-et-al.pdf'
+2025-06-29 08:33:07,326 - INFO - INFO: Searching for context: - What are the main nutrients or substrates that Clostridioides difficile (C. diff) utilizes during an infection in the human gut?
+- How does the diet of the host influence the metabolic activity and growth of C. diff during an infection?
+- Are there specific environmental conditions in the gut that promote the growth of C. diff and its ability to thrive during an infection?
+- In what ways does C. diff interact with other gut microbiota in terms of competition for nutrients during an infection? 
+- What is the role of bile acids and other by-products of digestion in supporting the survival and activity of C. diff during an infection?
+2025-06-29 08:33:07,327 - INFO - Searching for more context in provided documents and web...
+2025-06-29 08:33:07,329 - INFO - Querying local embedded text vectors...
+2025-06-29 08:33:07,795 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 08:33:07,810 - INFO - Average relevance score: 1.0
+2025-06-29 08:33:07,842 - INFO - Retrying request to /responses in 0.449898 seconds
+2025-06-29 08:33:20,594 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 08:33:20,631 - INFO - Querying local embedded text vectors...
+2025-06-29 08:33:21,003 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 08:33:21,012 - INFO - Average relevance score: 1.0
+2025-06-29 08:33:31,961 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 08:33:31,978 - INFO - Querying local embedded text vectors...
+2025-06-29 08:33:32,166 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 08:33:32,182 - INFO - Average relevance score: 1.0
+2025-06-29 08:33:39,638 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 08:33:39,645 - INFO - Querying local embedded text vectors...
+2025-06-29 08:33:39,946 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 08:33:39,953 - INFO - Average relevance score: 1.0
+2025-06-29 08:33:47,289 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 08:33:47,298 - INFO - Querying local embedded text vectors...
+2025-06-29 08:33:47,895 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 08:33:47,903 - INFO - Average relevance score: 1.0
+2025-06-29 08:34:17,919 - ERROR - API call timed out after 30 seconds
+2025-06-29 08:34:17,920 - ERROR - Error in perform_api_call: 
+2025-06-29 08:34:33,705 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-06-29 08:34:33,712 - INFO - Querying local embedded text vectors...
+2025-06-29 08:34:34,217 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-06-29 08:34:34,224 - INFO - Average relevance score: 1.0
+2025-06-29 08:34:34,225 - ERROR - Error in perform_api_call: Message cannot be empty.
+2025-06-29 08:34:39,233 - ERROR - Error in perform_api_call: Message cannot be empty.
+2025-06-29 08:34:44,239 - ERROR - Error in perform_api_call: Message cannot be empty.

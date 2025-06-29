@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Dict, List
-
+import asyncio
 from scipy.special import logsumexp
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -59,7 +59,7 @@ class ResearchAgent(LogHandler):
 
     async def encode_text_to_vector_store(
         self,
-        extra_text: str = None,
+        extra_text: str = "",
         chunk_size: int = 1000,
         chunk_overlap: int = 200,
         platform: str = "openai",
@@ -80,26 +80,13 @@ class ResearchAgent(LogHandler):
             )
             
             # Handle the content properly
-            if not hasattr(self, 'content') or not self.content:
-                content_text = ""
-            elif isinstance(self.content, dict):
-                # If content is a dict, get the values
-                content_values = list(self.content.values())
-                if all(isinstance(x, str) for x in content_values):
-                    content_text = "\n\n".join(str(x) for x in content_values if x)
-                else:
-                    content_text = self.join_text_objects(content_values)
-            elif isinstance(self.content, (list, tuple)):
-                content_text = self.join_text_objects(self.content)
-            else:
-                content_text = str(self.content)
-                
+            content_text = self.join_text_objects(self.content)
+
             # Add extra text if provided
-            if extra_text:
-                content_text = f"{content_text}\n\n{extra_text}" if content_text else extra_text
+            content_text = f"{content_text}\n\n{extra_text}".strip()
                 
             # Ensure we have content to process
-            if not content_text.strip():
+            if not content_text:
                 raise ValueError("No content available to encode into vector store")
                 
             # Create documents - wrap in list as create_documents expects a list of strings
@@ -109,7 +96,7 @@ class ResearchAgent(LogHandler):
             for doc in docs:
                 if not hasattr(doc, "metadata"):
                     doc.metadata = {}
-                doc.metadata["relevance_score"] = 1.0
+                doc.metadata["relevance_score"] = 1.0 # baseline relevance
 
             embeddings = (
                 OpenAIEmbeddings()
@@ -118,7 +105,8 @@ class ResearchAgent(LogHandler):
             )
             vector_store = FAISS.from_documents(docs, embeddings)
             self.check_vector_store(vector_store)
-            return vector_store  # Make sure to return the vector store
+            
+            return vector_store
 
         except Exception as e:
             self.logger.error(f"Error in encode_text_to_vector_store: {str(e)}")
@@ -127,12 +115,13 @@ class ResearchAgent(LogHandler):
             )
     
     @staticmethod
-    def join_text_objects(collection, separator="\n\n"):
+    def join_text_objects(collection, separator="\n\n", data_type="values"):
         """Joins a collection of text objects into a single string.
         
         Args:
             collection: A string, dictionary, or iterable of strings/dictionaries to join
             separator: String to place between each item (default: "\n\n")
+            data_type: "values" or "keys" (default: "values")
             
         Returns:
             str: A single string with all items joined by the separator
@@ -144,25 +133,27 @@ class ResearchAgent(LogHandler):
             result = []
             for item in items:
                 if isinstance(item, dict):
-                    result.extend(to_strings(item.values()))
+                    if data_type == "values":
+                        result.extend(to_strings(item.values()))
+                    elif data_type == "keys":
+                        result.extend(to_strings(item.keys()))
                 elif item is not None:
                     result.append(str(item))
-            return result
+            return [x.strip() for x in result]
 
         if collection is None:
             return ""
             
         if isinstance(collection, str):
-            return collection
+            return collection.strip()
             
         if isinstance(collection, dict):
-            collection = list(collection.values())
+            collection = to_strings(collection)
             
         if not isinstance(collection, (list, tuple)):
-            collection = [collection]
+            collection = [str(collection).strip()]
             
-        string_items = to_strings(collection)
-        return separator.join(string_items)
+        return separator.join(collection)
 
     def check_vector_store(self, chunks: FAISS):
         """
@@ -261,7 +252,7 @@ class ResearchAgent(LogHandler):
         # Return the selected documents and their scores
         return dict(zip(selected_documents, selection_scores))
 
-    def search_embedded_context(self, query: str, num_results: int = 5) -> str:
+    async def search_embedded_context(self, query: str, num_results: int = 5) -> str:
         """
         Retrieve most relevant and diverse context items for a query.
         Uses default parameters from __init__ if not provided.
@@ -311,4 +302,4 @@ class ResearchAgent(LogHandler):
                 round(np.mean(list(result.values())), 3)
             )
         )
-        return "\n".join([x.strip() for x in list(result.keys())])
+        return self.join_text_objects(result, data_type="keys")

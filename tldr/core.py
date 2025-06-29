@@ -89,44 +89,6 @@ class TldrEngine(CompletionHandler):
         await self.encode_text_to_vector_store(extra_text=all_context)
 
     @staticmethod
-    def join_text_objects(collection, separator="\n\n"):
-        """Joins a collection of text objects into a single string.
-        
-        Args:
-            collection: A string, dictionary, or iterable of strings/dictionaries to join
-            separator: String to place between each item (default: "\n\n")
-            
-        Returns:
-            str: A single string with all items joined by the separator
-            
-        Raises:
-            TypeError: If any item cannot be converted to string
-        """
-        def to_strings(items):
-            result = []
-            for item in items:
-                if isinstance(item, dict):
-                    result.extend(to_strings(item.values()))
-                elif item is not None:
-                    result.append(str(item))
-            return result
-
-        if collection is None:
-            return ""
-            
-        if isinstance(collection, str):
-            return collection
-            
-        if isinstance(collection, dict):
-            collection = list(collection.values())
-            
-        if not isinstance(collection, (list, tuple)):
-            collection = [collection]
-            
-        string_items = to_strings(collection)
-        return separator.join(string_items)
-
-    @staticmethod
     def strip_leading_bullet(text):
         """Removes a single leading bullet point and whitespace from a string."""
         text = text.lstrip()
@@ -137,26 +99,36 @@ class TldrEngine(CompletionHandler):
     async def initial_context_search(self, context_size="medium"):
         """Search for context in the vector store"""
         # Break up multiple queries
-        if self.query.count("?") >= 2:
-            queries = [self.strip_leading_bullet(query) for query in self.query.split("?")]
-        else:
-            queries = [self.query]
+        queries = [self.strip_leading_bullet(query) for query in self.query.split("\n")]
 
         # Address each query separately
+        self.logger.info("Searching for more context in provided documents and web...")
+        new_context = []
         for query in queries:
+            self.logger.info(f"Searching for context for query: {query}")
+            new_context.append(f"Query: {query}")
+
             # Search embeddings
-            self.logger.info("Searching for initial context in provided documents...")
-            context_search = self.search_embedded_context(query=query)
-            await self.format_context(
-                context_search, context_size=context_size, label="context_search"
-            )
+            current_search = await self.search_embedded_context(query=query)
+            new_context.append(f"Search: {current_search}")
+            
             # Search web
-            self.logger.info("Searching for initial context on the web...")
-            context_research = await self.perform_api_call(prompt=query,
-            prompt_type="web_search", context_size=context_size, web_search=True)
-            await self.format_context(
-                self.join_text_objects(context_research), context_size=context_size, label="context_research"
+            current_research = await self.perform_api_call(
+                prompt=query,
+                prompt_type="web_search", 
+                context_size=context_size, 
+                web_search=True
             )
+            new_context.append(f"Research: {current_research['response']}")
+
+        # Format context
+        self.logger.info(f"Context search results: {len(new_context)}")
+        self.context_search_results = new_context
+        await self.format_context(
+            self.join_text_objects(new_context), 
+            context_size=context_size, 
+            label="context_search"
+        )
 
     async def finish_session(self):
         """Complete run with stats reporting"""
