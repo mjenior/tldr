@@ -115,13 +115,13 @@ class ResearchAgent(LogHandler):
             )
     
     @staticmethod
-    def join_text_objects(collection, separator="\n\n", data_type="values"):
+    def join_text_objects(collection, separator="\n\n", data_type="content"):
         """Joins a collection of text objects into a single string.
         
         Args:
             collection: A string, dictionary, or iterable of strings/dictionaries to join
             separator: String to place between each item (default: "\n\n")
-            data_type: "values" or "keys" (default: "values")
+            data: "content" or "summary" (default: "content")
             
         Returns:
             str: A single string with all items joined by the separator
@@ -129,31 +129,23 @@ class ResearchAgent(LogHandler):
         Raises:
             TypeError: If any item cannot be converted to string
         """
-        def to_strings(items):
-            result = []
-            for item in items:
-                if isinstance(item, dict):
-                    if data_type == "values":
-                        result.extend(to_strings(item.values()))
-                    elif data_type == "keys":
-                        result.extend(to_strings(item.keys()))
-                elif item is not None:
-                    result.append(str(item))
-            return [x.strip() for x in result]
-
         if collection is None:
             return ""
             
-        if isinstance(collection, str):
+        elif isinstance(collection, str):
             return collection.strip()
+        
+        elif isinstance(collection, list):
+            return separator.join([str(x).strip() for x in collection])
             
-        if isinstance(collection, dict):
-            collection = to_strings(collection)
-            
-        if not isinstance(collection, (list, tuple)):
-            collection = [str(collection).strip()]
-            
-        return separator.join(collection)
+        elif isinstance(collection, dict):
+            result = []
+            for source in collection.keys():
+                result.append(collection[source].get(data_type, "content"))
+            return separator.join(result)
+
+        else:
+            raise TypeError("Unsupported collection type")
 
     def check_vector_store(self, chunks: FAISS):
         """
@@ -302,4 +294,4 @@ class ResearchAgent(LogHandler):
                 round(np.mean(list(result.values())), 3)
             )
         )
-        return self.join_text_objects(result, data_type="keys")
+        return results

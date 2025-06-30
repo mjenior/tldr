@@ -58,7 +58,7 @@ class CompletionHandler(ResearchAgent):
         self, message, prompt_type, web_search=True, context_size="medium"
     ):
         """Assemble messages object, adding query and context information."""
-        instructions_dict = self.instructions.get(prompt_type.lower(), "other")
+        instructions_dict = self.prompt_dictionary[prompt_type.lower()]
         instructions = instructions_dict["system_instruction"]
         output_tokens = self._scale_token(instructions_dict["max_output_tokens"])
         model = instructions_dict["model"]

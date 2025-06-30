@@ -73,21 +73,28 @@ class TldrEngine(CompletionHandler):
         else:
             self.content = self.fetch_content(recursive=recursive, label="reference")
 
-        # Fetch and reformat additional context if provided
-        if context_files is not None and context_files != []:
-            all_context = self.fetch_content(user_files=context_files, label="context")
-            all_context = self.join_text_objects(all_context)
-            await self.format_context(
-                all_context, 
-                context_size=context_size, 
-                label="context_files"
-            )
+        if len(self.content.keys()) == 0:
+            self.logger.error(f"No valid resources provided for reference documents.")
+            return
         else:
-            all_context = None
+            self.logger.info(f"Identified {len(self.content.keys())} reference documents.")
 
         # Create embeddings
-        await self.encode_text_to_vector_store(extra_text=all_context)
+        await self.encode_text_to_vector_store()
 
+        # Fetch and reformat additional context if provided
+        if context_files is not None:
+            all_context = self.fetch_content(user_files=context_files, label="context")
+            if len(all_context.keys()) == 0:
+                self.logger.error(f"No valid resources provided for context documents.")
+            else:
+                self.logger.info(f"Identified {len(all_context.keys())} context documents.")
+                await self.add_succinct_context(
+                    self.join_text_objects(all_context, data_type="content"), 
+                    context_size=context_size, 
+                    label="context_files"
+                )
+        
     @staticmethod
     def strip_leading_bullet(text):
         """Removes a single leading bullet point and whitespace from a string."""
@@ -110,7 +117,8 @@ class TldrEngine(CompletionHandler):
 
             # Search embeddings
             current_search = await self.search_embedded_context(query=query)
-            new_context.append(f"Search: {current_search}")
+            search_context = self.join_text_objects(list(current_search.keys()))
+            new_context.append(f"Embedding search results: {search_context}")
             
             # Search web
             current_research = await self.perform_api_call(
@@ -119,12 +127,12 @@ class TldrEngine(CompletionHandler):
                 context_size=context_size, 
                 web_search=True
             )
-            new_context.append(f"Research: {current_research['response']}")
+            new_context.append(f"Web search results: {current_research['response']}")
 
         # Format context
         self.logger.info(f"Context search results: {len(new_context)}")
         self.context_search_results = new_context
-        await self.format_context(
+        await self.add_succinct_context(
             self.join_text_objects(new_context), 
             context_size=context_size, 
             label="context_search"
@@ -138,7 +146,7 @@ class TldrEngine(CompletionHandler):
         self.generate_token_report()
         await self.client.close()
 
-    async def format_context(
+    async def add_succinct_context(
         self, new_context, context_size="medium", label="formatted_context"
     ):
         """
@@ -197,7 +205,6 @@ class TldrEngine(CompletionHandler):
         self.logger.info(f"Refined query: {self.query}")
         result = self.save_response_text(self.query, label="refined_query")
         self.logger.info(f"Response saved to: {result}")
-
         self.logger.info(f"Finished refining user query")
         
 
@@ -220,7 +227,6 @@ class TldrEngine(CompletionHandler):
             self.all_summaries, label="reference_summaries"
         )
         self.logger.info(f"Response saved to: {result}")
-
         self.logger.info(f"Finished summarizing resources")
 
     async def integrate_summaries(self, context_size="medium"):
@@ -373,7 +379,7 @@ class TldrEngine(CompletionHandler):
             search_context = self.search_embedded_context(
                 query=q_ans_pair["prompt"], num_results=1
             )
-            search_context = self.join_text_objects(search_context)
+            search_context = self.join_text_objects(list(search_context.keys()))
             current_context = f'Question:\n{q_ans_pair["prompt"]}\n'
             current_context += f'Answer:\n{q_ans_pair["response"]}\n'
             current_context += f"Local RAG Context:\n{search_context}\n"
@@ -385,7 +391,7 @@ class TldrEngine(CompletionHandler):
         self.research_context = research_str
 
         # Update added context with new research
-        await self.format_context(research_str, label="research_context")
+        await self.add_succinct_context(research_str, label="research_context")
         result = self.save_response_text(research_str, label="research_results")
         self.logger.info(f"Response saved to: {result}")
 

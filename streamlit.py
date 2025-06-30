@@ -205,18 +205,12 @@ async def run_tldr_streamlit():
     # Initialize session state
     if "documents" not in st.session_state:
         st.session_state.documents = None
-    if "context_files" not in st.session_state:
-        st.session_state.context_files = None
     if "added_context" not in st.session_state:
         st.session_state.added_context = None
     if "executive_summary" not in st.session_state:
         st.session_state.executive_summary = None
-    if "executive" not in st.session_state:
-        st.session_state.executive = False
     if "research_results" not in st.session_state:
         st.session_state.research_results = None
-    if "polished" not in st.session_state:
-        st.session_state.polished = False
     if "polished_summary" not in st.session_state:
         st.session_state.polished_summary = None
     if "summarized" not in st.session_state:
@@ -306,23 +300,20 @@ async def run_tldr_streamlit():
             "Documents to provide supplementary context")
 
         # Process uploaded files
-        if documents is not None:
+        if documents is not None or context is not None:
             st.markdown('<div class="process-button">', unsafe_allow_html=True)
             process_clicked = st.button("Process References",
                 help="Process the documents you want to summarize and research.")
             st.markdown("</div>", unsafe_allow_html=True)
 
             if process_clicked:
-                with st.spinner("Processing documents..."):
+                with st.spinner("Processing documents and context..."):
                     st.session_state.documents = tldr_ui.process_files(documents)
                     input_files = [f["source"] for f in st.session_state.documents]
-                    if context:
-                        st.session_state.context_files = tldr_ui.process_files(context)
-                        context_files = [
-                            f["source"] for f in st.session_state.context_files
-                        ]
+                    if context is not None:
+                        st.session_state.context = tldr_ui.process_files(context)
+                        context_files = [f["source"] for f in st.session_state.context]
                     else:
-                        st.session_state.context_files = None
                         context_files = None
 
                     # Collect all content
@@ -337,7 +328,7 @@ async def run_tldr_streamlit():
                     for doc in st.session_state.documents:
                         doc["content"] = tldr_ui.tldr.content[doc["source"]]
 
-                    if st.session_state.context_files is not None:
+                    if context_files is not None:
                         st.session_state.added_context = tldr_ui.tldr.added_context
 
         # Query input
@@ -452,7 +443,7 @@ async def run_tldr_streamlit():
     with col2:
         # Generate initial summaries
         if st.button("Generate Reference Summaries", 
-                     disabled=st.session_state.documents is None,
+                     disabled=st.session_state.documents is None or tldr_ui.processing is True,
                      help="Summarizes the initial set of documents to create a baseline."):
             with st.spinner("Summarizing documents..."):
 
@@ -466,7 +457,6 @@ async def run_tldr_streamlit():
                 for doc in st.session_state.documents:
                     doc["summary"] = tldr_ui.tldr.content[doc["source"]]["summary"]
                 st.session_state.summarized = True
-                st.session_state.executive = True
 
         # Display selected document content
         if st.session_state.summarized is True:
@@ -494,6 +484,7 @@ async def run_tldr_streamlit():
             if st.button(
                 "Research",
                 disabled=st.session_state.documents is None
+                or st.session_state.summarized is False
                 or tldr_ui.processing is True,
                 help="Apply external research to the compiled document summaries",
             ):
@@ -509,6 +500,7 @@ async def run_tldr_streamlit():
             if st.button(
                 "Synthesize",
                 disabled=st.session_state.documents is None
+                or st.session_state.summarized is False
                 or tldr_ui.processing is True,
                 help="Synthesize summaries, research, and new added context",
             ):
@@ -520,12 +512,14 @@ async def run_tldr_streamlit():
                         function=tldr_ui.tldr.integrate_summaries,
                         context_size=context_size,
                     )
+                    st.session_state.executive_summary = tldr_ui.tldr.executive_summary
     
         # Polish
         with action_col3:
             if st.button(
                 "Polish",
-                disabled=st.session_state.executive is False
+                disabled=st.session_state.executive_summary is None
+                or st.session_state.summarized is False
                 or tldr_ui.processing is True,
                 help="Polish the finalized summary",
             ):
@@ -535,7 +529,7 @@ async def run_tldr_streamlit():
                         function=tldr_ui.tldr.polish_response,
                         tone=tone, context_size=context_size
                     )
-                    st.session_state.polished = True
+                    st.session_state.polished_summary = tldr_ui.tldr.polished_summary
 
         st.subheader("TLDR Text")
         # Summary tabs
@@ -650,7 +644,7 @@ async def run_tldr_streamlit():
             if st.button(
                 "💾 Save Executive Summary as PDF",
                 key="executive_pdf_btn_hidden",
-                disabled=st.session_state.executive is False,
+                disabled=st.session_state.executive_summary is None,
                 help="Save summary as PDF",
             ):
                 with st.spinner("Generating PDF..."):
@@ -665,7 +659,7 @@ async def run_tldr_streamlit():
             if st.button(
                 "💾 Save Polished Summary as PDF",
                 key="polished_pdf_btn_hidden",
-                disabled=st.session_state.polished is False,
+                disabled=st.session_state.polished_summary is None,
                 help="Save summary as PDF",
             ):
                 with st.spinner("Generating PDF..."):

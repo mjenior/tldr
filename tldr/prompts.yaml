@@ -21,6 +21,7 @@ format_context:
   Your objective is to extract the core information and clarifying complex sentences. 
   Reformat the text into a concise and easily digestible format, suitable for providing essential context in a chat completion. 
   Remove absolutely no unique pieces of information.
+  Responses should be no longer than 350 words.
 
 
 file_type:

@@ -1,7 +1,8 @@
 import os
 import re
-import sys
 import yaml
+import string
+import unicodedata
 from datetime import datetime
 
 from docx import Document
@@ -53,7 +54,7 @@ class FileHandler:
         Find files and read in their contents.
         Returns a dictionary of file paths and content strings.
         """
-        self.logger.info(f"Searching for {label} documents...")
+        self.logger.info(f"Reading content of {label} documents...")
         files = self._find_readable_files(
             infiles=user_files, directory=search_dir, recursive=recursive
         )
@@ -63,21 +64,17 @@ class FileHandler:
         for ext, filelist in files.items():
             for f in filelist:
                 f_content = self.read_file_content(f, ext)
-                if f_content is not None:
+                f_test = self.is_text_corrupted(f_content)
+                if f_test is True:
+                    self.logger.error(f"File '{f}' is corrupted.")
+                    continue
+                elif f_content is not None:
                     content[f] = {"content": f_content}
 
-        # Check if no resources were found
-        if len(content.keys()) == 0:
-            self.logger.error(
-                "No resources found in current search directory. Exiting."
-            )
-            sys.exit(1)
-        else:
-            self.logger.info(f"Identified {len(content.keys())} {label} documents.")
-            return content
+        return content
 
     def _find_readable_files(
-        self, infiles: list = None, directory: str = ".", recursive: bool = False
+        self, infiles: list = [], directory: str = ".", recursive: bool = False
     ) -> dict:
         """
         Scan for readable text files.
@@ -96,57 +93,56 @@ class FileHandler:
             "md": [],
         }
 
-        if infiles is not None:
-            for file_path_item in infiles:
-                ext = os.path.splitext(file_path_item)[1].lower()
-                self._update_file_dictionary(
-                    readable_files_by_type, file_path_item, ext
-                )
+        for file_path_item in infiles:
+            ext = file_path_item.split(".")[-1].lower().strip()
+            self._update_file_dictionary(
+                readable_files_by_type, file_path_item, ext
+            )
+            
+        if recursive is False:
+            for filename in os.listdir(directory):
+                if ".tldr." in filename:
+                    continue
+                filepath = os.path.join(directory, filename)
+                if os.path.isfile(filepath):
+                    ext = filepath.split(".")[-1].lower().strip()
+                    self._update_file_dictionary(
+                        readable_files_by_type, filepath, ext
+                    )
         else:
-            if not recursive:
-                for filename in os.listdir(directory):
+            for root, _, files_in_dir in os.walk(directory):
+                for filename in files_in_dir:
                     if ".tldr." in filename:
                         continue
-                    filepath = os.path.join(directory, filename)
-                    if os.path.isfile(filepath):
-                        ext = os.path.splitext(filename)[1].lower()
-                        self._update_file_dictionary(
-                            readable_files_by_type, filepath, ext
-                        )
-            else:
-                for root, _, files_in_dir in os.walk(directory):
-                    for filename in files_in_dir:
-                        if ".tldr." in filename:
-                            continue
-                        filepath = os.path.join(root, filename)
-                        ext = os.path.splitext(filename)[1].lower()
-                        self._update_file_dictionary(
-                            readable_files_by_type, filepath, ext
-                        )
+                    filepath = os.path.join(root, filename)
+                    ext = filepath.split(".")[-1].lower().strip()
+                    self._update_file_dictionary(
+                        readable_files_by_type, filepath, ext
+                    )
         return {k: v for k, v in readable_files_by_type.items() if v}
 
     def _update_file_dictionary(self, file_dict, file_path, file_ext):
         """Add file path to dictionary if readable and of a supported type."""
         try:
-            if file_ext == ".pdf":
+            if file_ext == "pdf":
                 reader = PdfReader(file_path)
                 if reader.pages and any(
                     page.extract_text() for page in reader.pages if page.extract_text()
                 ):
                     file_dict["pdf"].append(file_path)
-            elif file_ext == ".docx":
+            elif file_ext == "docx":
                 doc = Document(file_path)
                 if any(para.text.strip() for para in doc.paragraphs):
                     file_dict["docx"].append(file_path)
-            elif file_ext in [".html", ".htm"]:
+            elif file_ext in ["html", "htm"]:
                 with open(file_path, "r", encoding="utf-8") as f:
                     f.read(1024)  # Try reading a small chunk to check readability
                 file_dict["html"].append(file_path)
-            elif file_ext == ".md":
+            elif file_ext == "md":
                 with open(file_path, "r", encoding="utf-8") as f:
                     f.read(1024)
                 file_dict["md"].append(file_path)
-            elif file_ext == ".txt":
+            elif file_ext == "txt":
                 with open(file_path, "r", encoding="utf-8") as f:
                     f.read(1024)
                 file_dict["txt"].append(file_path)
@@ -160,7 +156,7 @@ class FileHandler:
         """
         current_ext = ext
         if current_ext is None:
-            current_ext = os.path.splitext(filepath)[1].lower().lstrip(".")
+            current_ext = filepath.split(".")[-1].lower().strip()
 
         try:
             if current_ext == "pdf":
@@ -188,6 +184,94 @@ class FileHandler:
             print(f"Error reading file '{filepath}': {e}")
             return None
 
+    def is_text_corrupted(self, text: str, threshold: float = 0.25) -> bool:
+        """
+        Determines if a text stream is likely corrupted by analyzing its content.
+
+        Args:
+            text: The text content to analyze
+            threshold: The ratio of suspicious patterns to total characters
+                     above which the text is considered corrupted (default: 0.25)
+
+        Returns:
+            bool: True if the text is likely corrupted, False otherwise
+        """
+        if not text or not text.strip():
+            return True
+
+        # Check for binary null bytes which are a strong indicator of binary data
+        if '\x00' in text:
+            return True
+
+        # Check for common corruption patterns
+        corruption_patterns = [
+            r'[\x80-\xFF]',  # High ASCII/Unicode garbage
+            r'\S{30,}',       # Very long words (reduced from 50)
+            r'[0-9]{8,}',     # Long sequences of numbers (reduced from 10)
+            r'[^\x00-\x7F]{2,}',  # Multiple consecutive non-ASCII (reduced from 3)
+            r'[\uFFFD]',      # Unicode replacement character
+            r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]',  # Control chars except \t, \n, \r
+            r'[\u0000-\u001F\u007F-\u009F]',  # Additional control characters
+            r'[\uFFFD]',  # Unicode replacement character (duplicate for emphasis)
+            r'[\uFFFB-\uFFFD]',  # More replacement characters
+            r'\\x[0-9A-Fa-f]{2}',  # Hex-encoded bytes
+            r'\\u[0-9A-Fa-f]{4}',  # Unicode escape sequences
+            r'[\u0080-\u00FF]',  # Extended ASCII (common in encoding errors)
+            r'[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]',  # More control chars
+        ]
+
+        # Calculate ratio of suspicious patterns to total characters
+        total_chars = len(text)
+        if total_chars == 0:
+            return True
+            
+        suspicious_count = 0
+        
+        # Check for patterns with weighted scoring
+        for pattern in corruption_patterns:
+            matches = re.findall(pattern, text)
+            for match in matches:
+                # Weight more severe patterns higher
+                if pattern in [r'[\uFFFD]', r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]']:
+                    suspicious_count += len(match) * 2
+                else:
+                    suspicious_count += len(match)
+        
+        # Check for invalid Unicode sequences
+        try:
+            text.encode('utf-8').decode('utf-8')
+        except UnicodeError:
+            return True
+            
+        # Check for excessive repetition of the same character (e.g., 'kkkkkk')
+        for i in range(0, len(text) - 5):
+            if len(set(text[i:i+5])) == 1 and text[i] not in ' .-_,':
+                suspicious_count += 10  # Increased weight for repetition
+                break
+        
+        # Check for mixed encoding (e.g., UTF-8 interpreted as Windows-1252)
+        try:
+            text.encode('latin-1').decode('utf-8')
+        except UnicodeError:
+            pass
+        else:
+            # If it can be interpreted as both, it might be double-encoded
+            suspicious_count += int(0.2 * total_chars)  # Increased penalty
+            
+        # Check for excessive whitespace patterns
+        if re.search(r'\s{10,}', text):
+            suspicious_count += 20
+            
+        # Check for common corrupted text patterns
+        if re.search(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', text):
+            suspicious_count += 15
+        
+        # Calculate ratio of suspicious content
+        suspicious_ratio = suspicious_count / total_chars
+        self.logger.info(f"Suspicious character ratio: {suspicious_ratio:.3f} (threshold: {threshold})")
+        
+        return suspicious_ratio > threshold
+
     def _read_system_instructions(self, file_path: str = "prompts.yaml") -> dict:
         """
         Reads a YAML file and returns its content as a Python dictionary.
@@ -196,7 +280,7 @@ class FileHandler:
         instructions_path = os.path.join(base_dir, file_path)
         try:
             with open(instructions_path, "r", encoding="utf-8") as file:
-                self.instructions = yaml.safe_load(file)
+                self.prompt_dictionary = yaml.safe_load(file)
         except FileNotFoundError:
             print(f"Instructions file not found: '{instructions_path}'")
         except yaml.YAMLError as e:
@@ -206,6 +290,8 @@ class FileHandler:
                 f"An unexpected error occurred while reading '{instructions_path}': {e}"
             )
         self.logger.info("Systems instructions loaded successfully.")
+
+
 
     def save_response_text(
         self,
