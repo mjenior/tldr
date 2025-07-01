@@ -97,23 +97,9 @@ class TldrUI:
         self.status = "Ready"
         self.processing = False
 
-    def log_message(self, message, level="INFO"):
-        """Helper method to log messages to both console and Streamlit interface"""
-        formatted_message = f"{level}: {message}"
-        print(f"TLDR: {formatted_message}")  # Console logging
-        
-        # Log to TldrEngine logger if available
-        if hasattr(self, 'tldr') and hasattr(self.tldr, 'logger'):
-            if level.upper() == "ERROR":
-                self.tldr.logger.error(formatted_message)
-            elif level.upper() == "WARNING":
-                self.tldr.logger.warning(formatted_message)
-            else:
-                self.tldr.logger.info(formatted_message)
-    
     def start_processing_status(self, message: str):
         """Helper method to update processing status"""
-        self.log_message(message)
+        self.tldr.logger.info(message)
         self.status = "Processing..."
         self.processing = True
         st.session_state.status = self.status
@@ -121,7 +107,7 @@ class TldrUI:
 
     def end_processing_status(self):
         """Reset session status and update session state"""
-        self.log_message("Completed successfully")
+        self.tldr.logger.info("Completed successfully")
 
         # Restore session to ready state
         self.status = "Ready"
@@ -135,8 +121,8 @@ class TldrUI:
     def session_error(self, error_message: str):
         error_details = traceback.format_exc()
         self.status = "Error during processing"
-        self.log_message(f"Error: {error_message}", "ERROR")
-        self.log_message(f"Error details: {error_details}", "ERROR")
+        self.tldr.logger.error(f"Error: {error_message}")
+        self.tldr.logger.error(f"Error details: {error_details}")
         st.error(f"An error occurred: {error_message}\n\nError details:\n{error_details}")
         st.stop()
 
@@ -145,7 +131,7 @@ class TldrUI:
         """Round up to the nearest specified decimal"""
         return round(num + to / 2, -int(math.log10(to)))
 
-    async def execute_session_process(self, log_message, function, **args):
+    async def execute_session_process(self, log_message: str, function: callable, **args):
         """Generic execution of an async function with processing status updates"""
         self.start_processing_status(log_message)
         
@@ -191,7 +177,7 @@ class TldrUI:
         # Log the uploaded files
         if uploaded_files and len(uploaded_files) > 0:
             file_names = ", ".join([f"'{file.name}'" for file in uploaded_files])
-            self.log_message(f"Uploaded {len(uploaded_files)} file(s) to {key}: {file_names}")
+            self.tldr.logger.info(f"Uploaded {len(uploaded_files)} file(s) to {key}: {file_names}")
         
         return uploaded_files
 
@@ -236,22 +222,10 @@ async def run_tldr_streamlit():
         # Log initialization success
         print("TLDR: TldrEngine initialized successfully")
         print("TLDR: StreamlitLogHandler is ready for log capture")
-        
-        # Verify logger setup
-        if hasattr(st.session_state.tldr_ui.tldr, 'logger'):
-            logger = st.session_state.tldr_ui.tldr.logger
-            print(f"TLDR: Logger has {len(logger.handlers)} handlers configured")
-            
-            # Make sure we have at least console and streamlit handlers
-            handler_types = [type(h).__name__ for h in logger.handlers]
-            print(f"TLDR: Handler types: {handler_types}")
-            
-            # Test logging
-            st.session_state.tldr_ui.log_message("TLDR system initialized and ready for use")
-        else:
-            print("TLDR WARNING: No logger found on TldrEngine")
-                
+
+    # Finish initialization        
     tldr_ui = st.session_state.tldr_ui
+    tldr_ui.tldr.logger.info("TLDR system initialized and ready for use")
 
     # Handle refined query and initial context updates
     if "refined_query" in st.session_state:
@@ -318,11 +292,11 @@ async def run_tldr_streamlit():
 
                     # Collect all content
                     await tldr_ui.execute_session_process(
-                        log_message=f"Starting to load content from {len(input_files)} files...",
-                        function=tldr_ui.tldr.load_all_content,
-                        input_files=input_files,
-                        context_files=context_files,
-                        context_size=context_size,
+                        log_message = f"Starting to load content from {len(input_files)} files...",
+                        function = tldr_ui.tldr.load_all_content,
+                        input_files = input_files,
+                        context_files = context_files,
+                        context_size = context_size,
                     )
                     # And update the session state
                     for doc in st.session_state.documents:
@@ -344,27 +318,31 @@ async def run_tldr_streamlit():
         with query_col1:
             if st.button(
                 "Refine Query",
-                disabled=st.session_state.user_query is None or tldr_ui.processing is True,
+                disabled=st.session_state.user_query is None 
+                or tldr_ui.processing is True,
+                help="Refine the user query to be more specific and comprehensive.",
             ):
                 with st.spinner("Refining query..."):
                     await tldr_ui.execute_session_process(
-                        log_message=f"Refining query: {st.session_state.user_query}",
-                        function=tldr_ui.tldr.refine_user_query,
-                        query=st.session_state.user_query,
+                        log_message = f"Refining query: {st.session_state.user_query}",
+                        function = tldr_ui.tldr.refine_user_query,
+                        query = st.session_state.user_query,
                     )
                     st.session_state.refined_query = tldr_ui.tldr.query
                     st.rerun()
 
         with query_col2:
             if st.button(
-                "Search for Context",
-                disabled=st.session_state.user_query is None or tldr_ui.processing is True or st.session_state.documents is None,
+                "Web Search for Context",
+                disabled=st.session_state.user_query is None 
+                or tldr_ui.processing is True,
+                help="Search web for additional context based on current user query.",
             ):
-                with st.spinner("Searching docs and web for more context (please wait)..."):
+                with st.spinner("Searching web for more context..."):
                     await tldr_ui.execute_session_process(
-                        log_message=f"Searching for context: {st.session_state.user_query}",
-                        function=tldr_ui.tldr.initial_context_search,
-                        context_size=context_size,
+                        log_message = f"Searching for context: {st.session_state.user_query}",
+                        function = tldr_ui.tldr.initial_context_search,
+                        context_size = context_size,
                     )
                     st.session_state.initial_context = tldr_ui.tldr.added_context
                     st.rerun()
@@ -449,9 +427,9 @@ async def run_tldr_streamlit():
 
                 # Generate document summaries
                 await tldr_ui.execute_session_process(
-                    log_message="Summarizing documents...",
-                    function=tldr_ui.tldr.summarize_resources,
-                    context_size=context_size,
+                    log_message = "Summarizing documents...",
+                    function = tldr_ui.tldr.summarize_resources,
+                    context_size = context_size,
                 )
                 # And update the session state
                 for doc in st.session_state.documents:
@@ -490,9 +468,9 @@ async def run_tldr_streamlit():
             ):
                 with st.spinner("Researching knowledge gaps (please wait)..."):
                     await tldr_ui.execute_session_process(
-                        log_message="Researching knowledge gaps...",
-                        function=tldr_ui.tldr.apply_research,
-                        context_size=context_size,
+                        log_message = "Researching knowledge gaps...",
+                        function = tldr_ui.tldr.apply_research,
+                        context_size = context_size,
                     )
 
         # Synthesis
@@ -508,9 +486,9 @@ async def run_tldr_streamlit():
                     "Synthesizing summaries, research, and new added context..."
                 ):
                     await tldr_ui.execute_session_process(
-                        log_message="Synthesizing summaries, research, and new added context...",
-                        function=tldr_ui.tldr.integrate_summaries,
-                        context_size=context_size,
+                        log_message = "Synthesizing summaries, research, and new added context...",
+                        function = tldr_ui.tldr.integrate_summaries,
+                        context_size = context_size,
                     )
                     st.session_state.executive_summary = tldr_ui.tldr.executive_summary
     
@@ -525,9 +503,10 @@ async def run_tldr_streamlit():
             ):
                 with st.spinner("Polishing finalized summary..."):
                     await tldr_ui.execute_session_process(
-                        log_message="Polishing finalized summary...",
-                        function=tldr_ui.tldr.polish_response,
-                        tone=tone, context_size=context_size
+                        log_message = "Polishing finalized summary...",
+                        function = tldr_ui.tldr.polish_response,
+                        tone = tone, 
+                        context_size = context_size
                     )
                     st.session_state.polished_summary = tldr_ui.tldr.polished_summary
 
@@ -649,9 +628,9 @@ async def run_tldr_streamlit():
             ):
                 with st.spinner("Generating PDF..."):
                     await tldr_ui.execute_session_process(
-                        log_message="Saving to PDF...",
-                        function=tldr_ui.tldr.save_to_pdf,
-                        polished=False,
+                        log_message = "Saving to PDF...",
+                        function = tldr_ui.tldr.save_to_pdf,
+                        polished = False,
                     )
                 st.toast("PDF saved!")
 
@@ -664,9 +643,9 @@ async def run_tldr_streamlit():
             ):
                 with st.spinner("Generating PDF..."):
                     await tldr_ui.execute_session_process(
-                        log_message="Saving to PDF...",
-                        function=tldr_ui.tldr.save_to_pdf,
-                        polished=True,
+                        log_message = "Saving to PDF...",
+                        function = tldr_ui.tldr.save_to_pdf,
+                        polished = True,
                     )
                 st.toast("PDF saved!")
 
@@ -693,7 +672,7 @@ async def run_tldr_streamlit():
                     # Clear the handler logs after reading to prevent duplication
                     tldr_ui.tldr.streamlit_handler.clear_logs()
             except Exception as e:
-                print(f"Error reading streamlit handler logs: {e}")
+                logger.error(f"Error reading streamlit handler logs: {e}")
         
         # Method 2: Check for any log records from the logger directly
         if hasattr(tldr_ui.tldr, 'logger') and hasattr(tldr_ui.tldr.logger, 'handlers'):
@@ -706,23 +685,23 @@ async def run_tldr_streamlit():
                             new_logs.extend(handler_logs)
                             handler.clear_logs()
                     except Exception as e:
-                        print(f"Error reading handler logs: {e}")
+                        logger.error(f"Error reading handler logs: {e}")
         
         # Method 3: Add processing status logs
         if tldr_ui.processing:
             status_msg = f"INFO: {tldr_ui.status}"
             if status_msg not in st.session_state.output_lines:
                 new_logs.append(status_msg)
-                # Also print to console
-                print(status_msg)
+                # Also st.session_state.tldr_ui.logger.info to console
+                logger.info(status_msg)
         
         # Method 4: Add completion status logs when processing finishes
         if hasattr(tldr_ui.tldr, 'total_input_tokens') and tldr_ui.tldr.total_input_tokens > 0:
             status_log = f"INFO: Processing complete - Input tokens: {tldr_ui.tldr.total_input_tokens}, Output tokens: {tldr_ui.tldr.total_output_tokens}, Total spend: ${tldr_ui.tldr.total_spend:.4f}"
             if status_log not in st.session_state.output_lines:
                 new_logs.append(status_log)
-                # Also print to console
-                print(status_log)
+                # Also st.session_state.tldr_ui.logger.info to console
+                logger.info(status_log)
         
         # Update session state with new logs
         if new_logs:

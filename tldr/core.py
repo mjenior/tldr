@@ -109,23 +109,18 @@ class TldrEngine(CompletionHandler):
         queries = [self.strip_leading_bullet(query) for query in self.query.split("\n")]
 
         # Address each query separately
-        self.logger.info("Searching for more context in provided documents and web...")
+        self.logger.info("Searching web for additional context...")
         new_context = []
         for query in queries:
             self.logger.info(f"Searching for context for query: {query}")
             new_context.append(f"Query: {query}")
 
-            # Search embeddings
-            current_search = await self.search_embedded_context(query=query)
-            search_context = self.join_text_objects(list(current_search.keys()))
-            new_context.append(f"Embedding search results: {search_context}")
-            
             # Search web
             current_research = await self.perform_api_call(
-                prompt=query,
-                prompt_type="web_search", 
-                context_size=context_size, 
-                web_search=True
+                prompt = query,
+                prompt_type = "web_search", 
+                context_size = context_size, 
+                web_search = True
             )
             new_context.append(f"Web search results: {current_research['response']}")
 
@@ -154,10 +149,10 @@ class TldrEngine(CompletionHandler):
         """
         # Format context references
         formatted_context = await self.perform_api_call(
-            prompt=new_context,
-            prompt_type="format_context",
-            context_size=context_size,
-            web_search=False,
+            prompt = new_context,
+            prompt_type = "format_context",
+            context_size = context_size,
+            web_search = False,
         )
         self.added_context += formatted_context["response"]
         result = self.save_response_text(
@@ -194,10 +189,10 @@ class TldrEngine(CompletionHandler):
 
         # Generate new query text
         refined_query = await self.perform_api_call(
-            prompt=self._lint_query(query),
-            prompt_type="refine_prompt",
-            context_size=context_size,
-            web_search=False,
+            prompt = self._lint_query(query),
+            prompt_type = "refine_prompt",
+            context_size = context_size,
+            web_search = False,
         )
 
         # Handle output text
@@ -235,10 +230,10 @@ class TldrEngine(CompletionHandler):
 
         # Generate executive summary
         executive_summary = await self.perform_api_call(
-            prompt=self.all_summaries,
-            prompt_type="executive_summary",
-            context_size=context_size,
-            web_search=False,
+            prompt = self.all_summaries,
+            prompt_type = "executive_summary",
+            context_size = context_size,
+            web_search = False,
         )
         self.executive_summary = executive_summary["response"]
 
@@ -261,10 +256,10 @@ class TldrEngine(CompletionHandler):
 
         # Polish summary
         self.polished_summary = await self.perform_api_call(
-            prompt=self.executive_summary,
-            prompt_type=tone_instructions,
-            context_size=context_size,
-            web_search=False,
+            prompt = self.executive_summary,
+            prompt_type = tone_instructions,
+            context_size = context_size,
+            web_search = False,
         )
         self.polished_summary = self.polished_summary["response"]
         result = self.save_response_text(
@@ -285,10 +280,10 @@ class TldrEngine(CompletionHandler):
         # Generate title
         if smart_title is True:
             doc_title = await self.perform_api_call(
-                prompt=summary_text,
-                prompt_type="title_instructions",
-                context_size="low",
-                web_search=False,
+                prompt = summary_text,
+                prompt_type = "title_instructions",
+                context_size = "low",
+                web_search = False,
             )
 
         # Save to PDF
@@ -333,11 +328,11 @@ class TldrEngine(CompletionHandler):
 
             # Generate summary task
             task = self.perform_api_call(
-                prompt=content,
-                prompt_type=prompt_type,
-                web_search=web_search,
-                context_size=context_size,
-                source=source,
+                prompt = content,
+                prompt_type = prompt_type,
+                web_search = web_search,
+                context_size = context_size,
+                source = source,
                 **kwargs,
             )
             coroutine_tasks.append(task)
@@ -350,10 +345,10 @@ class TldrEngine(CompletionHandler):
         """
         self.logger.info("Identifying knowledge gaps...")
         research_questions = await self.perform_api_call(
-            prompt=self.all_summaries,
-            prompt_type="background_gaps",
-            context_size=context_size,
-            web_search=False,
+            prompt = self.all_summaries,
+            prompt_type = "background_gaps",
+            context_size = context_size,
+            web_search = False,
         )
 
         # Reassemble research questions into content dictionary
@@ -377,7 +372,7 @@ class TldrEngine(CompletionHandler):
         for q_ans_pair in self.research_results:
             self.logger.info(f"Potential knowledge gap: {q_ans_pair['prompt']}")
             search_context = self.search_embedded_context(
-                query=q_ans_pair["prompt"], num_results=1
+                query = q_ans_pair["prompt"], num_results = 1
             )
             search_context = self.join_text_objects(list(search_context.keys()))
             current_context = f'Question:\n{q_ans_pair["prompt"]}\n'

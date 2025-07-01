@@ -181,7 +181,7 @@ class FileHandler:
             return text.strip()
 
         except Exception as e:  # pylint: disable=broad-except
-            print(f"Error reading file '{filepath}': {e}")
+            self.logger.error(f"Error reading file '{filepath}': {e}")
             return None
 
     def is_text_corrupted(self, text: str, threshold: float = 0.25) -> bool:
@@ -196,7 +196,7 @@ class FileHandler:
         Returns:
             bool: True if the text is likely corrupted, False otherwise
         """
-        if not text or not text.strip():
+        if text is None or len(text.strip()) == 0:
             return True
 
         # Check for binary null bytes which are a strong indicator of binary data
@@ -212,7 +212,6 @@ class FileHandler:
             r'[\uFFFD]',      # Unicode replacement character
             r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]',  # Control chars except \t, \n, \r
             r'[\u0000-\u001F\u007F-\u009F]',  # Additional control characters
-            r'[\uFFFD]',  # Unicode replacement character (duplicate for emphasis)
             r'[\uFFFB-\uFFFD]',  # More replacement characters
             r'\\x[0-9A-Fa-f]{2}',  # Hex-encoded bytes
             r'\\u[0-9A-Fa-f]{4}',  # Unicode escape sequences
@@ -220,14 +219,8 @@ class FileHandler:
             r'[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]',  # More control chars
         ]
 
-        # Calculate ratio of suspicious patterns to total characters
-        total_chars = len(text)
-        if total_chars == 0:
-            return True
-            
-        suspicious_count = 0
-        
         # Check for patterns with weighted scoring
+        suspicious_count = 0
         for pattern in corruption_patterns:
             matches = re.findall(pattern, text)
             for match in matches:
@@ -256,18 +249,18 @@ class FileHandler:
             pass
         else:
             # If it can be interpreted as both, it might be double-encoded
-            suspicious_count += int(0.2 * total_chars)  # Increased penalty
+            suspicious_count += int(0.2 * len(text.strip()))  # Increased penalty
             
         # Check for excessive whitespace patterns
-        if re.search(r'\s{10,}', text):
+        if re.search(r'\s{10,}', text.strip()):
             suspicious_count += 20
             
         # Check for common corrupted text patterns
-        if re.search(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', text):
+        if re.search(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', text.strip()):
             suspicious_count += 15
         
         # Calculate ratio of suspicious content
-        suspicious_ratio = suspicious_count / total_chars
+        suspicious_ratio = suspicious_count / len(text.strip())
         self.logger.info(f"Suspicious character ratio: {suspicious_ratio:.3f} (threshold: {threshold})")
         
         return suspicious_ratio > threshold
@@ -282,16 +275,14 @@ class FileHandler:
             with open(instructions_path, "r", encoding="utf-8") as file:
                 self.prompt_dictionary = yaml.safe_load(file)
         except FileNotFoundError:
-            print(f"Instructions file not found: '{instructions_path}'")
+            self.logger.error(f"Instructions file not found: '{instructions_path}'")
         except yaml.YAMLError as e:
-            print(f"Error parsing YAML file '{instructions_path}': {e}")
+            self.logger.error(f"Error parsing YAML file '{instructions_path}': {e}")
         except Exception as e:  # pylint: disable=broad-except
-            print(
+            self.logger.error(
                 f"An unexpected error occurred while reading '{instructions_path}': {e}"
             )
         self.logger.info("Systems instructions loaded successfully.")
-
-
 
     def save_response_text(
         self,
@@ -344,7 +335,7 @@ class FileHandler:
         try:
             doc.build(body)
         except Exception as e:
-            print(f"An unexpected error occurred while saving {file_path}: {e}")
+            self.logger.error(f"An unexpected error occurred while saving {file_path}: {e}")
             raise
 
         return file_path
