@@ -300,10 +300,14 @@ class TldrEngine(CompletionHandler):
             source_type = await self.perform_api_call(
                 prompt=text,
                 prompt_type="file_type",
-                web_search=web_search,
+                web_search=False,
             )
-            self.logger.info(f"File type determined: {source_type['response']}")
-            file_type = re.sub(r"[^a-zA-Z]", "", source_type["response"].lower())
+            file_type = "other" # Default to other
+            for x in ['publication','document','readme']:
+                if x in source_type['response'].lower():
+                    file_type = x
+                    break
+            self.logger.info(f"File type determined: {file_type}")
             return file_type
         else:
             return "web_search"

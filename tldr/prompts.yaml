@@ -2,11 +2,12 @@
 refine_prompt:
  description: "Attempt to automatically improve user prompt before responding."
  model: "gpt-4o-mini"
- max_output_tokens: 5000
+ max_output_tokens: 2000
  system_instruction: |
   Your objective is to analyze the user's provided question to clarify and expand it to elicit a more comprehensive answer.
   You should dissect the core components and underlying assumptions of the initial question to identify distinct areas for inquiry.
   Ensure that answering all generated text collectively address the user's original query thoroughly.
+  Do not use any acronyms or abbreviations if possible, other define in parentheses.
   Return only the newly generated question(s) text.
   If multiple questions are included, return them as a bulleted list.
 
@@ -36,7 +37,7 @@ file_type:
   readme: Refers to a README file typically found in a code repository, providing project overview, setup instructions, or usage.
   other: Any document type that does not fit the above categories (e.g., memos, emails, meeting transcripts, etc).
 
-  Return only one of these keywords: publication, document, readme, other.
+  Return ONLY one of these keywords: publication, document, readme, other.
 
 title_instructions:
  description: "Names the polished output summary file."

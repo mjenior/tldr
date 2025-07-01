@@ -64,9 +64,12 @@ class FileHandler:
         for ext, filelist in files.items():
             for f in filelist:
                 f_content = self.read_file_content(f, ext)
-                f_test = self.is_text_corrupted(f_content)
+                if "readme" in f.lower():
+                    f_test = False
+                else:
+                    f_test = self.is_text_corrupted(f_content)
                 if f_test is True:
-                    self.logger.error(f"File '{f}' is corrupted.")
+                    self.logger.error(f"File '{f}' may be corrupted, ignoring.")
                     continue
                 elif f_content is not None:
                     content[f] = {"content": f_content}
@@ -93,13 +96,20 @@ class FileHandler:
             "md": [],
         }
 
+        # Handle user selected files first
+        infiles_found = 0
         for file_path_item in infiles:
+            infiles_found += 1
             ext = file_path_item.split(".")[-1].lower().strip()
             self._update_file_dictionary(
                 readable_files_by_type, file_path_item, ext
             )
-            
-        if recursive is False:
+            self.logger.info(f"Found file '{file_path_item}' of type '{ext}'.")
+        if infiles_found >= 1:
+            return {k: v for k, v in readable_files_by_type.items() if v}
+
+        # Then handle directory search in none are returned
+        elif recursive is False:
             for filename in os.listdir(directory):
                 if ".tldr." in filename:
                     continue
@@ -109,7 +119,8 @@ class FileHandler:
                     self._update_file_dictionary(
                         readable_files_by_type, filepath, ext
                     )
-        else:
+                    self.logger.info(f"Found file '{filepath}' of type '{ext}'.")
+        elif recursive is True:
             for root, _, files_in_dir in os.walk(directory):
                 for filename in files_in_dir:
                     if ".tldr." in filename:
@@ -119,6 +130,8 @@ class FileHandler:
                     self._update_file_dictionary(
                         readable_files_by_type, filepath, ext
                     )
+                    self.logger.info(f"Found file '{filepath}' of type '{ext}'.")
+
         return {k: v for k, v in readable_files_by_type.items() if v}
 
     def _update_file_dictionary(self, file_dict, file_path, file_ext):

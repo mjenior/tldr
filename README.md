@@ -2,7 +2,7 @@
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-Version: 1.0.37
+Version: 1.1.0
 
 ## Overview
 
@@ -76,7 +76,7 @@ TLDR is most easily used via a web interface.
 
 ```bash
 # Run the web interface
-streamlit run streamlit.py
+streamlit run interface.py
 ```
 
 ### Command Line
