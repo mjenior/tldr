@@ -1,5 +1,0 @@
-- What are the main nutrients or substrates that Clostridioides difficile (C. diff) utilizes during an infection in the human gut?
-- How does the diet of the host influence the metabolic activity and growth of C. diff during an infection?
-- Are there specific environmental conditions in the gut that promote the growth of C. diff and its ability to thrive during an infection?
-- In what ways does C. diff interact with other gut microbiota in terms of competition for nutrients during an infection? 
-- What is the role of bile acids and other by-products of digestion in supporting the survival and activity of C. diff during an infection?
