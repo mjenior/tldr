@@ -1,0 +1,45 @@
+2025-07-02 06:41:26,584 - INFO - Logging system initialized
+2025-07-02 06:41:26,585 - INFO - Intermediate files being written to: tldr.20250702_064126.files
+2025-07-02 06:41:26,629 - INFO - Systems instructions loaded successfully.
+2025-07-02 06:41:26,704 - INFO - Initialized OpenAI client: version=1.86.0, context size=medium
+2025-07-02 06:41:26,705 - INFO - TLDR system initialized and ready for use
+2025-07-02 06:41:34,808 - INFO - TLDR system initialized and ready for use
+2025-07-02 06:41:34,878 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie_abstract.txt'
+2025-07-02 06:41:38,231 - INFO - TLDR system initialized and ready for use
+2025-07-02 06:41:38,254 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie_abstract.txt'
+2025-07-02 06:41:38,281 - INFO - Starting to load content from 2 files...
+2025-07-02 06:41:38,284 - INFO - Reading content of reference documents...
+2025-07-02 06:41:38,466 - INFO - Found file 'tldr.20250702_064126.files/jenior-et-al.pdf' of type 'pdf'.
+2025-07-02 06:41:38,468 - INFO - Found file 'tldr.20250702_064126.files/leslie_abstract.txt' of type 'txt'.
+2025-07-02 06:41:39,362 - INFO - Suspicious character ratio: 0.052 (threshold: 0.25)
+2025-07-02 06:41:39,365 - INFO - Suspicious character ratio: 0.202 (threshold: 0.25)
+2025-07-02 06:41:39,365 - INFO - Identified 2 reference documents.
+2025-07-02 06:41:39,366 - INFO - Generating embeddings for reference documents...
+2025-07-02 06:41:44,405 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-02 06:41:44,505 - INFO - Loading faiss.
+2025-07-02 06:41:44,540 - INFO - Successfully loaded faiss.
+2025-07-02 06:41:44,548 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-07-02 06:41:44,565 - INFO - Completed successfully
+2025-07-02 06:42:01,373 - INFO - TLDR system initialized and ready for use
+2025-07-02 06:42:01,407 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie_abstract.txt'
+2025-07-02 06:42:01,411 - INFO - Uploaded 1 file(s) to context_uploader: 'context.txt'
+2025-07-02 06:42:02,627 - INFO - TLDR system initialized and ready for use
+2025-07-02 06:42:02,656 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie_abstract.txt'
+2025-07-02 06:42:02,659 - INFO - Uploaded 1 file(s) to context_uploader: 'context.txt'
+2025-07-02 06:42:02,686 - INFO - Starting to load content from 2 files...
+2025-07-02 06:42:02,686 - INFO - Reading content of reference documents...
+2025-07-02 06:42:02,951 - INFO - Found file 'tldr.20250702_064126.files/jenior-et-al.pdf' of type 'pdf'.
+2025-07-02 06:42:02,952 - INFO - Found file 'tldr.20250702_064126.files/leslie_abstract.txt' of type 'txt'.
+2025-07-02 06:42:03,803 - INFO - Suspicious character ratio: 0.052 (threshold: 0.25)
+2025-07-02 06:42:03,805 - INFO - Suspicious character ratio: 0.202 (threshold: 0.25)
+2025-07-02 06:42:03,806 - INFO - Identified 2 reference documents.
+2025-07-02 06:42:03,806 - INFO - Generating embeddings for reference documents...
+2025-07-02 06:42:04,574 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-02 06:42:04,673 - INFO - Reading content of context documents...
+2025-07-02 06:42:04,674 - INFO - Found file 'tldr.20250702_064126.files/context.txt' of type 'txt'.
+2025-07-02 06:42:04,676 - INFO - Suspicious character ratio: 0.212 (threshold: 0.25)
+2025-07-02 06:42:04,676 - INFO - Identified 1 context documents.
+2025-07-02 06:42:11,953 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-07-02 06:42:12,003 - INFO - Response saved to: tldr.20250702_064126.files/context_files.tldr.20250702_064126.txt
+2025-07-02 06:42:12,006 - INFO - Completed successfully
+2025-07-02 06:42:12,036 - INFO - INFO: Processing complete - Input tokens: 1042, Output tokens: 854, Total spend: $0.0003

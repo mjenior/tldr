@@ -1,0 +1,30 @@
+2025-07-02 06:39:42,548 - INFO - Logging system initialized
+2025-07-02 06:39:42,552 - INFO - Intermediate files being written to: tldr.20250702_063942.files
+2025-07-02 06:39:42,678 - INFO - Systems instructions loaded successfully.
+2025-07-02 06:39:42,761 - INFO - Initialized OpenAI client: version=1.86.0, context size=medium
+2025-07-02 06:39:42,762 - INFO - TLDR system initialized and ready for use
+2025-07-02 06:39:49,888 - INFO - TLDR system initialized and ready for use
+2025-07-02 06:39:49,939 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-07-02 06:39:51,173 - INFO - TLDR system initialized and ready for use
+2025-07-02 06:39:51,190 - INFO - Uploaded 2 file(s) to document_uploader: 'jenior-et-al.pdf', 'leslie-et-al.pdf'
+2025-07-02 06:39:51,208 - INFO - Starting to load content from 2 files...
+2025-07-02 06:39:51,210 - INFO - Reading content of reference documents...
+2025-07-02 06:39:51,359 - INFO - Found file 'tldr.20250702_063942.files/jenior-et-al.pdf' of type 'pdf'.
+2025-07-02 06:39:51,565 - INFO - Found file 'tldr.20250702_063942.files/leslie-et-al.pdf' of type 'pdf'.
+2025-07-02 06:39:52,708 - INFO - Suspicious character ratio: 0.052 (threshold: 0.25)
+2025-07-02 06:40:01,569 - INFO - Suspicious character ratio: 0.040 (threshold: 0.25)
+2025-07-02 06:40:01,570 - INFO - Identified 2 reference documents.
+2025-07-02 06:40:01,570 - INFO - Generating embeddings for reference documents...
+2025-07-02 06:40:03,103 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-02 06:40:03,251 - INFO - Loading faiss.
+2025-07-02 06:40:03,296 - INFO - Successfully loaded faiss.
+2025-07-02 06:40:03,303 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-07-02 06:40:03,346 - ERROR - Error: name 'sys' is not defined
+2025-07-02 06:40:03,346 - ERROR - Error details: Traceback (most recent call last):
+  File "/home/matt-jenior/repos/tldr/interface.py", line 139, in execute_session_process
+    await function(**args)
+  File "/home/matt-jenior/repos/tldr/tldr/core.py", line 89, in load_all_content
+    sys.exit(1)
+    ^^^
+NameError: name 'sys' is not defined. Did you forget to import 'sys'
+

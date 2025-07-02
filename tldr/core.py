@@ -84,8 +84,8 @@ class TldrEngine(CompletionHandler):
         await self.encode_text_to_vector_store()
 
         # Fetch and reformat additional context if provided
-        if context_files is not None or len(context_files) > 0:
-            all_context = self.fetch_content(user_files=context_files, label="context", search=search)
+        if context_files is not None and len(context_files) >= 1:
+            all_context = self.fetch_content(user_files=context_files, label="context", search=False)
             if len(all_context.keys()) == 0:
                 self.logger.error(f"No valid resources provided for context documents.")
             else:

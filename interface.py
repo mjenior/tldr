@@ -308,6 +308,13 @@ async def run_tldr_streamlit():
 
         # Query input
         st.subheader("Focused Query", divider=True)
+        st.text_area(
+            "What would you like to know from these documents?",
+            height=70,
+            key="user_query",
+            disabled=st.session_state.processing is True,
+        )
+
         query_col1, query_col2 = st.columns(2)
 
         # Query refine button, display refined text once returned
@@ -342,13 +349,6 @@ async def run_tldr_streamlit():
                     )
                     st.session_state.initial_context = tldr_ui.tldr.added_context
                     st.rerun()
-
-        st.text_area(
-            "What would you like to know from these documents?",
-            height=70,
-            key="user_query",
-            disabled=st.session_state.processing is True,
-        )
 
     # Right column - Summaries and actions
     with col2:
@@ -522,9 +522,8 @@ async def run_tldr_streamlit():
                         st.session_state.polished_summary = tldr_ui.tldr.polished_summary
                         st.rerun()
     
-        if st.session_state.added_context is None or st.session_state.research_results is None or st.session_state.executive_summary is None or st.session_state.polished_summary is None:
-            st.text("Use provided tools to view TLDR-generated text.")
-        else:
+        if st.session_state.added_context is not None or st.session_state.research_results is not None or st.session_state.executive_summary is not None:
+
             # Summary tabs
             tabs = st.tabs(
                 ["Added Context", "Research Results", "Executive Summary", "Polished Summary"]
@@ -663,6 +662,9 @@ async def run_tldr_streamlit():
                             polished = True,
                         )
                     st.toast("PDF saved!")
+        
+        elif st.session_state.summarized is True:
+            st.text("Use provided tools to view TLDR-generated text.")
 
     # Status and Output section
     with st.expander("🔍 Processing Logs", expanded=False):
