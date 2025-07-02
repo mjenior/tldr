@@ -49,6 +49,7 @@ class FileHandler:
         user_files: list = None,
         search_dir: str = ".",
         recursive: bool = False,
+        search: bool = False,
     ):
         """
         Find files and read in their contents.
@@ -56,7 +57,7 @@ class FileHandler:
         """
         self.logger.info(f"Reading content of {label} documents...")
         files = self._find_readable_files(
-            infiles=user_files, directory=search_dir, recursive=recursive
+            infiles=user_files, directory=search_dir, recursive=recursive, search=search
         )
 
         # Create content dictionary
@@ -77,7 +78,7 @@ class FileHandler:
         return content
 
     def _find_readable_files(
-        self, infiles: list = [], directory: str = ".", recursive: bool = False
+        self, infiles: list = [], directory: str = ".", recursive: bool = False, search: bool = False
     ) -> dict:
         """
         Scan for readable text files.
@@ -97,6 +98,8 @@ class FileHandler:
         }
 
         # Handle user selected files first
+        if len(infiles) >= 1:
+            search = False
         infiles_found = 0
         for file_path_item in infiles:
             infiles_found += 1
@@ -109,7 +112,7 @@ class FileHandler:
             return {k: v for k, v in readable_files_by_type.items() if v}
 
         # Then handle directory search in none are returned
-        elif recursive is False:
+        if search is True and recursive is False:
             for filename in os.listdir(directory):
                 if ".tldr." in filename:
                     continue
@@ -120,7 +123,7 @@ class FileHandler:
                         readable_files_by_type, filepath, ext
                     )
                     self.logger.info(f"Found file '{filepath}' of type '{ext}'.")
-        elif recursive is True:
+        else:
             for root, _, files_in_dir in os.walk(directory):
                 for filename in files_in_dir:
                     if ".tldr." in filename:

@@ -64,14 +64,15 @@ class TldrEngine(CompletionHandler):
         context_files=None,
         context_size="medium",
         recursive=False,
+        search=True,
     ):
         """Establish context for the TldrEngine"""
 
         # Read in files and contents
-        if input_files is not None:
-            self.content = self.fetch_content(user_files=input_files, label="reference")
+        if input_files is not None or len(input_files) > 0:
+            self.content = self.fetch_content(user_files=input_files, label="reference", search=search)
         else:
-            self.content = self.fetch_content(recursive=recursive, label="reference")
+            self.content = self.fetch_content(recursive=recursive, label="reference", search=search)
 
         if len(self.content.keys()) == 0:
             self.logger.error(f"No valid resources provided for reference documents.")
@@ -83,8 +84,8 @@ class TldrEngine(CompletionHandler):
         await self.encode_text_to_vector_store()
 
         # Fetch and reformat additional context if provided
-        if context_files is not None:
-            all_context = self.fetch_content(user_files=context_files, label="context")
+        if context_files is not None or len(context_files) > 0:
+            all_context = self.fetch_content(user_files=context_files, label="context", search=search)
             if len(all_context.keys()) == 0:
                 self.logger.error(f"No valid resources provided for context documents.")
             else:
@@ -112,7 +113,7 @@ class TldrEngine(CompletionHandler):
         self.logger.info("Searching web for additional context...")
         new_context = []
         for query in queries:
-            self.logger.info(f"Searching for context for query: {query}")
+            self.logger.info(f"Searching local docs with query: {query}")
             new_context.append(f"Query: {query}")
 
             # Search web
@@ -317,6 +318,7 @@ class TldrEngine(CompletionHandler):
         content_dict,
         context_size="medium",
         web_search=False,
+        report_prompt=False,
         **kwargs,
     ):
         """
@@ -327,12 +329,14 @@ class TldrEngine(CompletionHandler):
         for source in content_dict.keys():
 
             # Determine type of submission
-            content = content_dict[source]["content"]
-            prompt_type = await self.determine_prompt_type(content, source, web_search)
+            prompt = content_dict[source]["content"]
+            if report_prompt is True:
+                self.logger.info(f"Searching query: {prompt}")
+            prompt_type = await self.determine_prompt_type(prompt, source, web_search)
 
             # Generate summary task
             task = self.perform_api_call(
-                prompt = content,
+                prompt = prompt,
                 prompt_type = prompt_type,
                 web_search = web_search,
                 context_size = context_size,
@@ -364,34 +368,33 @@ class TldrEngine(CompletionHandler):
 
         # Search web for to fill gaps
         self.logger.info("Applying web research agent to knowledge gaps...")
-        self.research_results = await self.multi_completions(
+        web_search_results = await self.multi_completions(
             content_dict=research_question_dict,
             context_size=context_size,
             web_search=True,
+            report_prompt=True,
         )
 
         # Also search for additional context missed in references
         self.logger.info("Searching for additional context in reference docs...")
-        research_context = []
-        for q_ans_pair in self.research_results:
-            self.logger.info(f"Potential knowledge gap: {q_ans_pair['prompt']}")
-            search_context = self.search_embedded_context(
-                query = q_ans_pair["prompt"], num_results = 1
+        research_results = []
+        for q_ans_pair in web_search_results:
+            search_context = await self.search_embedded_context(
+                query = q_ans_pair["prompt"], num_results = 2
             )
             search_context = self.join_text_objects(list(search_context.keys()))
             current_context = f'Question:\n{q_ans_pair["prompt"]}\n'
-            current_context += f'Answer:\n{q_ans_pair["response"]}\n'
-            current_context += f"Local RAG Context:\n{search_context}\n"
-            research_context.append(current_context)
+            current_context += f'Web Search Answer:\n{q_ans_pair["response"]}\n'
+            current_context += f"Local RAG Result:\n{search_context}\n"
+            research_results.append(current_context)
 
         # Assemble full research context
         divider = "\n#--------------------------------------------------------#\n"
-        research_str = self.join_text_objects(research_context, divider)
-        self.research_context = research_str
+        research_str = self.join_text_objects(research_results, divider)
+        self.research_results = research_str
 
         # Update added context with new research
-        await self.add_succinct_context(research_str, label="research_context")
+        await self.add_succinct_context(research_str, label="research_results")
         result = self.save_response_text(research_str, label="research_results")
         self.logger.info(f"Response saved to: {result}")
-
-        self.logger.info(f"Finished research knowledge gaps")
+        self.logger.info(f"Finished researching knowledge gaps")

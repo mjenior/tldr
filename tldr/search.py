@@ -294,4 +294,4 @@ class ResearchAgent(LogHandler):
                 round(np.mean(list(result.values())), 3)
             )
         )
-        return results
+        return result
