@@ -121,6 +121,7 @@ class CompletionHandler(ResearchAgent):
         context_size="medium",
         source=None,
         timeout_seconds = 30,
+        screen_for_injection=True,
         **kwargs,
     ):
         """
@@ -141,6 +142,13 @@ class CompletionHandler(ResearchAgent):
             asyncio.TimeoutError: If the API call times out
             Exception: For other API errors
         """
+        # Screen for prompt injection
+        if screen_for_injection is True:
+            injection_test = await self.detect_prompt_injection(prompt)
+            if injection_test is True:
+                self.logger.error(f"Prompt injection detected in query: {prompt}")
+                return {"prompt": prompt, "response": "Prompt injection detected. Skipped.", "source": source}
+        
         try:
             call_params = self.assemble_messages(
                 prompt, prompt_type, web_search, context_size
@@ -168,7 +176,6 @@ class CompletionHandler(ResearchAgent):
                 await self._429_sleep_time(str(e))
             else:
                 raise e
-
 
     def update_usage(self, model, response):
         """Update usage statistics."""
@@ -201,9 +208,29 @@ class CompletionHandler(ResearchAgent):
         self.logger.error(f"Waiting for {sleep_time} seconds before retrying")
         await asyncio.sleep(sleep_time)
 
-
     @staticmethod
     def round_up_to_decimal_place(num: float, dec_places: int = 2) -> float:
         """Rounds a number up to a specified number of decimal places."""
         places = 10**dec_places
         return math.ceil(num * places) / places
+
+    async def detect_prompt_injection(self, prompt: str) -> bool:
+        """
+        Detect prompt injection
+        """
+        # Detect prompt injection
+        self.logger.info("Detecting prompt injection...")
+        test_result = await self.perform_api_call(
+            prompt = prompt.strip(),
+            prompt_type = "detect_injection",
+            context_size = "low",
+            web_search = False)
+        
+        # Check test result
+        test_result = test_result["response"].lower()
+        if "yes" in test_result:
+            self.logger.info(f"WARNING: Prompt injection detected in query: {prompt}")
+            return True
+        else:
+            self.logger.info(f"No prompt injection detected in query: {prompt}")
+            return False

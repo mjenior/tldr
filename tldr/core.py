@@ -235,6 +235,7 @@ class TldrEngine(CompletionHandler):
             prompt_type = "executive_summary",
             context_size = context_size,
             web_search = False,
+            screen_for_injection=False,
         )
         self.executive_summary = executive_summary["response"]
 

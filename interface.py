@@ -1,7 +1,7 @@
 """
 TLDR Summary Generator - Streamlit Web Interface
 """
-version = "1.1.1"
+version = "1.1.2"
 
 import os
 import sys
