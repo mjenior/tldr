@@ -1,4 +1,4 @@
-VERSION = "1.1.2"
+VERSION = "1.1.3"
 
 # Default target
 .DEFAULT_GOAL := help
@@ -21,7 +21,19 @@ build:
 	pixi lock
 	pixi run python -m build
 
-install: build
+install: 
 	pixi install
 	pixi run pip install -e .
+
+clean:
 	rm -rf dist build tldr.egg-info
+	git clean -fdx -e .venv/ -e .pixi/ -e '*.pyc' -e '*.pyo' -e '__pycache__'
+
+all: format build install clean
+
+uninstall:
+	pip uninstall tldr -y
+	pixi uninstall
+
+publish: build
+	pixi publish

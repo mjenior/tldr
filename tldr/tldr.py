@@ -37,6 +37,7 @@ async def pipeline():
     tldr = TldrEngine(
         verbose=args.verbose,
         api_key=args.api_key,
+        injection_screen=args.injection_screen,
     )
 
     # Optional: Refine user query

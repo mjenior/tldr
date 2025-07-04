@@ -30,10 +30,11 @@ class CompletionHandler(ResearchAgent):
         client (AsyncOpenAI): An asynchronous client for the OpenAI API.
     """
 
-    def __init__(self, context_size="medium", api_key=None):
+    def __init__(self, context_size="medium", api_key=None, injection_screen=True):
         super().__init__()
         self.context_size = context_size
         self.api_key = api_key
+        self.injection_screen = injection_screen
 
     def _new_openai_client(self):
         """Initialize OpenAI client"""
@@ -47,6 +48,10 @@ class CompletionHandler(ResearchAgent):
         self.logger.info(
             f"Initialized OpenAI client: version={self.client._version}, context size={self.context_size}"
         )
+        if self.injection_screen is True:
+            self.logger.info("Prompt injection screen enabled.")
+        else:
+            self.logger.info("Prompt injection screen disabled.")
 
     def _scale_token(self, tokens):
         """Multiply the size of maximum output tokens allowed."""
@@ -121,7 +126,7 @@ class CompletionHandler(ResearchAgent):
         context_size="medium",
         source=None,
         timeout_seconds = 30,
-        screen_for_injection=True,
+        injection_screen=True,
         **kwargs,
     ):
         """
@@ -143,10 +148,10 @@ class CompletionHandler(ResearchAgent):
             Exception: For other API errors
         """
         # Screen for prompt injection
-        if screen_for_injection is True:
+        if injection_screen is True:
             injection_test = await self.detect_prompt_injection(prompt)
             if injection_test is True:
-                self.logger.error(f"Prompt injection detected in query: {prompt}")
+                self.logger.warning(f"Skipping prompt")
                 return {"prompt": prompt, "response": "Prompt injection detected. Skipped.", "source": source}
         
         try:
@@ -216,10 +221,10 @@ class CompletionHandler(ResearchAgent):
 
     async def detect_prompt_injection(self, prompt: str) -> bool:
         """
-        Detect prompt injection
+        Detect potential prompt injection and return boolean test result
         """
         # Detect prompt injection
-        self.logger.info("Detecting prompt injection...")
+        self.logger.info("Testing for prompt injection...")
         test_result = await self.perform_api_call(
             prompt = prompt.strip(),
             prompt_type = "detect_injection",
@@ -227,10 +232,8 @@ class CompletionHandler(ResearchAgent):
             web_search = False)
         
         # Check test result
-        test_result = test_result["response"].lower()
-        if "yes" in test_result:
-            self.logger.info(f"WARNING: Prompt injection detected in query: {prompt}")
+        if "yes" in test_result["response"].lower():
+            self.logger.warning(f"Prompt injection detected: {prompt}")
             return True
         else:
-            self.logger.info(f"No prompt injection detected in query: {prompt}")
             return False

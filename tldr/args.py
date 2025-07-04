@@ -29,47 +29,46 @@ def parse_tldr_arguments():
             arguments as attributes.
     """
     parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         description="TLDR: Summarize text files based on user arguments."
     )
-
     # Define arguments
-    parser.add_argument("query", nargs="?", default=None, help="Optional user query")
     parser.add_argument(
-        "-i",
+        "query",
+        nargs="?",
+        default=None,
+        help="Optional user query",
+    )
+    parser.add_argument(
         "--input_files",
         default=None,
         nargs="+",
         help="Optional: Input files to summarize (Default is scan for text files in working directory)",
     )
     parser.add_argument(
-        "-f",
         "--refine_query",
         type=bool,
         default=True,
         help="Automatically refine and improve the user query",
     )
     parser.add_argument(
-        "-c",
         "--context_files",
         default=None,
         nargs="+",
-        help="Optional: Additional context files to include in the summary",
+        help="Optional: Additional context files to script include in the summary",
     )
     parser.add_argument(
-        "-r",
         "--recursive_search",
         action="store_true",
         help="Recursively search input directories",
     )
     parser.add_argument(
-        "-w",
         "--web_search",
         type=bool,
         default=True,
         help="Additional research agent to find and fill knowledge gaps",
     )
     parser.add_argument(
-        "-s",
         "--context_size",
         type=str,
         choices=["low", "medium", "high"],
@@ -82,14 +81,12 @@ def parse_tldr_arguments():
         help="Testing mode",
     )
     parser.add_argument(
-        "-p",
         "--polish",
         type=bool,
         default=True,
         help="Polish final response",
     )
     parser.add_argument(
-        "-t",
         "--tone",
         choices=["stylized", "formal"],
         default="stylized",
@@ -102,13 +99,19 @@ def parse_tldr_arguments():
         help="Save final response to PDF",
     )
     parser.add_argument(
-        "-v", "--verbose", type=bool, default=True, help="Verbose stdout reporting"
+        "--verbose", type=bool, default=True, help="Verbose stdout reporting"
     )
     parser.add_argument(
         "--api_key",
         type=str,
         default=None,
         help="API key for OpenAI",
+    )
+    parser.add_argument(
+        "--injection_screen",
+        type=bool,
+        default=True,
+        help="Enable prompt injection testing",
     )
     return parser.parse_args()
 
@@ -126,39 +129,35 @@ def parse_eval_arguments():
             arguments as attributes.
     """
     parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         description="Evaluate a summary against the target content."
     )
 
     # Define arguments
     parser.add_argument(
-        "-c",
         "--content",
         default=None,
         required=True,
         help="Content to evaluate summary against",
     )
     parser.add_argument(
-        "-s",
         "--summary",
         default=None,
         required=True,
         help="Summary to evaluate",
     )
     parser.add_argument(
-        "-m",
         "--model",
         default="gpt-4o-mini",
         help="Model to use for evaluation",
     )
     parser.add_argument(
-        "-i",
-        "--iterations",
+        "--iters",
         type=int,
         default=5,
         help="Number of iterations to run",
     )
     parser.add_argument(
-        "-v",
         "--verbose",
         type=bool,
         default=True,

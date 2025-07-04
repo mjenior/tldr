@@ -39,9 +39,10 @@ class TldrEngine(CompletionHandler):
         self,
         verbose=True,
         api_key=None,
+        injection_screen=True,
     ):
         # Initialize parent class chain
-        super().__init__(api_key=api_key)
+        super().__init__(api_key=api_key, injection_screen=injection_screen)
 
         # Additional attributes
         self.verbose = verbose

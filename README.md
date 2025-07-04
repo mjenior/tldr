@@ -2,7 +2,7 @@
 
 A powerful text summarization tool that uses OpenAI's models to generate concise summaries and evaluations of scientific documents.
 
-Version: 1.1.2
+Version: 1.1.3
 
 ## Overview
 
@@ -30,6 +30,7 @@ This architecture allows for a clear separation of concerns and makes the system
 -   **Automated Research Agent**: Identifies knowledge gaps in the source material and uses web searches to find the missing information.
 -   **Customizable Output**: Supports different output tones and formats, including a final polished PDF report.
 -   **Objective Summary Evaluation**: Provides tools to score the quality of the generated summaries.
+-   **Prompt Injection Testing**: Tests the system for prompt injection vulnerabilities.
 
 ## Installation
 
@@ -77,6 +78,9 @@ TLDR is most easily used via a web interface.
 ```bash
 # Run the web interface
 streamlit run interface.py
+
+# Or simply use the tldr_ui alias added during installation
+tldr_ui
 ```
 
 ### Command Line
@@ -91,32 +95,34 @@ tldr
 tldr "What are the latest advancements in CRISPR gene editing?"
 
 # Specify input files for summarization
-tldr -i ./my_papers/*
+tldr --input_files ./my_papers/*
 
 # Add context documents to inform the summary
-tldr -c ./context_files/*
+tldr --context_files ./context_files/*
 
 # Enable recursive file search in input directories
-tldr -r
+tldr --recursive_search True
 
 # Disable the web research agent
-tldr -w False
+tldr --web_search False
 
-# Use a modified output tone (e.g., 'technical' or 'casual')
-tldr -t modified
+# Use a modified output tone (e.g., 'stylized' or 'formal')
+tldr --tone formal
 ```
 
 ### Available Arguments
 
 *   `query` (Positional): Your question or topic of interest. (Default: None)
-*   `-q`, `--refine_query <True|False>`: Automatically refine the user query. (Default: `True`)
-*   `-i`, `--input_files <path>`: List of input files or directories. (Default: None)
-*   `-c`, `--context_files <path>`: List of files for additional context. (Default: None)
-*   `-r`, `--recursive_search <True|False>`: Recursively search input directories. (Default: `False`)
-*   `-w`, `--web_search <True|False>`: Use the research agent to fill knowledge gaps. (Default: `True`)
-*   `-t`, `--tone <tone>`: Define the tone for the final summary. (Default: `default`)
-*   `-s`, `--context_size <scale>`: Set the context window size for the model. (Choices: `low`, `medium`, `high`; Default: `medium`)
-*   `-v`, `--verbose <True|False>`: Enable verbose logging to stdout. (Default: `True`)
+*   `--refine_query <True|False>`: Automatically refine the user query. (Default: `True`)
+*   `--input_files <path>`: List of input files or directories. (Default: None)
+*   `--context_files <path>`: List of files for additional context. (Default: None)
+*   `--recursive_search <True|False>`: Recursively search input directories. (Default: `False`)
+*   `--web_search <True|False>`: Use the research agent to fill knowledge gaps. (Default: `True`)
+*   `--tone <tone>`: Define the tone for the final summary. (Default: `default`)
+*   `--context_size <scale>`: Set the context window size for the model. (Choices: `low`, `medium`, `high`; Default: `medium`)
+*   `--verbose <True|False>`: Enable verbose logging to stdout. (Default: `True`)
+*   `--api_key <key>`: API key for OpenAI. (Default: None)
+*   `--injection_screen <True|False>`: Enable prompt injection testing. (Default: `True`)
 
 ### Summary Evaluation (Python API)
 
@@ -147,11 +153,11 @@ print(f"Reasoning: {evaluation['reason']}")
 ```
 
 CLI Options:
-- `-c, --content`: Path to the original content file or string
-- `-s, --summary`: Path to the generated summary file or string
-- `-m, --model`: Model to use for evaluation (default: "gpt-4o-mini")
-- `-i, --iterations`: Number of evaluation iterations (default: 5)
-- `-v, --verbose`: Enable verbose output (default: True)
+- `--content`: Path to the original content file or string
+- `--summary`: Path to the generated summary file or string
+- `--model`: Model to use for evaluation (default: "gpt-4o-mini")
+- `--iterations`: Number of evaluation iterations (default: 5)
+- `--verbose`: Enable verbose output (default: True)
 
 #### Evaluation Metrics
 
@@ -192,4 +198,3 @@ This project is licensed under the MIT License - see the `LICENSE.txt` file for 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-

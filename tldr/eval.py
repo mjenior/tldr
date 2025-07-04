@@ -25,7 +25,7 @@ class SummaryEvaluator(CompletionHandler):
         content: str,
         testing: bool = True,
         verbose: bool = True,
-        iterations: int = 5,
+        iters: int = 5,
         **kwargs,
     ):
         """

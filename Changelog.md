@@ -1,6 +1,7 @@
 # Changelog
 
-## Version 1.1.1 - Streamlit Interface and Code Refactoring
+## Version 1.1.3 - Streamlit Interface and Code Refactoring
+* Added prompt injection testing and system instructions guardrails
 * Added Streamlit-based web interface for easier interaction
 * Refactored file handling into a dedicated `FileHandler` class
 * Improved code organization and maintainability

@@ -299,7 +299,7 @@ class FileHandler:
                 f"An unexpected error occurred while reading '{instructions_path}': {e}"
             )
         # Add guardrails to system instructions
-        guardrails = f"\n\n{self.prompt_dictionary['guardrails']['system_instruction']}"
+        guardrails = f"\n\n{self.prompt_dictionary['detect_injection']['guardrails']}"
         for agent in self.prompt_dictionary.keys():
             if agent != 'guardrails':
                 self.prompt_dictionary[agent]['system_instruction'] += guardrails
