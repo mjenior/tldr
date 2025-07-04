@@ -12,7 +12,7 @@ from typing import List
 
 import streamlit as st
 
-from .core import TldrEngine
+from tldr.core import TldrEngine
 
 # Page config
 st.set_page_config(
