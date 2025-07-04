@@ -1,0 +1,3 @@
+[console_scripts]
+tldr = tldr.tldr:run_tldr
+tldr_ui = tldr.streamlit:start_tldr_ui
