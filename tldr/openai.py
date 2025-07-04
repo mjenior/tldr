@@ -116,7 +116,9 @@ class CompletionHandler(ResearchAgent):
     @retry(
         wait=wait_random_exponential(multiplier=2, min=5, max=30),
         stop=stop_after_attempt(9),
-        retry=retry_if_exception_type((RateLimitError, asyncio.TimeoutError, Exception)),
+        retry=retry_if_exception_type(
+            (RateLimitError, asyncio.TimeoutError, Exception)
+        ),
     )
     async def perform_api_call(
         self,
@@ -125,13 +127,13 @@ class CompletionHandler(ResearchAgent):
         web_search=False,
         context_size="medium",
         source=None,
-        timeout_seconds = 30,
+        timeout_seconds=30,
         injection_screen=True,
         **kwargs,
     ):
         """
         Helper function to encapsulate the actual API call logic.
-        
+
         Args:
             prompt: The input prompt to send to the API
             prompt_type: Type of prompt (determines model and instructions)
@@ -139,10 +141,10 @@ class CompletionHandler(ResearchAgent):
             context_size: Size of the context window
             source: Source of the content (for tracking)
             **kwargs: Additional parameters to pass to the API
-            
+
         Returns:
             Dict containing the prompt, response, and source
-            
+
         Raises:
             asyncio.TimeoutError: If the API call times out
             Exception: For other API errors
@@ -152,28 +154,36 @@ class CompletionHandler(ResearchAgent):
             injection_test = await self.detect_prompt_injection(prompt)
             if injection_test is True:
                 self.logger.warning(f"Skipping prompt")
-                return {"prompt": prompt, "response": "Prompt injection detected. Skipped.", "source": source}
-        
+                return {
+                    "prompt": prompt,
+                    "response": "Prompt injection detected. Skipped.",
+                    "source": source,
+                }
+
         try:
             call_params = self.assemble_messages(
                 prompt, prompt_type, web_search, context_size
             )
-            
+
             # Run completion query with timeout
             try:
                 response = await asyncio.wait_for(
                     self.client.responses.create(**call_params, **kwargs),
-                    timeout=timeout_seconds
+                    timeout=timeout_seconds,
                 )
-                
+
                 # Update usage and return prompt and response pair
                 self.update_usage(call_params["model"], response)
-                return {"prompt": prompt, "response": response.output_text, "source": source}
-                
+                return {
+                    "prompt": prompt,
+                    "response": response.output_text,
+                    "source": source,
+                }
+
             except asyncio.TimeoutError:
                 self.logger.error(f"API call timed out after {timeout_seconds} seconds")
                 raise
-                
+
         except Exception as e:
             self.logger.error(f"Error in perform_api_call: {str(e)}")
             if "429 Too Many Requests" in str(e):
@@ -226,11 +236,12 @@ class CompletionHandler(ResearchAgent):
         # Detect prompt injection
         self.logger.info("Testing for prompt injection...")
         test_result = await self.perform_api_call(
-            prompt = prompt.strip(),
-            prompt_type = "detect_injection",
-            context_size = "low",
-            web_search = False)
-        
+            prompt=prompt.strip(),
+            prompt_type="detect_injection",
+            context_size="low",
+            web_search=False,
+        )
+
         # Check test result
         if "yes" in test_result["response"].lower():
             self.logger.warning(f"Prompt injection detected: {prompt}")

@@ -6,14 +6,15 @@ from typing import List, Optional
 
 from .io import FileHandler
 
+
 class StreamlitLogHandler(logging.Handler):
     """Custom logging handler that updates Streamlit UI with log messages."""
-    
+
     def __init__(self):
         super().__init__()
         self.logs: List[str] = []
         self.max_logs = 1000  # Maximum number of logs to keep in memory
-    
+
     def emit(self, record):
         """Emit a log record."""
         try:
@@ -21,14 +22,14 @@ class StreamlitLogHandler(logging.Handler):
             self.logs.append(msg)
             # Keep only the most recent logs
             if len(self.logs) > self.max_logs:
-                self.logs = self.logs[-self.max_logs:]
+                self.logs = self.logs[-self.max_logs :]
         except Exception:
             self.handleError(record)
-    
+
     def get_logs(self) -> List[str]:
         """Get the current list of log messages."""
         return self.logs
-    
+
     def clear_logs(self):
         """Clear all stored log messages."""
         self.logs = []
@@ -47,14 +48,16 @@ class StreamlitStdout:
                 if line.strip():
                     # Create a log record and emit it through the handler
                     record = logging.LogRecord(
-                        'stdout', logging.INFO, '', 0, line, (), None)
+                        "stdout", logging.INFO, "", 0, line, (), None
+                    )
                     self.streamlit_handler.emit(record)
             self.buffer = lines[-1]
 
     def flush(self):
         if self.buffer:
             record = logging.LogRecord(
-                'stdout', logging.INFO, '', 0, self.buffer, (), None)
+                "stdout", logging.INFO, "", 0, self.buffer, (), None
+            )
             self.streamlit_handler.emit(record)
         self.buffer = ""
 
@@ -119,7 +122,7 @@ class LogHandler(FileHandler):
         # Reset logger to ensure clean state
         self.logger.handlers = []
         self.logger.setLevel(logging.INFO if self.verbose else logging.WARNING)
-        
+
         # Create formatter
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 
@@ -132,15 +135,17 @@ class LogHandler(FileHandler):
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setFormatter(formatter)
         self.logger.addHandler(console_handler)
-        
+
         # File handler
         log_file = os.path.join(self.output_directory, f"{self.run_tag}.log")
         file_handler = logging.FileHandler(log_file)
         file_handler.setFormatter(formatter)
         self.logger.addHandler(file_handler)
-        
+
         self.logger.info("Logging system initialized")
-        self.logger.info(f"Intermediate files being written to: {self.output_directory}")
+        self.logger.info(
+            f"Intermediate files being written to: {self.output_directory}"
+        )
 
     def update_spending(self):
         """Calculates approximate cost (USD) of LLM tokens generated to a given decimal place"""

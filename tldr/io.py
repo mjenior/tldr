@@ -78,7 +78,11 @@ class FileHandler:
         return content
 
     def _find_readable_files(
-        self, infiles: list = [], directory: str = ".", recursive: bool = False, search: bool = False
+        self,
+        infiles: list = [],
+        directory: str = ".",
+        recursive: bool = False,
+        search: bool = False,
     ) -> dict:
         """
         Scan for readable text files.
@@ -104,9 +108,7 @@ class FileHandler:
         for file_path_item in infiles:
             infiles_found += 1
             ext = file_path_item.split(".")[-1].lower().strip()
-            self._update_file_dictionary(
-                readable_files_by_type, file_path_item, ext
-            )
+            self._update_file_dictionary(readable_files_by_type, file_path_item, ext)
             self.logger.info(f"Found file '{file_path_item}' of type '{ext}'.")
         if infiles_found >= 1:
             return {k: v for k, v in readable_files_by_type.items() if v}
@@ -119,9 +121,7 @@ class FileHandler:
                 filepath = os.path.join(directory, filename)
                 if os.path.isfile(filepath):
                     ext = filepath.split(".")[-1].lower().strip()
-                    self._update_file_dictionary(
-                        readable_files_by_type, filepath, ext
-                    )
+                    self._update_file_dictionary(readable_files_by_type, filepath, ext)
                     self.logger.info(f"Found file '{filepath}' of type '{ext}'.")
         else:
             for root, _, files_in_dir in os.walk(directory):
@@ -130,9 +130,7 @@ class FileHandler:
                         continue
                     filepath = os.path.join(root, filename)
                     ext = filepath.split(".")[-1].lower().strip()
-                    self._update_file_dictionary(
-                        readable_files_by_type, filepath, ext
-                    )
+                    self._update_file_dictionary(readable_files_by_type, filepath, ext)
                     self.logger.info(f"Found file '{filepath}' of type '{ext}'.")
 
         return {k: v for k, v in readable_files_by_type.items() if v}
@@ -216,23 +214,23 @@ class FileHandler:
             return True
 
         # Check for binary null bytes which are a strong indicator of binary data
-        if '\x00' in text:
+        if "\x00" in text:
             return True
 
         # Check for common corruption patterns
         corruption_patterns = [
-            r'[\x80-\xFF]',  # High ASCII/Unicode garbage
-            r'\S{30,}',       # Very long words (reduced from 50)
-            r'[0-9]{8,}',     # Long sequences of numbers (reduced from 10)
-            r'[^\x00-\x7F]{2,}',  # Multiple consecutive non-ASCII (reduced from 3)
-            r'[\uFFFD]',      # Unicode replacement character
-            r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]',  # Control chars except \t, \n, \r
-            r'[\u0000-\u001F\u007F-\u009F]',  # Additional control characters
-            r'[\uFFFB-\uFFFD]',  # More replacement characters
-            r'\\x[0-9A-Fa-f]{2}',  # Hex-encoded bytes
-            r'\\u[0-9A-Fa-f]{4}',  # Unicode escape sequences
-            r'[\u0080-\u00FF]',  # Extended ASCII (common in encoding errors)
-            r'[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]',  # More control chars
+            r"[\x80-\xFF]",  # High ASCII/Unicode garbage
+            r"\S{30,}",  # Very long words (reduced from 50)
+            r"[0-9]{8,}",  # Long sequences of numbers (reduced from 10)
+            r"[^\x00-\x7F]{2,}",  # Multiple consecutive non-ASCII (reduced from 3)
+            r"[\uFFFD]",  # Unicode replacement character
+            r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]",  # Control chars except \t, \n, \r
+            r"[\u0000-\u001F\u007F-\u009F]",  # Additional control characters
+            r"[\uFFFB-\uFFFD]",  # More replacement characters
+            r"\\x[0-9A-Fa-f]{2}",  # Hex-encoded bytes
+            r"\\u[0-9A-Fa-f]{4}",  # Unicode escape sequences
+            r"[\u0080-\u00FF]",  # Extended ASCII (common in encoding errors)
+            r"[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]",  # More control chars
         ]
 
         # Check for patterns with weighted scoring
@@ -241,44 +239,46 @@ class FileHandler:
             matches = re.findall(pattern, text)
             for match in matches:
                 # Weight more severe patterns higher
-                if pattern in [r'[\uFFFD]', r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]']:
+                if pattern in [r"[\uFFFD]", r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]"]:
                     suspicious_count += len(match) * 2
                 else:
                     suspicious_count += len(match)
-        
+
         # Check for invalid Unicode sequences
         try:
-            text.encode('utf-8').decode('utf-8')
+            text.encode("utf-8").decode("utf-8")
         except UnicodeError:
             return True
-            
+
         # Check for excessive repetition of the same character (e.g., 'kkkkkk')
         for i in range(0, len(text) - 5):
-            if len(set(text[i:i+5])) == 1 and text[i] not in ' .-_,':
+            if len(set(text[i : i + 5])) == 1 and text[i] not in " .-_,":
                 suspicious_count += 10  # Increased weight for repetition
                 break
-        
+
         # Check for mixed encoding (e.g., UTF-8 interpreted as Windows-1252)
         try:
-            text.encode('latin-1').decode('utf-8')
+            text.encode("latin-1").decode("utf-8")
         except UnicodeError:
             pass
         else:
             # If it can be interpreted as both, it might be double-encoded
             suspicious_count += int(0.2 * len(text.strip()))  # Increased penalty
-            
+
         # Check for excessive whitespace patterns
-        if re.search(r'\s{10,}', text.strip()):
+        if re.search(r"\s{10,}", text.strip()):
             suspicious_count += 20
-            
+
         # Check for common corrupted text patterns
-        if re.search(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', text.strip()):
+        if re.search(r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]", text.strip()):
             suspicious_count += 15
-        
+
         # Calculate ratio of suspicious content
         suspicious_ratio = suspicious_count / len(text.strip())
-        self.logger.info(f"Suspicious character ratio: {suspicious_ratio:.3f} (threshold: {threshold})")
-        
+        self.logger.info(
+            f"Suspicious character ratio: {suspicious_ratio:.3f} (threshold: {threshold})"
+        )
+
         return suspicious_ratio > threshold
 
     def _read_system_instructions(self, file_path: str = "prompts.yaml") -> dict:
@@ -301,8 +301,8 @@ class FileHandler:
         # Add guardrails to system instructions
         guardrails = f"\n\n{self.prompt_dictionary['detect_injection']['guardrails']}"
         for agent in self.prompt_dictionary.keys():
-            if agent != 'guardrails':
-                self.prompt_dictionary[agent]['system_instruction'] += guardrails
+            if agent != "guardrails":
+                self.prompt_dictionary[agent]["system_instruction"] += guardrails
 
         self.logger.info("Systems instructions loaded successfully.")
 
@@ -357,7 +357,9 @@ class FileHandler:
         try:
             doc.build(body)
         except Exception as e:
-            self.logger.error(f"An unexpected error occurred while saving {file_path}: {e}")
+            self.logger.error(
+                f"An unexpected error occurred while saving {file_path}: {e}"
+            )
             raise
 
         return file_path

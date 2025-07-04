@@ -78,17 +78,17 @@ class ResearchAgent(LogHandler):
                 length_function=len,
                 is_separator_regex=False,
             )
-            
+
             # Handle the content properly
             content_text = self.join_text_objects(self.content)
 
             # Add extra text if provided
             content_text = f"{content_text}\n\n{extra_text}".strip()
-                
+
             # Ensure we have content to process
             if not content_text:
                 raise ValueError("No content available to encode into vector store")
-                
+
             # Create documents - wrap in list as create_documents expects a list of strings
             docs = text_splitter.create_documents([content_text])
 
@@ -96,7 +96,7 @@ class ResearchAgent(LogHandler):
             for doc in docs:
                 if not hasattr(doc, "metadata"):
                     doc.metadata = {}
-                doc.metadata["relevance_score"] = 1.0 # baseline relevance
+                doc.metadata["relevance_score"] = 1.0  # baseline relevance
 
             embeddings = (
                 OpenAIEmbeddings()
@@ -105,7 +105,7 @@ class ResearchAgent(LogHandler):
             )
             vector_store = FAISS.from_documents(docs, embeddings)
             self.check_vector_store(vector_store)
-            
+
             return vector_store
 
         except Exception as e:
@@ -113,31 +113,31 @@ class ResearchAgent(LogHandler):
             raise RuntimeError(
                 f"An error occurred during the encoding process: {str(e)}"
             )
-    
+
     @staticmethod
     def join_text_objects(collection, separator="\n\n", data_type="content"):
         """Joins a collection of text objects into a single string.
-        
+
         Args:
             collection: A string, dictionary, or iterable of strings/dictionaries to join
             separator: String to place between each item (default: "\n\n")
             data: "content" or "summary" (default: "content")
-            
+
         Returns:
             str: A single string with all items joined by the separator
-            
+
         Raises:
             TypeError: If any item cannot be converted to string
         """
         if collection is None:
             return ""
-            
+
         elif isinstance(collection, str):
             return collection.strip()
-        
+
         elif isinstance(collection, list):
             return separator.join([str(x).strip() for x in collection])
-            
+
         elif isinstance(collection, dict):
             result = []
             for source in collection.keys():

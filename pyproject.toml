@@ -36,4 +36,4 @@ build-backend = "setuptools.build_meta"
 
 [project.scripts]
 tldr = "tldr.tldr:run_tldr"
-tldr_ui = "interface:run_tldr_ui"
+tldr_ui = "tldr.streamlit:start_tldr_ui"

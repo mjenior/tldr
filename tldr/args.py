@@ -30,7 +30,7 @@ def parse_tldr_arguments():
     """
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        description="TLDR: Summarize text files based on user arguments."
+        description="TLDR: Summarize text files based on user arguments.",
     )
     # Define arguments
     parser.add_argument(
@@ -130,7 +130,7 @@ def parse_eval_arguments():
     """
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        description="Evaluate a summary against the target content."
+        description="Evaluate a summary against the target content.",
     )
 
     # Define arguments
