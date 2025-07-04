@@ -18,6 +18,7 @@ The tool operates through a modular, object-oriented design:
 -   **`FileHandler`**: A robust module for all file I/O operations. It handles reading different document types (PDF, DOCX, HTML, TXT, Markdown), discovering readable files, and saving all output files, including intermediate summaries and the final PDF report.
 -   **`CompletionHandler`**: Manages all interactions with the OpenAI API, including sending prompts and processing the responses for summarization, query refinement, and research.
 -   **`SummaryJudge`**: An evaluation tool to objectively score the quality of generated summaries based on criteria like correctness, coherence, and conciseness.
+-   **`PromptInjectionScreen`**: Tests the system for prompt injection vulnerabilities.
 
 This architecture allows for a clear separation of concerns and makes the system easily extensible.
 
@@ -37,10 +38,12 @@ This architecture allows for a clear separation of concerns and makes the system
 This project uses [pixi](https://pixi.sh/latest/) for environment and dependency management through `make`.
 
 ```bash
-# Install from source
+# Clone and navigate to the repository
 git clone https://github.com/mattjenior/tldr.git
 cd tldr
-make install
+
+# Install from source with make
+make all
 
 # In most cases, installation can also be done with pip
 pip install -e .
