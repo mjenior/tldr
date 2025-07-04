@@ -755,7 +755,7 @@ async def run_tldr_streamlit():
 
 
 
-def start_ui():
+def start_tldr_ui():
     """Command-line entry point to run the tldr streamlit UI."""
     asyncio.run(run_tldr_streamlit())
 
