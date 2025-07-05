@@ -1,0 +1,1 @@
+When asked to to address a specific bug or error message; reflect on 5-7 different sources of the problem, distill those down to 1-2 most likely sources, and then add logs to validate your assumptions before moving on to implementing the actual proposed fix.
