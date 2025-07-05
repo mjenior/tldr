@@ -150,7 +150,6 @@ class CompletionHandler(ResearchAgent):
         """
         # Screen for prompt injection
         if injection_screen is True:
-            self.logger.info(f"Testing for prompt injection...")
             injection_test = await self.detect_prompt_injection(prompt)
             if injection_test is True:
                 self.logger.warning(f"Prompt injection detected: {prompt}")
