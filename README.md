@@ -31,7 +31,7 @@ This architecture allows for a clear separation of concerns and makes the system
 -   **Automated Research Agent**: Identifies knowledge gaps in the source material and uses web searches to find the missing information.
 -   **Customizable Output**: Supports different output tones and formats, including a final polished PDF report.
 -   **Objective Summary Evaluation**: Provides tools to score the quality of the generated summaries.
--   **Prompt Injection Testing**: Tests the system for prompt injection vulnerabilities.
+-   **Prompt Injection Testing**: Tests input text for potential prompt injection attempts.
 
 ## Installation
 
@@ -127,9 +127,9 @@ tldr --tone formal
 *   `--api_key <key>`: API key for OpenAI. (Default: None)
 *   `--injection_screen <True|False>`: Enable prompt injection testing. (Default: `True`)
 
-### Summary Evaluation (Python API)
+### BETA - Summary Evaluation (Python API)
 
-You can evaluate the quality of generated summaries using the Python API for easier iterative testing.
+You can evaluate the quality of generated summaries using the Python API for easier iterative testing. This feature is still under construction, and the API may change in the future.
 
 #### Python API
 
