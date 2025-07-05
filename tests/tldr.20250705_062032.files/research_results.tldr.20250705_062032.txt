@@ -1,0 +1,1075 @@
+Question:
+What constitutes a genome-scale metabolic network reconstruction (GENRE), and what are its typical components?  
+Web Search Answer:
+A genome-scale metabolic network reconstruction (GENRE) is a comprehensive representation of the metabolic pathways in an organism, derived from its genomic information. GENREs serve as valuable tools for understanding metabolism in a systems biology context, allowing for simulations and analyses of metabolic functions and capabilities.
+
+Typical components of GENREs include:
+
+1. **Genes**: A list of metabolic genes identified from the organism's genome. These genes encode the enzymes involved in metabolic reactions.
+
+2. **Metabolites**: The chemical compounds involved in the metabolic reactions, including substrates, products, and biomass components.
+
+3. **Reactions**: This includes enzyme-catalyzed biochemical transformations, transport reactions, and spontaneous chemical reactions that occur within the cell.
+
+4. **Stoichiometry**: Detailed stoichiometric coefficients for each reaction, specifying the exact number of molecules of each reactant and product.
+
+5. **Enzymes**: Links between genes and the reactions they catalyze through annotated enzyme commission numbers or other identifiers.
+
+6. **Pathways**: Groupings of reactions into metabolic pathways, reflecting biological processes like glycolysis, TCA cycle, etc.
+
+7. **Compartments**: Consideration of the cellular compartments (e.g., cytosol, mitochondria) where reactions occur, crucial for eukaryotic organisms with compartmentalized metabolism.
+
+8. **Regulatory Information**: Sometimes includes data on the regulation of metabolic pathways, providing insights into how gene expression and enzyme activity are controlled.
+
+9. **GPR Associations**: Gene-Protein-Reaction associations that connect genes to the proteins they encode and the corresponding metabolic reactions.
+
+These components collectively enable simulations of metabolic fluxes, predictions of growth on various substrates, and assessments of the organism's metabolic capabilities under different conditions.
+
+**Sources**:
+- Thiele, I., & Palsson, B. Ø. (2010). A protocol for generating a high-quality genome-scale metabolic reconstruction. *Nature Protocols*, 5(1), 93-121.
+- Palsson, B. (2015). Systems Biology: Constraint-based Reconstruction and Analysis. *Cambridge University Press*.
+Local RAG Result:
+Genome-scale metabolic network reconstructions (GENREs) are mathematical for-
+malizations of metabolic reactions encoded in the genome of an organism. These
+models are subsequently constrained by known biological and physical parameterssuch as membrane transport and enzyme kinetics. GENREs can be utilized to interro-
+gate the metabolic capability of a given organism, as well as providing a means to sim-
+ulate growth and assess the impact of genotype on metabolism. GENREs have been
+implemented in directing genetic engineering efforts (13) and accurately predicting
+auxotrophies and interactions between species for growth substrates (14, 15). These
+platforms also create improved context for the interpretation of omics data (16), and
+have provided powerful utility for identi ﬁcation of novel drug and gene targets, accel-
+erating downstream laboratory testing (17). This concept is especially critical when
+
+ingly to compete within new hosts. In spite of these differences, there are known core
+elements of C. dif ﬁcilemetabolism across different environments including carbohy-
+drate and amino acid fermentation (9). It is known that speci ﬁc growth nutrients in ﬂu-
+ence expression of virulence genes in C. dif ﬁcile(9, 10). Given these ﬁndings, targeted
+therapeutic strategies that alter active metabolism and downregulate virulence may
+be possible without continued exposure to antibiotics. This form of treatment would
+be especially bene ﬁcial as there have been stark increases in the prevalence of antibi-
+otic resistance and hypervirulence among C. dif ﬁcileclinical isolates (11, 12).
+Genome-scale metabolic network reconstructions (GENREs) are mathematical for-
+malizations of metabolic reactions encoded in the genome of an organism. These
+
+After completion, we repeated the assessments that were performed for the earlierreconstructions and found that our GENREs had substantial improvements in all met-
+rics including few, if any, ﬂux or mass inconsistencies, and now each received a cumu-
+lative MEMOTE score of 86% (Table S1). The new network reconstructions were desig-nated iCdG709 (str. 630) and iCdR703 (str. R20291).
+C. dif ﬁcileGENRE validation against laboratory measurements. As t a n d a r dm e a -
+surement of GENRE performance is the comparison of predicted essential genes for growthin silico a n dt h o s ef o u n dt ob ee s s e n t i a le x p e r i m e n t a l l yt h r o u g hf o r w a r dg e n e t i cs c r e e n s
+( 6 5 ) .F o rag e n et ob ec o n s i d e r e de s s e n t i a l ,l e s st h a n1 %o fo p t i m a lb i o m a s sc a nb ep r o -
+#--------------------------------------------------------#
+Question:
+What computational tools and methodologies are commonly used to construct GENREs from bacterial genome sequences?  
+Web Search Answer:
+Constructing genome-scale metabolic network reconstructions (GENREs) from bacterial genome sequences involves several computational tools and methodologies designed to automate and refine the reconstruction process. Key tools and approaches include:
+
+**1. Automated Reconstruction Tools:**
+
+- **AutoKEGGRec:** Developed in MATLAB, AutoKEGGRec generates draft metabolic network reconstructions using data from the Kyoto Encyclopedia of Genes and Genomes (KEGG). It integrates seamlessly with the COBRA Toolbox v3, facilitating the creation of both single-organism and community metabolic models. ([bmcbioinformatics.biomedcentral.com](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2472-z?utm_source=openai))
+
+- **gapseq:** This tool predicts bacterial metabolic pathways and reconstructs accurate metabolic models by integrating genomic data with pathway information. It emphasizes informed predictions to enhance model accuracy. ([genomebiology.biomedcentral.com](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-021-02295-1?utm_source=openai))
+
+**2. Constraint-Based Modeling Frameworks:**
+
+- **COBRA Toolbox:** Implemented in MATLAB, the COBRA (Constraints-Based Reconstruction and Analysis) Toolbox provides a platform for constructing and analyzing metabolic models. It supports various analyses, including Flux Balance Analysis (FBA) and Flux Variability Analysis (FVA). ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC4079539/?utm_source=openai))
+
+- **PROSO Toolbox:** This unified framework constructs protein-constrained genome-scale models, facilitating strain design and optimization. It automates the integration of protein constraints into metabolic models, enhancing their predictive capabilities. ([arxiv.org](https://arxiv.org/abs/2308.14869?utm_source=openai))
+
+**3. Metabolic Pathway Databases and Integration Tools:**
+
+- **MetaNetX:** Maintained by the SIB Swiss Institute of Bioinformatics, MetaNetX provides a unified namespace for metabolites and biochemical reactions, aiding in the automated construction and annotation of large-scale metabolic networks. ([en.wikipedia.org](https://en.wikipedia.org/wiki/MetaNetX?utm_source=openai))
+
+- **Pathway Tools:** This software platform supports the creation and analysis of pathway/genome databases, facilitating the reconstruction of metabolic networks by integrating genomic data with biochemical pathways. ([enviromicro-journals.onlinelibrary.wiley.com](https://enviromicro-journals.onlinelibrary.wiley.com/doi/10.1111/1462-2920.12312?utm_source=openai))
+
+**4. Flux Balance Analysis (FBA):**
+
+FBA is a mathematical approach used to predict metabolic fluxes within a network under steady-state conditions. It involves optimizing an objective function, such as biomass production, subject to mass balance and capacity constraints. ([en.wikipedia.org](https://en.wikipedia.org/wiki/Flux_balance_analysis?utm_source=openai))
+
+**5. Integration of Omics Data:**
+
+Tools like the MetaboTools toolbox enable the integration of metabolomic data into genome-scale metabolic models, enhancing the models' accuracy and predictive power. ([arxiv.org](https://arxiv.org/abs/1606.02860?utm_source=openai))
+
+These tools and methodologies collectively facilitate the construction of GENREs by automating the integration of genomic data with metabolic information, enabling comprehensive analyses of bacterial metabolism. 
+Local RAG Result:
+analysis showed .89.0% accuracy. Next, we utilized each GENRE to identify metabolic drivers of both sporulation and biofilm formation. Through contextualization of each model using transcriptomes generated from in vitro and infection conditions, we discovered reliance on the pentose phosphate pathway as well as increased usage of cytidine and N-acetylneuraminate when virulence expres- sion is reduced, which was subsequently supported experimentally. Our results high- light the ability of GENREs to identify novel metabolite signals in higher-order pheno- types like bacterial pathogenesis.
+
+forms for deciphering novel metabolic drivers of virulence-associated phenotypes in C.
+difﬁcile.
+We began by generating new GENREs for two strains of C. dif ﬁcileincluding a highly
+characterized laboratory strain, C. dif ﬁcilestrain (str.) 630 (21), as well as a more recently
+isolated hypervirulent strain, R20291 (22). De novo reconstruction for both models was
+followed by extensive literature-driven manual curation of catabolic pathways and
+related metabolite transport, with speci ﬁc emphasis on Stickland fermentation for ATP
+generation and C. dif ﬁcile-speci ﬁc redox maintenance (23). Additionally, both GENREs
+contain a tailored biomass objective function (an in silico proxy for bacterial growth,
+requiring synthesis of major macromolecular components) which accounts for codon
+biases and amino acid balance and cell wall structure. Growth simulations from both
+GENREs were compared against in vitro gene essentiality and carbon utilization
+
+Collectively, these data strongly indicated that both GENREs were well suited for predic-
+tion of growth substrate utilization in either strain of C. dif ﬁcile.
+Finally, we also compared our results against existing C. dif ﬁcileGENREs. The pri-
+mary focus of curated C. dif ﬁcilemetabolic modeling efforts has been on the ﬁrst fully
+sequenced strain of C. dif ﬁcile, str. 630. The ﬁrst reconstruction effort (iMLTC806cdf
+[71]) and subsequent revision (icdf834 [71, 72]) were followed by a recent de novo crea-
+tion following updated genome curation (iCN900 [27, 73). Another GENRE was devel-
+oped for str. 630 Derm (iHD992 [74]), a strain derived from str. 630 by serial passage
+until erythromycin resistance was lost (75). Four additional C. dif ﬁcilestrain GENREs
+were generated as a part of an effort to generate numerous new reconstructions for
+#--------------------------------------------------------#
+Question:
+What procedures are involved in the manual curation of a metabolic network reconstruction?  
+Web Search Answer:
+Manual curation of a metabolic network reconstruction involves several detailed procedures to ensure accuracy and relevance. The main steps include:
+
+1. **Data Collection and Integration**: 
+   - Gather metabolic data from various sources, such as genome annotations, biochemical databases (like KEGG, MetaCyc), and scientific literature.
+   - Integrate data from different sources to create a comprehensive initial draft of the metabolic network.
+
+2. **Gene-Protein-Reaction (GPR) Associations**: 
+   - Identify and establish relationships between genes, the proteins they encode, and the metabolic reactions they catalyze.
+   - Use genomic annotations and experimental data to confirm these associations.
+
+3. **Metabolite Standardization**: 
+   - Ensure that all metabolites are consistently named and linked to established databases (such as ChEBI or PubChem) to avoid redundancy and confusion.
+
+4. **Reaction and Pathway Verification**: 
+   - Validate each metabolic reaction by consulting biochemical literature to confirm experimental evidence or strong bioinformatics predictions.
+   - Verify entire pathways for biological relevance based on the organism’s phenotype and physiological data.
+
+5. **Gap Filling**: 
+   - Identify missing reactions or pathways that are biologically necessary but absent in the draft network. 
+   - Propose potential additional reactions, supported by literature or comparative genomics, to complete these gaps.
+
+6. **Consistency and Quality Control**: 
+   - Check for mass and charge balance in all reactions to ensure stoichiometric consistency.
+   - Validate the network’s functionality by testing its ability to simulate known growth conditions or phenotypes.
+
+7. **Annotation Updates**: 
+   - Regularly update the reconstruction with new findings from recent literature or updated databases.
+
+8. **Documentation**: 
+   - Carefully document all decisions, sources, and modifications during the curation process for transparency and reproducibility.
+
+References:
+- Thiele, I., & Palsson, B. Ø. (2010). A protocol for generating a high-quality genome-scale metabolic reconstruction. *Nature Protocols*, 5(1), 93–121.
+- Heirendt, L., et al. (2019). Creation and analysis of biochemical constraint-based models: the COBRA Toolbox v3.0. *Nature Protocols*, 14(3), 639–702.
+Local RAG Result:
+.
+62. Medlock GL, Moutinho TJ, Papin JA. 2020. Medusa: software to build and
+analyze ensembles of genome-scale metabolic network reconstructions.
+PLoS Comput Biol 16:e1007847. https://doi.org/10.1371/journal.pcbi
+.1007847 .
+63. Satish Kumar V, Dasika MS, Maranas CD. 2007. Optimization based auto-
+mated curation of metabolic reconstructions. BMC Bioinformatics 8:212.
+https://doi.org/10.1186/1471-2105-8-212 .
+64. Atlas RM. 2010. Handbook of microbiological media, 4th ed. CRC Press,
+Boca Raton, FL.
+65. Blazier AS, Papin JA. 2019. Reconciling high-throughput gene essential-
+ity data with metabolic network reconstructions. PLoS Comput Biol 15:e1006507. https://doi.org/10.1371/journal.pcbi.1006507
+.
+66. O ’Brien EJ, Monk JM, Palsson BO. 2015. Using genome-scale models to
+predict biological capabilities. Cell 161:971 –987. https://doi.org/10.1016/
+j.cell.2015.05.019 .
+67. Dembek M, Barquist L, Boinett CJ, Cain AK, Mayho M, Lawley TD,
+
+.
+77. Gevorgyan A, Poolman MG, Fell DA. 2008. Detection of stoichiometric
+inconsistencies in biomolecular models. Bioinformatics 24:2245 –2251.
+https://doi.org/10.1093/bioinformatics/btn425 .
+78. Schellenberger J, Lewis NE, Palsson BØ. 2011. Elimination of thermody-
+namically infeasible loops in steady-state metabolic models. Biophys J
+100:544 –553. https://doi.org/10.1016/j.bpj.2010.12.3707 .
+79. Ravikrishnan A, Raman K. 2015. Critical assessment of genome-scale
+metabolic networks: the need for a uni ﬁed standard. Brief Bioinform 16:
+1057 –1068. https://doi.org/10.1093/bib/bbv003 .Jenior et al.
+September/October 2021 Volume 6 Issue 5 e00919-21 msystems.asm.org 18
+Downloaded from https://journals.asm.org/journal/msystems on 17 May 2025 by 104.52.7.96.
+
+Manual curation is required to ultimately produce high-quality GENREs and make
+meaningful biological predictions (33). As such, we proceeded to manually incorporate259 new reactions (with associated genes and metabolites) and altered the conditionsof an additional 312 reactions already present within each GENRE prior to gap- ﬁlling
+(Table S1). Primary targets and considerations for the manual curation of the C. dif ﬁcile
+GENREs included the following:
+/C15Anaerobic glycolysis, fragmented tricarboxylic acid (TCA) cycle, and known
+molecular oxygen detoxi ﬁcation (23, 34)
+/C15Minimal medium components and known auxotrophies (35 –37)
+/C15Aminoglycan and dipeptide catabolism (38 –40)
+/C15Numerous Stickland fermentation oxidative and reductive pathways (Table S2)
+(41–52)Metabolic Determinants of C. dif ﬁcileVirulence
+September/October 2021 Volume 6 Issue 5 e00919-21 msystems.asm.org 3
+Downloaded from https://journals.asm.org/journal/msystems on 17 May 2025 by 104.52.7.96.
+#--------------------------------------------------------#
+Question:
+How are growth simulations performed using GENREs, and what software or algorithms are typically employed?  
+Web Search Answer:
+Growth simulations using Genome-Scale Metabolic Reconstructions (GENREs) typically involve a few key steps, utilizing specific software and algorithms designed for constraint-based modeling. Here’s a general process:
+
+1. **Genome-Scale Metabolic Reconstruction (GENRE)**:
+   - **Data Collection**: Begin by curating genomic, biochemical, and physiological data to reconstruct the organism's metabolic network.
+   - **Model Construction**: This involves creating a stoichiometric matrix that represents the reactions in the metabolic network.
+
+2. **Simulation Frameworks**:
+   - **Flux Balance Analysis (FBA)**: This is the primary algorithm used to predict the flow of metabolites through a metabolic network under steady-state conditions. FBA aims to optimize an objective function, such as maximizing biomass production, subject to constraints.
+   - **Dynamic FBA (dFBA)**: An extension of FBA for simulating dynamic processes, allowing for the modeling of changes over time.
+   - **Gene Knockout Simulations**: These involve systematically removing genes from the model to understand their effects on growth and metabolism.
+
+3. **Key Software Tools**:
+   - **COBRA Toolbox**: Widely used for FBA and related analyses. It integrates with MATLAB and offers various methods for metabolic modeling and simulation.
+   - **OptFlux**: An open-source software platform for FBA and evolutionary algorithms.
+   - **CellNetAnalyzer**: Used for structural and functional analysis of metabolic networks.
+   - **CobraPy**: A Python implementation of the COBRA Toolbox, allowing for similar analyses in a Python environment.
+
+4. **Optimization Algorithms**:
+   - **Linear Programming**: Core to FBA, employing solvers like CPLEX, Gurobi, or GLPK to efficiently find solutions to optimization problems.
+
+5. **Validation and Analysis**:
+   - **Experimental Data Integration**: Simulation results are validated with experimental data such as growth rates and metabolite profiles.
+   - **Scenario Analysis**: Exploring different environmental and genetic conditions to predict metabolic responses.
+
+These tools and methods together provide a robust framework for simulating and analyzing metabolic networks in silico, which can be applied to various research areas including metabolic engineering, drug discovery, and synthetic biology.
+
+### References
+- [Orth, J. D., Thiele, I., & Palsson, B. Ø. (2010). What is flux balance analysis? *Nature Biotechnology*, 28(3), 245-248.](https://www.nature.com/articles/nbt.1614)
+- [COBRA Toolbox Website](https://opencobra.github.io/)
+- [OptFlux Software](http://www.optflux.org/)
+- [Lieven C et al. (2020) Memote: A community-driven effort towards a standardized genome-scale metabolic model test suite. *Nature Biotechnology*, 38(3), 272-276.](https://www.nature.com/articles/s41587-019-0398-9)
+Local RAG Result:
+Genome-scale metabolic network reconstructions (GENREs) are mathematical for-
+malizations of metabolic reactions encoded in the genome of an organism. These
+models are subsequently constrained by known biological and physical parameterssuch as membrane transport and enzyme kinetics. GENREs can be utilized to interro-
+gate the metabolic capability of a given organism, as well as providing a means to sim-
+ulate growth and assess the impact of genotype on metabolism. GENREs have been
+implemented in directing genetic engineering efforts (13) and accurately predicting
+auxotrophies and interactions between species for growth substrates (14, 15). These
+platforms also create improved context for the interpretation of omics data (16), and
+have provided powerful utility for identi ﬁcation of novel drug and gene targets, accel-
+erating downstream laboratory testing (17). This concept is especially critical when
+
+that each GENRE possesses the necessary machinery for catabolizing a given metabolite.
+FIG 1 Carbon source utilization prediction pro ﬁles accurately re ﬂect laboratory measurements.
+Results from previous phenotypic screen of 115 metabolites for both str. 630 and str. R20291 werecompared against in silico results for each corresponding GENRE. Ratios of overall in vitro growth
+enhancement by each metabolite were correlated with the corresponding results from growth
+simulations in the same media for iCdG709 (str. 630) (A) and iCdR703 (str. R20291) (B). Points arecolored by their biochemical grouping, ﬁt, and signi ﬁcance determined by Spearman correlation.Metabolic Determinants of C. dif ﬁcileVirulence
+September/October 2021 Volume 6 Issue 5 e00919-21 msystems.asm.org 5
+Downloaded from https://journals.asm.org/journal/msystems on 17 May 2025 by 104.52.7.96.
+
+for both models, which revealed overall accuracies of 89.1% and 88.9%, with negative pre-
+dictive values as high as 90.0% for iCdR703 and 89.9% for iCdG709 (Fig. S1A). This high
+degree of agreement supported that metabolic pathways in the new GENREs were struc-tured correctly and are more likely to provide useful downstream predictions.
+To then assess if GENRE requirements re ﬂected the components of minimal medium
+derived experimentally, we identi ﬁed the minimum subset of metabolites necessary forJenior et al.
+September/October 2021 Volume 6 Issue 5 e00919-21 msystems.asm.org 4
+Downloaded from https://journals.asm.org/journal/msystems on 17 May 2025 by 104.52.7.96.
+#--------------------------------------------------------#
+Question:
+How is single-gene deletion analysis conducted in the context of GENRE validation, and what metrics indicate model accuracy?  
+Web Search Answer:
+Single-gene deletion analysis in the context of Genome-scale Network Reconstruction (GENRE) validation involves systematically deleting individual genes in a metabolic model to observe the effects on cellular functions, typically growth. The process compares the model predictions to experimental data to validate the accuracy of the metabolic network and its predictions.
+
+### Procedure:
+
+1. **Model Construction:** Develop a genome-scale metabolic network model based on genomic data. This model includes all known metabolic pathways and reactions.
+
+2. **In Silico Gene Deletion:** Simulate the deletion of each gene in the model one by one. This is done by constraining or removing the corresponding reaction(s) from the network associated with that gene.
+
+3. **Growth Simulation:** For each deleted gene, simulate the growth of the organism under predefined conditions using Flux Balance Analysis (FBA) or similar computational methods.
+
+4. **Comparison with Experimental Data:** Compare the predicted phenotype (e.g., growth or no-growth) of the model with experimental gene essentiality data. Experimental data often come from knockout studies where the specific gene is deleted, and the organism's growth is observed.
+
+### Metrics for Model Accuracy:
+
+1. **Sensitivity:** Measures the proportion of true positives correctly predicted by the model (i.e., essential genes correctly predicted as essential).
+
+2. **Specificity:** Measures the proportion of true negatives correctly predicted by the model (i.e., non-essential genes correctly predicted as non-essential).
+
+3. **Precision (Positive Predictive Value):** The proportion of predicted essential genes that are truly essential.
+
+4. **Recall (Sensitivity):** The proportion of true essential genes that are correctly predicted.
+
+5. **Accuracy:** Overall proportion of correct predictions, summing true positives and true negatives over all predictions.
+
+6. **F1 Score:** The harmonic mean of precision and recall, providing a single metric that balances both concerns.
+
+7. **ROC Curve and AUC:** The Receiver Operating Characteristic curve, and the Area Under the Curve (AUC) are sometimes used to assess the trade-offs between sensitivity and specificity for different thresholds.
+
+Using these metrics, researchers can evaluate how well their GENRE model predicts biological reality and adjust the model to improve its predictive power.
+
+### References:
+
+- Thiele, I., & Palsson, B. O. (2010). A protocol for generating a high-quality genome-scale metabolic reconstruction. *Nature Protocols*, 5(1), 93–121.
+- Monk, J., & Palsson, B. O. (2014). Genetics. Predicting microbial growth. *Science*, 344(6191), 1448-1449.
+Local RAG Result:
+for both models, which revealed overall accuracies of 89.1% and 88.9%, with negative pre-
+dictive values as high as 90.0% for iCdR703 and 89.9% for iCdG709 (Fig. S1A). This high
+degree of agreement supported that metabolic pathways in the new GENREs were struc-tured correctly and are more likely to provide useful downstream predictions.
+To then assess if GENRE requirements re ﬂected the components of minimal medium
+derived experimentally, we identi ﬁed the minimum subset of metabolites necessary forJenior et al.
+September/October 2021 Volume 6 Issue 5 e00919-21 msystems.asm.org 4
+Downloaded from https://journals.asm.org/journal/msystems on 17 May 2025 by 104.52.7.96.
+
+analysis showed .89.0% accuracy. Next, we utilized each GENRE to identify metabolic drivers of both sporulation and biofilm formation. Through contextualization of each model using transcriptomes generated from in vitro and infection conditions, we discovered reliance on the pentose phosphate pathway as well as increased usage of cytidine and N-acetylneuraminate when virulence expres- sion is reduced, which was subsequently supported experimentally. Our results high- light the ability of GENREs to identify novel metabolite signals in higher-order pheno- types like bacterial pathogenesis.
+
+lations with measured carbon source usage (positive predictive value [PPV] $92.7%),
+and single-gene deletion analysis showed .89.0% accuracy. Next, we utilized each
+GENRE to identify metabolic drivers of both sporulation and bio ﬁlm formation.
+Through contextualization of each model using transcriptomes generated from in vitro
+and infection conditions, we discovered reliance on the pentose phosphate pathway
+as well as increased usage of cytidine and N-acetylneuraminate when virulence expres-
+sion is reduced, which was subsequently supported experimentally. Our results high-light the ability of GENREs to identify novel metabolite signals in higher-order pheno-types like bacterial pathogenesis.
+IMPORTANCE Clostridioides dif ﬁcilehas become the leading single cause of hospital-
+acquired infections. Numerous studies have demonstrated the importance of speci ﬁc
+metabolic pathways in aspects of C. dif ﬁcilepathophysiology, from initial colonization
+#--------------------------------------------------------#
+Question:
+What approaches exist for integrating transcriptomic data into GENREs to produce context-specific metabolic models?  
+Web Search Answer:
+Integrating transcriptomic data into genome-scale metabolic reconstructions (GENREs) to develop context-specific metabolic models is a critical approach in systems biology. Several methodologies have been developed to achieve this integration:
+
+1. **GIMME (Gene Inactivity Moderated by Metabolism and Expression):** This method utilizes gene expression data to identify active reactions within a metabolic network. It assigns scores to reactions based on the expression levels of associated genes and constrains reactions with low scores, ensuring the model aligns with observed gene activity. ([bmcsystbiol.biomedcentral.com](https://bmcsystbiol.biomedcentral.com/articles/10.1186/1752-0509-5-147?utm_source=openai))
+
+2. **iMAT (Integrative Metabolic Analysis Tool):** iMAT discretizes gene expression data into categories (low, moderate, high) and formulates an optimization problem to maximize the consistency between gene expression levels and metabolic fluxes, thereby identifying context-specific active reactions. ([pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/25379144/?utm_source=openai))
+
+3. **E-Flux:** This approach maps continuous gene expression levels directly onto flux bounds in the metabolic model. Higher gene expression levels correspond to higher allowable fluxes, enabling a nuanced integration of transcriptomic data into flux balance analysis. ([pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/25379144/?utm_source=openai))
+
+4. **tINIT (Task-driven Integrative Network Inference for Tissues):** tINIT integrates gene expression data to generate tissue-specific metabolic models by identifying active reactions that fulfill predefined metabolic tasks, ensuring the resulting model is both context-specific and functionally relevant. ([pnas.org](https://www.pnas.org/doi/10.1073/pnas.2217868120?utm_source=openai))
+
+5. **mCADRE (Metabolic Context-specificity Assessed by Deterministic Reaction Evaluation):** mCADRE constructs tissue-specific metabolic models by evaluating gene expression data to determine the likelihood of reaction activity, systematically pruning the generic metabolic network to reflect tissue-specific metabolism. ([bmcsystbiol.biomedcentral.com](https://bmcsystbiol.biomedcentral.com/articles/10.1186/1752-0509-6-153?utm_source=openai))
+
+6. **FASTCORMICS (Fast Reconstruction of Compact Context-Specific Metabolic Networks):** An extension of the FASTCORE algorithm, FASTCORMICS integrates microarray data to rapidly reconstruct context-specific metabolic networks, facilitating high-throughput analyses. ([arxiv.org](https://arxiv.org/abs/1407.6534?utm_source=openai))
+
+7. **ICON-GEMs (Integration of Co-expression Network in Genome-Scale Metabolic Models):** This method incorporates gene co-expression networks into metabolic models, using quadratic programming to optimize the integration, thereby enhancing the biological relevance of the reconstructed models. ([link.springer.com](https://link.springer.com/article/10.1186/s12859-023-05599-0?utm_source=openai))
+
+8. **GEMsplice:** GEMsplice integrates splice-isoform expression data into genome-scale metabolic models, allowing for the characterization of metabolism at the isoform level, which is particularly relevant in contexts like cancer metabolism. ([arxiv.org](https://arxiv.org/abs/1809.08289?utm_source=openai))
+
+These methodologies enable the development of context-specific metabolic models by effectively integrating transcriptomic data, thereby enhancing the predictive power and biological relevance of genome-scale metabolic reconstructions. 
+Local RAG Result:
+and annotation inconsistencies, contain key functional capacities, and phenotypically
+mimic C. dif ﬁcile.
+Context-speci ﬁc modeling to capture virulence-associated metabolism. Following
+validation, we sought to utilize each GENRE to predict in situ metabolic phenotypes
+that correspond with expression of known virulence traits in C. dif
+ﬁcile. As previously
+stated, GENREs have provided powerful platforms for the integration of transcriptomic
+data, creating greater context for the shifts observed between conditions and captur-ing the potential in ﬂuence of pathways not obviously connected (80). With this appli-
+cation in mind, we chose to generate context-speci ﬁc models for both in vitro and in
+vivo experimental conditions characterized with transcriptome sequencing (RNA-Seq)
+analysis utilizing a recently published unsupervised transcriptomic data integrationmethod (18). Brie ﬂy, the algorithm calculates the most cost-ef ﬁcient usage of the meta-
+
+work reconstructions, we elected to focus on those gene sets where the greatest
+amount of evidence and annotation data could be found to maximize con ﬁdence in
+functionality. Consequently, both GENREs consistently underpredict the impact of
+some metabolite groups, primarily nucleotides and carboxylic acids, which could be
+due to the absence of annotation or overall knowledge of the relevant cellular machin-
+ery. Furthermore, more complex regulatory networks ultimately determine ﬁnal
+expression of virulence factors, and these may be needed additions in the future to
+truly understand the interplay of metabolism and pathogenicity in C. dif ﬁcile. Despite
+these potential shortcomings, both iCdG709 and iCdR703 produced highly accurate
+metabolic predictions for their respective strains as well as novel predictions for me-
+tabolism as it relates to C. dif ﬁcilevirulence expression, making both strong candidate
+platforms for directing future studies of C. dif ﬁcile
+metabolic pathways.
+
+for both models, which revealed overall accuracies of 89.1% and 88.9%, with negative pre-
+dictive values as high as 90.0% for iCdR703 and 89.9% for iCdG709 (Fig. S1A). This high
+degree of agreement supported that metabolic pathways in the new GENREs were struc-tured correctly and are more likely to provide useful downstream predictions.
+To then assess if GENRE requirements re ﬂected the components of minimal medium
+derived experimentally, we identi ﬁed the minimum subset of metabolites necessary forJenior et al.
+September/October 2021 Volume 6 Issue 5 e00919-21 msystems.asm.org 4
+Downloaded from https://journals.asm.org/journal/msystems on 17 May 2025 by 104.52.7.96.
+#--------------------------------------------------------#
+Question:
+How does the pentose phosphate pathway function in bacterial metabolism, and why might it become critical when virulence is reduced?  
+Web Search Answer:
+The pentose phosphate pathway (PPP) is a crucial metabolic route in bacteria, serving several essential functions:
+
+1. **NADPH Production**: The PPP generates NADPH, a vital reducing agent required for biosynthetic processes such as fatty acid and amino acid synthesis, and for maintaining redox balance within the cell. ([journals.asm.org](https://journals.asm.org/doi/full/10.1128/microbiolspec.mbp-0004-2014?utm_source=openai))
+
+2. **Biosynthesis of Nucleotides and Amino Acids**: It provides ribose-5-phosphate for nucleotide synthesis and erythrose-4-phosphate for the biosynthesis of aromatic amino acids. ([journals.asm.org](https://journals.asm.org/doi/full/10.1128/microbiolspec.mbp-0004-2014?utm_source=openai))
+
+3. **Management of Oxidative Stress**: By producing NADPH, the PPP aids in regenerating glutathione, a key antioxidant that protects cells from oxidative damage. ([numberanalytics.com](https://www.numberanalytics.com/blog/pentose-phosphate-pathway-microbial-insights?utm_source=openai))
+
+In pathogenic bacteria, the PPP is intricately linked to virulence:
+
+- **Virulence Factor Production**: In *Staphylococcus aureus*, the PPP is involved in the synthesis of virulence factors. ([numberanalytics.com](https://www.numberanalytics.com/blog/pentose-phosphate-pathway-microbial-insights?utm_source=openai))
+
+- **Adaptation to Host Environments**: The PPP enables bacteria to adapt to various host niches by modulating metabolism in response to nutrient availability and stress conditions. ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC4470864/?utm_source=openai))
+
+When virulence is reduced, bacteria may rely more heavily on the PPP for survival:
+
+- **Enhanced Resistance to Antibiotics**: In *Staphylococcus aureus*, a mutation in the PPP enzyme 6-phosphogluconolactonase (pgl) leads to increased resistance to β-lactam antibiotics. This mutation causes metabolic reprogramming, increasing flux through glycolysis and the tricarboxylic acid cycle, and enhancing the production of cell envelope precursors, resulting in a thicker cell wall and reduced antibiotic susceptibility. ([pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/36945400/?utm_source=openai))
+
+- **Compensatory Mechanisms**: In *Francisella novicida*, inactivation of PPP genes like tktA, rpiA, or rpe impairs intracellular multiplication. However, some mutants can resume growth later, indicating that the PPP serves as a metabolic hub connecting glycolysis, the tricarboxylic acid cycle, and other pathways, facilitating adaptation and survival when virulence is compromised. ([pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/34339477/?utm_source=openai))
+
+In summary, the PPP is integral to bacterial metabolism, providing essential precursors and reducing power. Its role becomes particularly critical when virulence is diminished, as it supports metabolic reprogramming and adaptation mechanisms that enhance bacterial survival under stress conditions. 
+Local RAG Result:
+analysis showed .89.0% accuracy. Next, we utilized each GENRE to identify metabolic drivers of both sporulation and biofilm formation. Through contextualization of each model using transcriptomes generated from in vitro and infection conditions, we discovered reliance on the pentose phosphate pathway as well as increased usage of cytidine and N-acetylneuraminate when virulence expres- sion is reduced, which was subsequently supported experimentally. Our results high- light the ability of GENREs to identify novel metabolite signals in higher-order pheno- types like bacterial pathogenesis.
+
+lations with measured carbon source usage (positive predictive value [PPV] $92.7%),
+and single-gene deletion analysis showed .89.0% accuracy. Next, we utilized each
+GENRE to identify metabolic drivers of both sporulation and bio ﬁlm formation.
+Through contextualization of each model using transcriptomes generated from in vitro
+and infection conditions, we discovered reliance on the pentose phosphate pathway
+as well as increased usage of cytidine and N-acetylneuraminate when virulence expres-
+sion is reduced, which was subsequently supported experimentally. Our results high-light the ability of GENREs to identify novel metabolite signals in higher-order pheno-types like bacterial pathogenesis.
+IMPORTANCE Clostridioides dif ﬁcilehas become the leading single cause of hospital-
+acquired infections. Numerous studies have demonstrated the importance of speci ﬁc
+metabolic pathways in aspects of C. dif ﬁcilepathophysiology, from initial colonization
+
+agreement with both gene essentiality and carbon utilization screens, indicating ahigh degree of con ﬁdence in subsequent predictions for active metabolism.
+We next employed a recently published technique for transcriptome contextualiza-
+tion with data sets from in vitro and in vivo systems to evaluate potential emergent
+metabolic drivers of virulence. These combined analyses revealed differential reliance
+on glycolysis-related metabolism during periods of increased virulence expression.Speci ﬁcally, in states of elevated bio ﬁlm formation by C. dif ﬁcilestr. R20291 we found
+that glucose is necessary for nucleotide synthesis and redox balance through the pentose
+phosphate pathway, despite still being utilized for ATP under conditions associated with
+reduced bio ﬁlm. These ﬁndings were subsequently supported by direct testing in vitro and
+FIG 5 N-Acetylneuraminic acid and cytidine drive changes in str. 630 growth and sporulation. (A)
+#--------------------------------------------------------#
+Question:
+What roles do cytidine and N-acetylneuraminate play in bacterial metabolism, and how are they utilized by Clostridioides difficile?  
+Web Search Answer:
+Cytidine and N-acetylneuraminate (Neu5Ac) are integral to bacterial metabolism, serving as carbon sources and influencing various physiological processes.
+
+**Cytidine in Bacterial Metabolism:**
+
+Cytidine, a nucleoside comprising cytosine and ribose, is essential for RNA synthesis and phospholipid biosynthesis. In *Clostridioides difficile*, cytidine can be utilized as a carbon source, promoting bacterial growth. Notably, the presence of cytidine has been observed to decrease sporulation rates in *C. difficile*, suggesting a role in modulating the bacterial life cycle. ([journals.asm.org](https://journals.asm.org/doi/full/10.1128/msystems.00919-21?utm_source=openai))
+
+**N-Acetylneuraminate in Bacterial Metabolism:**
+
+N-Acetylneuraminate, commonly known as sialic acid, is a nine-carbon sugar acid prevalent in host glycoconjugates. Many bacteria, including *C. difficile*, can catabolize Neu5Ac as a carbon and energy source. In *C. difficile*, Neu5Ac uptake and metabolism support growth and similarly reduce sporulation rates, indicating its influence on bacterial development. ([journals.asm.org](https://journals.asm.org/doi/full/10.1128/msystems.00919-21?utm_source=openai))
+
+**Utilization by *Clostridioides difficile*:**
+
+Both cytidine and Neu5Ac serve as carbon sources for *C. difficile*, enhancing vegetative growth. Their presence has been associated with decreased sporulation, a critical factor in the pathogen's transmission and persistence. This suggests that *C. difficile* may exploit these metabolites to adapt to host environments, balancing growth and sporulation to optimize survival and pathogenicity. ([journals.asm.org](https://journals.asm.org/doi/full/10.1128/msystems.00919-21?utm_source=openai))
+
+In summary, cytidine and N-acetylneuraminate are pivotal in bacterial metabolism, providing carbon sources that influence growth and developmental processes. In *Clostridioides difficile*, their utilization not only supports proliferation but also modulates sporulation, impacting the bacterium's lifecycle and pathogenic potential. 
+Local RAG Result:
+neuraminate (Neu5Ac) and the nucleotide precursor cytidine as primary sources of car-bon. In subsequent laboratory testing we were able to show that not only can C. dif ﬁ-
+cileuse the substrates for growth but also both lead to lower quantities of spores,
+which are essential for transmission of the pathogen (24, 25). This work is the ﬁrst time
+that contextualized GENREs of a pathogen have been utilized to identify new metabo-lite signals of virulence regulation. As such, the high-quality GENREs described herecan greatly augment the discovery of novel metabolism-directed therapeutics to treatCDI. Moreover, our results demonstrate that GENREs provide an advantage for delin-eating complex patterns in transcriptomic and metabolomic data sets into tractable ex-perimental targets.
+RESULTS
+C. dif ﬁcilemetabolic network generation, gap- ﬁlling, and curation. The emer-
+gence of hypervirulent strains of C. dif ﬁcilethat have unique metabolism and virulence
+
+glucose (10 mg/ml) controls, into which C. dif ﬁcilestr. 630 was inoculated and incu-
+bated for 18 h and optical density at 600 nm (OD600) was measured every 5 min
+(Fig. 5A). This assay revealed that C. dif ﬁcilestr. 630 could indeed use N-acetylneurami-
+nate and cytidine as carbon sources independently, as each condition allowed for sig-niﬁcantly more growth than background BDM alone ( Pvalues,0.05). Additionally,
+there was no discernible effect on growth when the two substrates were added simul-
+taneously. Utilization of the nucleotide precursor cytidine as a carbon source during
+infection has never been previously described in C. dif ﬁcile, which further supported
+the utility of our models as a platform for augmenting discovery.
+To then assess the effect of N-acetylneuraminate and cytidine on sporulation in C.
+difﬁcilestr. 630, we performed a growth and sporulation assay targeting these sub-
+strates using the same de ﬁned medium conditions described previously (Fig. 5B).
+
+growth (7), and cytidine is an integral component of RNA synthesis. However, neither had
+been previously associated with directly in ﬂuencing virulence factor expression in C. dif ﬁ-
+cile.F u r t h e r m o r e ,w h i l e N-acetylneuraminate signi ﬁcantly decreases during infection in
+the lower-sporulation context (7), cytidine also appears to decrease under these condi-
+tions, implying consumption by C. dif ﬁcile(Fig. S4D and E).
+Weﬁrst sought to measure if C. dif ﬁcilestr. 630 could utilize both N-acetylneurami-
+nate and cytidine as carbon sources and if together they exerted a combined effect on
+growth. Both N-acetylneuraminate and cytidine were supplemented (10 mg/ml each)
+in liquid BDM in parallel with liquid BDM with no additional substrate and BDM 1D-
+glucose (10 mg/ml) controls, into which C. dif ﬁcilestr. 630 was inoculated and incu-
+bated for 18 h and optical density at 600 nm (OD600) was measured every 5 min
+#--------------------------------------------------------#
+Question:
+Which metabolic pathways are known to regulate sporulation and biofilm formation in bacteria, and how might they operate in C. difficile?  
+Web Search Answer:
+In bacteria, metabolic pathways intricately regulate both sporulation and biofilm formation, with specific mechanisms varying among species. In *Clostridioides difficile*, these processes are modulated by several key metabolic and regulatory pathways:
+
+**1. Central Carbon Metabolism:**
+- **Glycolysis and the Pentose Phosphate Pathway (PPP):** During biofilm formation, *C. difficile* upregulates genes encoding glycolytic enzymes (e.g., *pgi*, *fba*, *gapA*, *pyk*) and the non-oxidative branch of the PPP (*rpiB₂*, *tkt*, *tkt'*, *tal*), indicating active carbohydrate metabolism. This suggests that biofilm cells prioritize energy production and biomass synthesis over storage. ([frontiersin.org](https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2018.02084/full?utm_source=openai))
+
+- **Pyruvate Metabolism:** Extracellular pyruvate induces biofilm formation in *C. difficile*. The bacterium imports pyruvate via the membrane protein CstA, leading to metabolic adaptations that promote biofilm development. ([pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/34155333/?utm_source=openai))
+
+**2. Regulatory Proteins and Sigma Factors:**
+- **Spo0A:** This master regulator influences both sporulation and biofilm formation. In *C. difficile*, disruption of *spo0A* results in reduced biofilm formation, highlighting its role in these processes. ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC8428550/?utm_source=openai))
+
+- **SigH:** The transition phase sigma factor SigH is essential for biofilm formation. Inactivation of *sigH* leads to decreased biofilm formation, suggesting its involvement in regulating genes necessary for this process. ([nature.com](https://www.nature.com/articles/s41396-021-01042-5?utm_source=openai))
+
+- **CodY and CcpA:** These global regulators link metabolism to biofilm formation. CodY, in cooperation with SinR and SinR', controls toxin production and sporulation, while CcpA regulates genes involved in glycolysis and fermentation pathways. ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC6384274/?utm_source=openai))
+
+**3. Cyclic di-GMP (c-di-GMP) Signaling:**
+- Elevated levels of c-di-GMP promote biofilm formation and inhibit early sporulation in *C. difficile*. This signaling molecule influences the expression of surface proteins and other factors critical for biofilm development. ([pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/34878288/?utm_source=openai))
+
+In summary, *C. difficile* coordinates sporulation and biofilm formation through complex metabolic and regulatory networks. Central carbon metabolism provides the necessary energy and precursors, while regulatory proteins and c-di-GMP signaling modulate gene expression to adapt to environmental conditions, ensuring survival and persistence. 
+Local RAG Result:
+analysis showed .89.0% accuracy. Next, we utilized each GENRE to identify metabolic drivers of both sporulation and biofilm formation. Through contextualization of each model using transcriptomes generated from in vitro and infection conditions, we discovered reliance on the pentose phosphate pathway as well as increased usage of cytidine and N-acetylneuraminate when virulence expres- sion is reduced, which was subsequently supported experimentally. Our results high- light the ability of GENREs to identify novel metabolite signals in higher-order pheno- types like bacterial pathogenesis.
+
+lations with measured carbon source usage (positive predictive value [PPV] $92.7%),
+and single-gene deletion analysis showed .89.0% accuracy. Next, we utilized each
+GENRE to identify metabolic drivers of both sporulation and bio ﬁlm formation.
+Through contextualization of each model using transcriptomes generated from in vitro
+and infection conditions, we discovered reliance on the pentose phosphate pathway
+as well as increased usage of cytidine and N-acetylneuraminate when virulence expres-
+sion is reduced, which was subsequently supported experimentally. Our results high-light the ability of GENREs to identify novel metabolite signals in higher-order pheno-types like bacterial pathogenesis.
+IMPORTANCE Clostridioides dif ﬁcilehas become the leading single cause of hospital-
+acquired infections. Numerous studies have demonstrated the importance of speci ﬁc
+metabolic pathways in aspects of C. dif ﬁcilepathophysiology, from initial colonization
+
+IMPORTANCE Clostridioides difficile has become the leading single cause of hospital- acquired infections. Numerous studies have demonstrated the importance of specific metabolic pathways in aspects of C. difficile pathophysiology, from initial colonization to regulation of virulence factors. In the past, genome-scale metabolic network reconstruction (GENRE) analysis of bacteria has enabled systematic investigation of the genetic and metabolic properties that contribute to downstream virulence phe- notypes. With this in mind, we generated and extensively curated C. difficile GENREs for both a well-studied laboratory strain (str. 630) and a more recently characterized hypervirulent isolate (str. R20291). In silico validation of both GENREs revealed high degrees of agreement with experimental gene essentiality and carbon source utiliza- tion data sets. Subsequent exploration of context-specific metabolism during both in vitro growth and infection revealed consistent patterns of
+#--------------------------------------------------------#
+Question:
+What challenges typically arise in annotating nucleotide and carboxylic acid metabolism in bacterial genome-scale models?  
+Web Search Answer:
+Annotating nucleotide and carboxylic acid metabolism in bacterial genome-scale models (GEMs) presents several challenges:
+
+1. **Incomplete or Inaccurate Genome Annotations**: Automated genome annotation tools may misidentify or overlook genes involved in nucleotide and carboxylic acid metabolism, leading to gaps in metabolic reconstructions. This issue is compounded by the reliance on homology-based methods, which may not detect novel or highly divergent genes. ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC10694557/?utm_source=openai))
+
+2. **Enzyme Promiscuity and Specificity**: Enzymes involved in these metabolic pathways often exhibit broad substrate specificity, complicating the accurate assignment of reactions. For instance, alcohol dehydrogenases can act on various alcohols, making it challenging to determine the exact metabolic reactions they catalyze. ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC2704943/?utm_source=openai))
+
+3. **Metabolic Network Gaps**: The presence of "holes" in metabolic pathways, where certain reactions are missing due to unidentified or misannotated enzymes, can disrupt the continuity of nucleotide and carboxylic acid metabolism in GEMs. These gaps necessitate manual curation and gap-filling strategies to ensure model completeness. ([en.wikipedia.org](https://en.wikipedia.org/wiki/Metabolic_network_modelling?utm_source=openai))
+
+4. **Transporter Annotation Deficiencies**: Accurate modeling of metabolism requires knowledge of metabolite transport across cellular compartments. However, transporter proteins are often poorly annotated, leading to uncertainties in metabolite availability and fluxes within the model. ([frontiersin.org](https://www.frontiersin.org/journals/systems-biology/articles/10.3389/fsysb.2024.1394084/full?utm_source=openai))
+
+5. **Dynamic and Context-Dependent Regulation**: Metabolic pathways are subject to complex regulatory mechanisms that can vary with environmental conditions. Capturing these dynamic regulatory networks in GEMs is challenging, as it requires integrating multi-omic data and understanding context-specific gene expression patterns. ([microbiomejournal.biomedcentral.com](https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-017-0299-x?utm_source=openai))
+
+6. **Standardization and Data Integration**: The lack of standardized formats and identifiers across different databases and annotation tools can hinder the integration of diverse datasets necessary for comprehensive metabolic modeling. This issue complicates the consolidation of information related to nucleotide and carboxylic acid metabolism. ([cell.com](https://www.cell.com/trends/endocrinology-metabolism/fulltext/S1043-2760%2824%2900062-6?utm_source=openai))
+
+Addressing these challenges requires a combination of improved annotation algorithms, manual curation, integration of multi-omic data, and the development of standardized frameworks for data representation and model construction. 
+Local RAG Result:
+work reconstructions, we elected to focus on those gene sets where the greatest
+amount of evidence and annotation data could be found to maximize con ﬁdence in
+functionality. Consequently, both GENREs consistently underpredict the impact of
+some metabolite groups, primarily nucleotides and carboxylic acids, which could be
+due to the absence of annotation or overall knowledge of the relevant cellular machin-
+ery. Furthermore, more complex regulatory networks ultimately determine ﬁnal
+expression of virulence factors, and these may be needed additions in the future to
+truly understand the interplay of metabolism and pathogenicity in C. dif ﬁcile. Despite
+these potential shortcomings, both iCdG709 and iCdR703 produced highly accurate
+metabolic predictions for their respective strains as well as novel predictions for me-
+tabolism as it relates to C. dif ﬁcilevirulence expression, making both strong candidate
+platforms for directing future studies of C. dif ﬁcile
+metabolic pathways.
+
+analyses extremely promising for directing and accelerating identi ﬁcation of possible
+therapeutic targets as well as a deeper understanding of the connections between C.
+difﬁcilevirulence and metabolism. Furthermore, as much of bacterial pathogenicity is
+now being attributed to shifts in metabolism, the analyses described here may provide
+large bene ﬁts to the identi ﬁcation of possible treatment targets in C. dif ﬁcileand other
+recalcitrant pathogens (88). In the current study, we develop and validate two highly
+curated genome-scale metabolic network reconstructions for a well-described labora-
+tory strain (str. 630) in addition to a more recently characterized hypervirulent strain
+(str. R20291) of C. dif ﬁcile. Validation results from both models indicated signi ﬁcant
+agreement with both gene essentiality and carbon utilization screens, indicating ahigh degree of con ﬁdence in subsequent predictions for active metabolism.
+
+pathogenesis. Environ Microbiol 20:1419 –1435. https://doi.org/10.1111/
+1462-2920.14048 .
+59. Senger RS, Papoutsakis ET. 2008. Genome-scale model for Clostridium
+acetobutylicum: Part I. Metabolic network resolution and analysis. Bio-technol Bioeng 101:1036 –1052. https://doi.org/10.1002/bit.22010
+.
+60. Lachance J-C, Lloyd CJ, Monk JM, Yang L, Sastry AV, Seif Y, Palsson BO,
+Rodrigue S, Feist AM, King ZA, Jacques P- /C19E. 2019. BOFdat: generating
+biomass objective functions for genome-scale metabolic models fromexperimental data. PLoS Comput Biol 15:e1006971. https://doi.org/10
+.1371/journal.pcbi.1006971
+.61. Biggs MB, Papin JA. 2017. Managing uncertainty in metabolic network
+structure and improving predictions using EnsembleFBA. PLoS ComputBiol 13:e1005413. https://doi.org/10.1371/journal.pcbi.1005413
+.
+62. Medlock GL, Moutinho TJ, Papin JA. 2020. Medusa: software to build and
+analyze ensembles of genome-scale metabolic network reconstructions.
+#--------------------------------------------------------#
+Question:
+What is the biochemical mechanism by which glycine acts as a co-germinant for Clostridioides difficile spores?  
+Web Search Answer:
+Clostridioides difficile spores require specific signals to initiate germination, a critical step for infection. Glycine acts as a co-germinant in this process, working alongside bile acids like taurocholate. The exact biochemical mechanism by which glycine facilitates spore germination in C. difficile is not fully elucidated. Unlike other spore-forming bacteria that possess well-characterized germinant receptors, C. difficile lacks orthologs of these receptors, suggesting a unique germination pathway. Current research indicates that glycine, in combination with bile acids, triggers germination, but the specific receptors and molecular interactions involved remain unidentified. ([pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/18245298/?utm_source=openai)) 
+Local RAG Result:
+31. Sorg JA, Sonenshein AL. 2008. Bile acids and glycine as cogerminants for
+Clostridium dif ﬁcilespores. J Bacteriol 190:2505 –2412. https://doi.org/10
+.1128/JB.01765-07 .
+32. Lawley TD, Clare S, Walker AW, Goulding D, Stabler RA, Croucher N,
+Mastroeni P, Scott P, Raisen C, Mottram L, Fairweather NF, Wren BW,Parkhill J, Dougan G. 2009. Antibiotic treatment of Clostridium dif ﬁcilecar-
+rier mice triggers a supershedder state, spore-mediated transmission,
+and severe disease in immunocompromised hosts. Infect Immun77:3661 –3669. https://doi.org/10.1128/IAI.00558-09 .
+33. Shrestha R, Sorg JA. 2018. Hierarchical recognition of amino acid co-ger-
+minants during Clostridioides dif ﬁcile spore germination. Anaerobe
+49:41 –47.https://doi.org/10.1016/j.anaerobe.2017.12.001 .
+34. Buf ﬁeC G ,B u c c iV ,S t e i nR R ,M c K e n n e yP T ,L i n gL ,G o b o u r n eA ,N oD ,L i uH ,
+
+https://doi.org/10.1128/JB.01492-12 .
+29. Neumann-Schaal M, Hofmann JD, Will SE, Schomburg D. 2015. Time-
+resolved amino acid uptake of Clostridium dif ﬁcile630Derm and concomi-
+tant fermentation product and toxin formation. BMC Microbiol 15:1 –12.
+https://doi.org/10.1186/s12866-015-0614-2 .
+30. Battaglioli EJ, Hale VL, Chen J, Jeraldo P, Ruiz-Mojica C, Schmidt BA, Rekdal VM,
+T i l lL M ,H u qL ,S m i t sS A ,M o o rW J ,J o n e s - H a l lY ,S m y r kT ,K h a n n aS ,P a r d iD S ,Grover M, Patel R, Chia N, Nelson H, Sonnenburg JL, Farrugia G, Kashyap PC.2018. Clostridioides dif ﬁ
+cileuses amino acids associated with gut microbial dys-
+biosis in a subset of patients with diarrhea. Sci Transl Med 10:eaam7019.
+https://doi.org/10.1126/scitranslmed.aam7019 .
+31. Sorg JA, Sonenshein AL. 2008. Bile acids and glycine as cogerminants for
+Clostridium dif ﬁcilespores. J Bacteriol 190:2505 –2412. https://doi.org/10
+.1128/JB.01765-07 .
+
+glycine following colonization by the ﬁrst strain of C. dif ﬁcile, is suf ﬁcient to decrease
+germination of the second strain, thereby limiting colonization by the lethal strain.
+IMPORTANCE Antibiotic-associated colitis is often caused by infection with the bacterium
+Clostridioides dif ﬁcile. In this study, we found that reduction of the amino acid glycine by
+precolonization with a less virulent strain of C. dif ﬁcileis suf ﬁcient to decrease germina-
+tion of a second strain. This ﬁnding demonstrates that the axis of competition for
+nutrients can include multiple life stages. This work is important, as it is the ﬁrst to iden-
+tify a possible mechanism through which precolonization with C. dif ﬁcile, a current clini-
+cal therapy, provides protection from reinfection. Furthermore, our work suggests that
+targeting nutrients utilized by all life stages could be an improved strategy for bacterial
+therapeutics that aim to restore colonization resistance in the gut.
+#--------------------------------------------------------#
+Question:
+What ex vivo assay methods are used to assess the impact of nutrient depletion on C. difficile spore germination?  
+Web Search Answer:
+Ex vivo assays to assess the impact of nutrient depletion on *Clostridioides difficile* spore germination include:
+
+1. **Single-Cell Impedance Cytometry**: This method quantifies spore germination by measuring the electrical properties of individual cells. Vegetative *C. difficile* cells exhibit higher net conductivity compared to spores, allowing for rapid assessment of germination rates. This technique has been applied to evaluate spore germination in fecal supernatants from antibiotic-treated mice, providing insights into how microbiota alterations influence germination. ([pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/32745926/?utm_source=openai))
+
+2. **Colony-Forming Unit (CFU) Assay**: This traditional method involves plating samples on selective media to count viable vegetative cells after a specified incubation period. It serves as a validation tool for other assays, confirming the presence of germinated spores. ([pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/37756389/?utm_source=openai))
+
+3. **Optical Density (OD) Measurement**: Monitoring the loss of optical density at 600 nm over time indicates spore germination, as germinated spores transition from phase-bright to phase-dark under phase-contrast microscopy. This approach assesses the kinetics of germination under various conditions. ([journals.asm.org](https://journals.asm.org/doi/10.1128/msphere.00335-18?utm_source=openai))
+
+4. **Phase-Contrast Microscopy**: This technique visually differentiates between dormant (phase-bright) and germinated (phase-dark) spores, providing qualitative and quantitative data on germination rates. It is particularly useful for observing the effects of different germinants and inhibitors on spore germination. ([pubs.acs.org](https://pubs.acs.org/doi/10.1021/ja506798e?utm_source=openai))
+
+These assays collectively offer comprehensive insights into how nutrient depletion and other environmental factors influence *C. difficile* spore germination ex vivo. 
+Local RAG Result:
+spores to germinate, we performed an ex vivo germination assay based on a previously described
+method (46) with the following modi ﬁcations. Rather than intact content, we used sterile cecal medium
+from mice that were off antibiotics for 3 days (D1 cecal medium) or infected with strain 630 for 24 h ( C.
+difﬁcileD1 cecal medium). We thawed 180-
+ml aliquots of the cecal medium and allowed them to equili-
+brate in the anaerobic chamber overnight. The next day, 10 ml of spores from strain VPI 10463 were ino-
+culated into the medium. Controls included sterile PBS (Gibco) plus 0.1% sodium taurocholate (Sigma;catalog no. T4009) and PBS with 0.1% sodium taurocholate and 100 mM glycine (Sigma; catalog no.50046). Following inoculation, samples were incubated anaerobically at RT for 15 min, after whichapproximately half the volume was immediately plated on BHI plus 0.1% sodium taurocholate plus0.01% cysteine agar plates, and the tubes were passed out of the chamber and placed in a water- ﬁlled
+
+taurocholate). Additionally, samples were plated on BHI plus 0.01% cysteine to check for any contamina-tion. After 24 h, the samples were removed from the chamber; cells were pelleted by centrifugation at2,000/C2g for 5 min. The supernatant was sterilized by passage through a 0.22-
+mm 96-well ﬁlter plate,
+and the sterile ﬂowthrough was passed back into the chamber to equilibrate overnight. The following
+day, the VPI 10463 inoculum was prepared as described earlier and inoculated into the spent cecal me-dium. CFU were monitored by plating samples at tof 0 and 6 h on CCFA and BHI plus 0.01% cysteine.
+Ex vivo germination assay. To determine if 24 h of strain 630 growth alters the ability of VPI 10463
+spores to germinate, we performed an ex vivo germination assay based on a previously described
+method (46) with the following modi ﬁcations. Rather than intact content, we used sterile cecal medium
+
+date, studies evaluating the role of the microbiota in altering germination of C. dif ﬁcile
+spores in vivo have primarily focused on bile acids, speci ﬁcally the primary bile acid
+taurocholate and the secondary bile acid deoxycholate (2, 34, 35). While bile acids playimportant roles in germination, vegetative growth, and toxin activity, this work demon-strates that microbial metabolism of other nutrients can also affect germination (42).Furthermore, these results suggest that targeting nutrients used by all life stages,including those that are metabolically inactive (such as a spore), could be an improvedstrategy when developing bacterial therapeutics that aim to restore colonization resist-ance in the gut.
+MATERIALS AND METHODS
+Animals and housing. Both male and female mice aged 5 to 12 weeks were used in these studies. The
+wild-type (WT) C57BL/6 speci ﬁc-pathogen-free (SPF) mice were from a breeding colony originally derived
+#--------------------------------------------------------#
+Question:
+How is quantitative PCR employed to differentiate and quantify Clostridioides difficile strains in competitive colonization studies?  
+Web Search Answer:
+Quantitative PCR (qPCR) is a pivotal tool in competitive colonization studies of *Clostridioides difficile* (C. difficile), enabling researchers to differentiate and quantify specific strains within complex microbial communities. By designing strain-specific primers targeting unique genetic sequences, qPCR facilitates the precise detection and enumeration of individual C. difficile strains.
+
+For instance, in a study investigating intraspecies competition between C. difficile strains VPI 10463 and 630, researchers developed primers specific to each strain. These primers targeted unique genomic regions, allowing for the selective amplification and quantification of each strain's DNA. This approach enabled the monitoring of strain dynamics during colonization and competition experiments. ([journals.asm.org](https://journals.asm.org/doi/full/10.1128/mbio.00522-21?utm_source=openai))
+
+Additionally, qPCR assays have been developed to detect and quantify both toxigenic and non-toxigenic C. difficile strains. By targeting genes such as tcdA and tcdB, which encode toxins A and B respectively, researchers can distinguish between toxigenic and non-toxigenic strains. This differentiation is crucial in understanding the pathogenic potential of colonizing strains. ([pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/25360662/?utm_source=openai))
+
+In continuous fermentation models simulating the human gut, qPCR has been employed to monitor C. difficile colonization. By using specific primers, researchers quantified C. difficile gene copies over time, providing insights into colonization dynamics and the impact of environmental factors on strain prevalence. ([gutpathogens.biomedcentral.com](https://gutpathogens.biomedcentral.com/articles/10.1186/s13099-016-0144-y?utm_source=openai))
+
+Furthermore, qPCR has been utilized to assess the inhibitory effects of probiotic organisms on C. difficile growth. By co-culturing C. difficile with probiotics and measuring toxin gene expression via qPCR, researchers evaluated the relative potency of probiotics in suppressing C. difficile proliferation. ([pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/22624106/?utm_source=openai))
+
+In summary, qPCR serves as a sensitive and specific method for differentiating and quantifying C. difficile strains in competitive colonization studies. Its ability to target strain-specific genetic markers allows for detailed analysis of strain interactions, colonization dynamics, and the efficacy of interventions aimed at modulating C. difficile populations. 
+Local RAG Result:
+Quantitative PCR. Primer3 (45) was used to design primers that differentiated strain VPI 10463 (IMG
+Genome ID 2512047057) from strain 630 (GenBank accession no. AM180355.1
+) using publicly available
+genomes. While the primers differentiated between the strains in pure culture, they also picked up other bacte-ria in the context of the microbiota and were only used in gnotobiotic experiments. C. dif ﬁcilestr. VPI 10463 pri-
+mers used were forward, 5 9-TTTCACATGAGCGGACAGGC-3 9,a n dr e v e r s e ,5 9-TCCGAAGGAGGTTTCCGGTT-3 9.
+The expected product size is 153 nucleotides, and the optimal annealing temperature was empiricallydetermined to be 56°C.
+For quantitative PCR, DNA from fecal samples was diluted in ultrapure water such that 20 ng of DNA
+was added to each reaction. Each sample was run in triplicate. Samples were loaded into a LightCycler480 multiwell plate (Roche; product no. 04729692001), with FastStart essential DNA green master mix(Roche; product no. 06402712001) and 0.5
+
+ABSTRCT: The pathogen Clostridioides difficile causes toxin-mediated diarrhea and is the leading cause of hospital-acquired infection in the United States. Due to growing antibiotic resistance and recurrent infection, targeting C. difficile metabolism presents a new approach to combat this infection. Genome-scale metabolic network recon- structions (GENREs) have been used to identify therapeutic targets and uncover prop- erties that determine cellular behaviors. Thus, we constructed C. difficile GENREs for a hypervirulent isolate (strain [str.] R20291) and a historic strain (str. 630), validating both with in vitro and in vivo data sets. Growth simulations revealed significant corre- lations with measured carbon source usage (positive predictive value [PPV] $ 92.7%), and single-gene deletion analysis showed .89.0% accuracy. Next, we utilized each GENRE to identify metabolic drivers of both sporulation and biofilm formation. Through contextualization of each model using transcriptomes
+
+ABSTRACT: Clostridioides difficile, a Gram-positive, spore-forming bacterium, is the primary cause of infectious nosocomial diarrhea. Antibiotics are a major risk factor for C. difficile infection (CDI), as they disrupt the gut microbial community, enabling increased germination of spores and growth of vegetative C. difficile. To date, the only single-species bacterial preparation that has demonstrated efficacy in reducing recurrent CDI in humans is nontoxigenic C. difficile. Using multiple infection models, we determined that precolonization with a less virulent strain is sufficient to protect from challenge with a lethal strain of C. difficile, surprisingly even in the absence of adaptive immunity. Additionally, we showed that protection is dependent on high levels of colonization by the less virulent strain and that it is mediated by exclusion of the invading strain. Our results suggest that reduction of amino acids, specifically glycine following colonization by the first strain
+#--------------------------------------------------------#
+Question:
+What ecological and mechanistic principles underlie competitive exclusion by one bacterial strain in the gut?  
+Web Search Answer:
+Competitive exclusion among bacterial strains in the gut microbiome is driven by several ecological and mechanistic principles:
+
+1. **Resource Competition**: Different bacterial strains compete for limited nutrients and space within the gut environment. If one strain is more efficient at utilizing available resources, it can outcompete and exclude other strains. This is often described by the Lotka-Volterra model of interspecific competition, adapted for microbial ecosystems (Hibbing et al., 2010).
+
+2. **Niche Differentiation**: Strains may occupy different ecological niches, utilizing distinct resources or inhabiting specific spatial structures within the gut. When niches overlap, the principle of competitive exclusion predicts that one strain will dominate unless they evolve distinct niches (Foster et al., 2017).
+
+3. **Production of Antimicrobial Compounds**: Certain bacterial strains produce bacteriocins or other antimicrobial substances that inhibit the growth of competing strains. This gives the producing strain a competitive advantage, facilitating exclusion of sensitive strains (Riley and Wertz, 2002).
+
+4. **Immune System Modulation**: Strains that can modulate the host immune response to their advantage may impede colonization by competitors. Some bacteria induce immune tolerance to themselves while provoking responses incompatible with competitor colonization (Round and Mazmanian, 2009).
+
+5. **Biofilm Formation**: Bacteria that are effective at forming biofilms can protect themselves from environmental stresses and antibiotics, thus outcompeting less structured populations. Biofilms also enable cooperative interactions among members of the same species, enhancing competitive abilities (Costerton et al., 1995).
+
+6. **Quorum Sensing**: This communication mechanism among bacteria allows them to coordinate behavior, such as virulence factor production, in response to population density. Effective quorum sensing can enhance competitive fitness (Ng and Bassler, 2009).
+
+**References:**
+
+- Hibbing, M. E., Fuqua, C., Parsek, M. R., & Peterson, S. B. (2010). Bacterial competition: surviving and thriving in the microbial jungle. *Nature Reviews Microbiology, 8*(1), 15-25.
+- Foster, K. R., Schluter, J., Coyte, K. Z., & Rakoff-Nahoum, S. (2017). The evolution of the host microbiome as an ecosystem on a leash. *Nature, 548*(7665), 43-51.
+- Riley, M. A., & Wertz, J. E. (2002). Bacteriocins: evolution, ecology, and application. *Annual Review of Microbiology, 56*(1), 117-137.
+- Round, J. L., & Mazmanian, S. K. (2009). The gut microbiota shapes intestinal immune responses during health and disease. *Nature Reviews Immunology, 9*(5), 313-323.
+- Costerton, J. W., Lewandowski, Z., Caldwell, D. E., Korber, D. R., & Lappin-Scott, H. M. (1995). Microbial biofilms. *Annual Review of Microbiology, 49*(1), 711-745.
+- Ng, W. L., & Bassler, B. L. (2009). Bacterial quorum-sensing network architectures. *Annual Review of Genetics, 43*, 197-222.
+Local RAG Result:
+40. Hardin G. 1960. The competitive exclusion principle. Science 131:1292 –1297.
+https://doi.org/10.1126/science.131.3409.1292 .
+41. Connell JH. 1990. Apparent versus “real”competition in plants, p 9 –26.In
+Grace JB, Tilman D (ed), Perspectives on plant competition. Academic
+Press, San Diego, CA.
+42. Thanissery R, Winston JA, Theriot CM. 2017. Inhibition of spore germina-
+tion, growth, and toxin activity of clinically relevant C. dif ﬁcilestrains by
+gut microbiota derived secondary bile acids. Anaerobe 45:86 –100.
+https://doi.org/10.1016/j.anaerobe.2017.03.004 .
+43. Warren CA, van Opstal E, Ballard TE, Kennedy A, Wang X, Riggins M,
+Olekhnovich I, Warthan M, Kolling GL, Guerrant RL, Macdonald TL,
+Hoffman PS. 2012. Amixicile, a novel inhibitor of pyruvate:ferredoxin oxi-
+doreductase, shows ef ﬁcacy against Clostridium dif ﬁcilein a mouse infec-
+tion model. Antimicrob Agents Chemother 56:4103 –4111. https://doi
+.org/10.1128/AAC.00360-12 .
+
+630 in our coinoculation model suggests that the strains are able to segregate niches;
+however, more work will be needed to fully elucidate which nutrients are preferred by
+each strain. Additionally, experiments focused on development of microbial therapies
+to restore colonization resistance against
+C. dif ﬁcileshould seek to understand the met-
+abolic pathways that enable certain strains to outcompete established C. dif ﬁcileversus
+inhibit colonization of invading strains as has been done with Escherichia coli in the
+streptomycin mouse model (38, 39).Leslie et al.®
+March/April 2021 Volume 12 Issue 2 e00522-21 mbio.asm.org 10
+Downloaded from https://journals.asm.org/journal/mbio on 17 May 2025 by 104.52.7.96.
+
+The major ﬁnding from this study is that reduction of amino acids, speci ﬁcally gly-
+cine, following colonization with one strain of C. dif ﬁcileis suf ﬁcient to decrease germi-
+nation of the second strain. This suggests that the axis of intraspeci ﬁc competition for
+nutrients includes multiple life stages of C. dif ﬁcile. Although this type of indirect com-
+petition across multiple life stages has been well recognized in macroecology, to ourknowledge, it has not yet been applied to the study of C. dif ﬁcileinfection (40, 41). To
+date, studies evaluating the role of the microbiota in altering germination of C. dif ﬁcile
+spores in vivo have primarily focused on bile acids, speci ﬁcally the primary bile acid
+#--------------------------------------------------------#
+Question:
+What is the Stickland fermentation pathway in Clostridioides difficile, and which amino acid pairs does it involve?  
+Web Search Answer:
+The Stickland fermentation pathway in *Clostridioides difficile* involves the coupled oxidation and reduction of amino acids to generate ATP and maintain redox balance. In this process, one amino acid acts as an electron donor and is oxidized, while another serves as an electron acceptor and is reduced.
+
+**Key amino acid pairs involved in Stickland fermentation in *C. difficile* include:**
+
+- **Electron Donors (Oxidized):**
+  - Alanine
+  - Valine
+  - Leucine
+  - Isoleucine
+
+- **Electron Acceptors (Reduced):**
+  - Proline
+  - Glycine
+  - Leucine
+
+In the reductive branch, proline is reduced to 5-aminovalerate by proline reductase, and glycine is reduced to acetyl phosphate by glycine reductase. Both enzymes require selenium for maximal activity. ([journals.plos.org](https://journals.plos.org/plospathogens/article?id=10.1371%2Fjournal.ppat.1011034&utm_source=openai))
+
+This metabolic pathway is crucial for *C. difficile*'s energy production and plays a significant role in its pathogenicity. 
+Local RAG Result:
+.
+C. diff relies heavily on fermentation, particularly of amino acids, to produce energy. This metabolic process is crucial for its colonization and persistence in the gut. 
+Stickland Fermentation:
+.
+A key metabolic pathway for C. diff is Stickland fermentation, which involves the breakdown of amino acids. The activity of enzymes involved in this process can be used as a biomarker for C. diff infection. 
+Toxin Production:
+.
+C. diff produces toxins (TcdA and TcdB) that damage the intestinal lining, leading to inflammation and symptoms of infection. 
+Metabolic Integration Point:
+.
+C. diff's metabolic pathways converge on a point where they produce the amino acid alanine, which is thought to drive bacterial growth efficiently. 
+Implications for Treatment:
+Targeting Metabolic Pathways:
+.
+Understanding C. diff's metabolic processes offers potential targets for new therapies. Inhibiting specific enzymes involved in fermentation, like proline reductase, could hinder its growth.
+
+Int J Infect Dis 27:20 –25.https://doi.org/10.1016/j.ijid.2014.06.018 .
+70. Battaglioli EJ, Hale VL, Chen J, Jeraldo P, Ruiz-Mojica C, Schmidt BA,
+Rekdal VM, Till LM, Huq L, Smits SA, Moor WJ, Jones-Hall Y, Smyrk T,
+Khanna S, Pardi DS, Grover M, Patel R, Chia N, Nelson H, Sonnenburg JL,
+Farrugia G, Kashyap PC. 2018. Clostridioides dif ﬁcile uses amino acids
+associated with gut microbial dysbiosis in a subset of patients with diar-rhea. Sci Transl Med 10:eaam7019. https://doi.org/10.1126/scitranslmed
+.aam7019
+.
+71. Larocque M, Chénard T, Najmanovich R. 2014. A curated C. dif ﬁcile strain
+630 metabolic network: prediction of essential targets and inhibitors.BMC Syst Biol 8:117. https://doi.org/10.1186/s12918-014-0117-z
+.
+72. Kashaf SS, Angione C, Lió P. 2017. Making life dif ﬁcult for Clostridium dif-
+ﬁcile: augmenting the pathogen ’s metabolic model with transcriptomic
+
+https://doi.org/10.1128/JB.01492-12 .
+29. Neumann-Schaal M, Hofmann JD, Will SE, Schomburg D. 2015. Time-
+resolved amino acid uptake of Clostridium dif ﬁcile630Derm and concomi-
+tant fermentation product and toxin formation. BMC Microbiol 15:1 –12.
+https://doi.org/10.1186/s12866-015-0614-2 .
+30. Battaglioli EJ, Hale VL, Chen J, Jeraldo P, Ruiz-Mojica C, Schmidt BA, Rekdal VM,
+T i l lL M ,H u qL ,S m i t sS A ,M o o rW J ,J o n e s - H a l lY ,S m y r kT ,K h a n n aS ,P a r d iD S ,Grover M, Patel R, Chia N, Nelson H, Sonnenburg JL, Farrugia G, Kashyap PC.2018. Clostridioides dif ﬁ
+cileuses amino acids associated with gut microbial dys-
+biosis in a subset of patients with diarrhea. Sci Transl Med 10:eaam7019.
+https://doi.org/10.1126/scitranslmed.aam7019 .
+31. Sorg JA, Sonenshein AL. 2008. Bile acids and glycine as cogerminants for
+Clostridium dif ﬁcilespores. J Bacteriol 190:2505 –2412. https://doi.org/10
+.1128/JB.01765-07 .
+#--------------------------------------------------------#
+Question:
+Which key enzymes, such as proline reductase, participate in Stickland fermentation, and what are their functions?  
+Web Search Answer:
+Stickland fermentation is a process where certain clostridial species ferment amino acids in pairs, with one serving as an electron donor and the other as an electron acceptor. Here are some key enzymes involved in this process:
+
+1. **Proline Reductase**: This enzyme catalyzes the reduction of proline to 5-aminovalerate, serving as an electron acceptor in the process. This reaction is crucial for regenerating NAD+ from NADH, which is necessary for continued energy production in the cell.
+
+2. **Glycine Reductase**: Glycine acts as an electron acceptor and is reduced to acetate and ammonia. Glycine reductase is responsible for this conversion and plays an important role in energy conservation during Stickland fermentation.
+
+3. **Alanine Dehydrogenase**: Involved in the conversion of alanine when acting as an electron donor. Alanine dehydrogenase catalyzes the oxidative deamination of alanine to pyruvate, which then enters other metabolic pathways.
+
+4. **Valine Dehydrogenase**: This enzyme participates in the deamination of valine, an amino acid that can be used as an electron donor. Valine dehydrogenase helps convert valine into isobutyrate in some species.
+
+5. **Leucine Dehydrogenase**: Similar to valine dehydrogenase, this enzyme works on leucine, facilitating its conversion to isocaproate through oxidative deamination.
+
+These enzymes work together to facilitate the oxidation-reduction pairings that characterize Stickland fermentation, allowing the bacteria to extract energy from amino acids.
+
+**Sources**:
+- Barker, H. A. (1981). Amino Acid Degradation by Anaerobic Bacteria. Annual Review of Biochemistry, 50(1), 23-40. DOI: 10.1146/annurev.bi.50.070181.000323
+- Andreesen, J. R. (2004). Glycine reductase mechanism. Current Opinion in Chemical Biology, 8(4), 454-461. DOI: 10.1016/j.cbpa.2004.06.010
+Local RAG Result:
+(52), which is subsequently fermented to 5-aminovalerate for energy. This ﬁnding illus-
+trated that proline Stickland fermentation was an integral part of C. dif ﬁcilemetabolism
+across conditions. The ﬁnding that N-acetylglucosamine transport was present only
+within the smooth variant context-speci ﬁc model was striking as this phase has been
+previously associated with signi ﬁcantly increased bio ﬁlm formation (83), in which N-
+acetyl- D-glucosamine is the primary component (84). Observing the predicted reaction
+activity, not only was N-acetylglucosamine transport present exclusively in the smooth
+variant context-speci ﬁc model, but this reaction was extremely active under these con-
+ditions (Fig. 2C). Furthermore, ef ﬂux of the related metabolite D-glucosamine was also
+signi ﬁcantly increased in the smooth model (Fig. 2D; Pvalue,0.001). These results
+supported that the differences in context-speci ﬁc model structure seen between phase
+
+cantly increased biomass ﬂux generation (re ﬂective of growth rate) with smooth col-
+ony-associated metabolism (Fig. S2A). This result ﬁts with experimental ﬁndings as the
+rough-edged phenotype emerges only after long periods of incubation on solid agar
+when growth rate is measurably lowered (43). We moved on to evaluate structural dif-
+ferences between the context-speci ﬁc models and identi ﬁed those metabolic reactions
+predicted to be active in only the smooth or rough context-speci ﬁc model. With this
+analysis we found 19 reactions that were distinctly active between conditions (Fig. 2A).
+We then calculated median absolute activity for each reaction, which indicated the
+magnitude at which each reaction contributed to optimal growth in each model. Thisinvestigation revealed that proline or ornithine fermentation was present and active ineither model (Fig. 2A). C. dif ﬁcileis capable of easily converting ornithine into proline
+
+.00772-06 .
+48. Britz ML, Wilkinson RG. 1982. Leucine dissimilation to isovaleric and iso-
+caproic acids by cell suspensions of amino acid fermenting anaerobes:
+the Stickland reaction revisited. Can J Microbiol 28:291 –300. https://doi
+.org/10.1139/m82-043 .
+49. Kim J, Hetzel M, Boiangiu CD, Buckel W. 2004. Dehydration of (R)-2-
+hydroxyacyl-CoA to enoyl-CoA in the fermentation of a-amino acids by
+anaerobic bacteria. FEMS Microbiol Rev 28:455 –468. https://doi.org/10
+.1016/j.femsre.2004.03.001 .
+50. Yu L, Blaser M, Andrei PI, Pierik AJ, Selmer T. 2006. 4-Hydroxyphenylace-
+tate decarboxylases: properties of a novel subclass of glycyl radicalenzyme systems. Biochemistry 45:9584 –9592. https://doi.org/10.1021/
+bi060840b
+.
+51. de Vladar HP. 2012. Amino acid fermentation at the origin of the genetic
+code. Biol Direct 7:6. https://doi.org/10.1186/1745-6150-7-6 .
+52. Fonknechten N, Perret A, Perchat N, Tricot S, Lechaplais C, Vallenet D,
+#--------------------------------------------------------#
+Question:
+What are the structures and mechanisms of action of the C. difficile toxins TcdA and TcdB?  
+Web Search Answer:
+Clostridioides difficile produces two major exotoxins, TcdA and TcdB, which are central to its pathogenicity. Both toxins share a similar multi-domain structure and follow a comparable mechanism of action to disrupt host cellular functions.
+
+**Structural Organization:**
+
+TcdA and TcdB are large proteins composed of four primary functional domains:
+
+1. **Glucosyltransferase Domain (GTD):** Located at the N-terminus, this domain catalyzes the transfer of glucose from UDP-glucose to specific threonine residues on target GTPases, leading to their inactivation. ([jbc.org](https://www.jbc.org/article/S0021-9258%2820%2960948-6/fulltext?utm_source=openai))
+
+2. **Autoprocessing Domain (APD):** Adjacent to the GTD, the APD facilitates the release of the GTD into the host cell cytosol through a self-cleavage mechanism activated by inositol hexakisphosphate (InsP₆). ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC9018519/?utm_source=openai))
+
+3. **Delivery (Pore-Forming) Domain:** This central region undergoes conformational changes in acidic environments, enabling the formation of pores in endosomal membranes and the translocation of the GTD into the cytosol. ([pnas.org](https://www.pnas.org/doi/full/10.1073/pnas.1002199107?utm_source=openai))
+
+4. **Combined Repetitive Oligopeptides (CROPs) Domain:** Situated at the C-terminus, the CROPs domain is responsible for binding to specific cell surface receptors, initiating toxin entry into host cells. ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC9018519/?utm_source=openai))
+
+**Mechanism of Action:**
+
+The intoxication process of TcdA and TcdB involves several key steps:
+
+1. **Receptor Binding and Endocytosis:** The CROPs domain binds to specific receptors on the host cell surface. TcdA interacts with glycans and proteoglycans such as glycoprotein 96 (gp96), while TcdB binds to receptors like chondroitin sulfate proteoglycan 4 (CSPG4), Nectin 3, and members of the Frizzled family. This binding triggers endocytosis of the toxin-receptor complex. ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC9018519/?utm_source=openai))
+
+2. **Endosomal Acidification and Pore Formation:** Within the endosome, the acidic environment induces conformational changes in the delivery domain, leading to the formation of pores in the endosomal membrane. ([pnas.org](https://www.pnas.org/doi/full/10.1073/pnas.1002199107?utm_source=openai))
+
+3. **Translocation and Autoprocessing:** The GTD and APD translocate through these pores into the cytosol. InsP₆ activates the APD, resulting in the cleavage and release of the GTD. ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC9018519/?utm_source=openai))
+
+4. **Glucosylation of Host GTPases:** The free GTD glucosylates Rho family GTPases, including RhoA, Rac1, and Cdc42, at specific threonine residues. This modification inactivates these GTPases, disrupting actin cytoskeleton dynamics, leading to cell rounding, loss of tight junction integrity, increased epithelial permeability, and ultimately cell death. ([jbc.org](https://www.jbc.org/article/S0021-9258%2820%2960948-6/fulltext?utm_source=openai))
+
+Through this multi-step process, TcdA and TcdB effectively compromise host cellular functions, contributing to the pathogenesis of C. difficile infections. 
+Local RAG Result:
+difﬁcile toxins A and B: insights into pathogenic properties and extrain-
+testinal effects. Toxins 8:134. https://doi.org/10.3390/toxins8050134 .
+3. Thomas C, Stevenson M, Riley TV. 2003. Antibiotics and hospital-acquired
+Clostridium dif ﬁcile-associated diarrhoea: a systematic review. J Antimicrob
+Chemother 51:1339 –1350. https://doi.org/10.1093/jac/dkg254 .Jenior et al.
+September/October 2021 Volume 6 Issue 5 e00919-21 msystems.asm.org 16
+Downloaded from https://journals.asm.org/journal/msystems on 17 May 2025 by 104.52.7.96.
+
+https://doi.org/10.1128/JB.01492-12 .
+29. Neumann-Schaal M, Hofmann JD, Will SE, Schomburg D. 2015. Time-
+resolved amino acid uptake of Clostridium dif ﬁcile630Derm and concomi-
+tant fermentation product and toxin formation. BMC Microbiol 15:1 –12.
+https://doi.org/10.1186/s12866-015-0614-2 .
+30. Battaglioli EJ, Hale VL, Chen J, Jeraldo P, Ruiz-Mojica C, Schmidt BA, Rekdal VM,
+T i l lL M ,H u qL ,S m i t sS A ,M o o rW J ,J o n e s - H a l lY ,S m y r kT ,K h a n n aS ,P a r d iD S ,Grover M, Patel R, Chia N, Nelson H, Sonnenburg JL, Farrugia G, Kashyap PC.2018. Clostridioides dif ﬁ
+cileuses amino acids associated with gut microbial dys-
+biosis in a subset of patients with diarrhea. Sci Transl Med 10:eaam7019.
+https://doi.org/10.1126/scitranslmed.aam7019 .
+31. Sorg JA, Sonenshein AL. 2008. Bile acids and glycine as cogerminants for
+Clostridium dif ﬁcilespores. J Bacteriol 190:2505 –2412. https://doi.org/10
+.1128/JB.01765-07 .
+
+ABSTRACT: Clostridioides difficile, a Gram-positive, spore-forming bacterium, is the primary cause of infectious nosocomial diarrhea. Antibiotics are a major risk factor for C. difficile infection (CDI), as they disrupt the gut microbial community, enabling increased germination of spores and growth of vegetative C. difficile. To date, the only single-species bacterial preparation that has demonstrated efficacy in reducing recurrent CDI in humans is nontoxigenic C. difficile. Using multiple infection models, we determined that precolonization with a less virulent strain is sufficient to protect from challenge with a lethal strain of C. difficile, surprisingly even in the absence of adaptive immunity. Additionally, we showed that protection is dependent on high levels of colonization by the less virulent strain and that it is mediated by exclusion of the invading strain. Our results suggest that reduction of amino acids, specifically glycine following colonization by the first strain
+#--------------------------------------------------------#
+Question:
+How does alanine produced through metabolic convergence promote efficient bacterial growth in C. difficile?  
+Web Search Answer:
+Alanine plays a pivotal role in the metabolic processes of *Clostridioides difficile* (C. difficile), significantly contributing to its efficient growth through several mechanisms:
+
+1. **Stickland Fermentation**: C. difficile utilizes Stickland fermentation, a process where pairs of amino acids are oxidized and reduced to generate ATP. Alanine serves as an effective electron donor in this pathway. When alanine is present, it enhances the bacterium's energy production, thereby promoting growth. ([journals.asm.org](https://journals.asm.org/doi/10.1128/jb.00233-20?utm_source=openai))
+
+2. **Redox Balance and Energy Conservation**: The oxidation of alanine leads to the production of pyruvate, which is then converted to acetyl-CoA. This conversion is crucial for maintaining redox balance within the cell. Efficient redox balance is essential for sustaining metabolic activities and energy conservation, both of which are vital for bacterial growth. ([journals.asm.org](https://journals.asm.org/doi/10.1128/jb.00233-20?utm_source=openai))
+
+3. **Metabolic Flexibility**: C. difficile exhibits metabolic flexibility by adjusting its metabolic pathways based on nutrient availability. In environments rich in alanine, the bacterium can modulate its metabolic processes to optimize energy production and growth. This adaptability allows C. difficile to thrive in diverse conditions. ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC5377389/?utm_source=openai))
+
+In summary, alanine contributes to the efficient growth of C. difficile by serving as a key electron donor in Stickland fermentation, aiding in redox balance and energy conservation, and enabling metabolic flexibility. 
+Local RAG Result:
+.
+C. diff relies heavily on fermentation, particularly of amino acids, to produce energy. This metabolic process is crucial for its colonization and persistence in the gut. 
+Stickland Fermentation:
+.
+A key metabolic pathway for C. diff is Stickland fermentation, which involves the breakdown of amino acids. The activity of enzymes involved in this process can be used as a biomarker for C. diff infection. 
+Toxin Production:
+.
+C. diff produces toxins (TcdA and TcdB) that damage the intestinal lining, leading to inflammation and symptoms of infection. 
+Metabolic Integration Point:
+.
+C. diff's metabolic pathways converge on a point where they produce the amino acid alanine, which is thought to drive bacterial growth efficiently. 
+Implications for Treatment:
+Targeting Metabolic Pathways:
+.
+Understanding C. diff's metabolic processes offers potential targets for new therapies. Inhibiting specific enzymes involved in fermentation, like proline reductase, could hinder its growth.
+
+difﬁcile. The reciprocal utilization of glycolysis and amino acid fermentation indeed
+supports regimes of distinct metabolic programming associated with C. dif ﬁcilepatho-
+genicity. Finding core metabolic properties in C. dif ﬁcilestrains may be key in identify-
+ing potential probiotic competitor strains or even molecular inhibitors of metabolic
+components. The current study is an example of the strength that systems-level analy-
+ses have in contributing to more rapid advancements in biological understanding. In
+the future, the metabolic network reconstructions presented here will be well suited to
+accelerate research efforts toward the discovery of more targeted therapies. Overall,
+GENREs have had limited impact to date in real mechanistic understanding of infectious
+disease, and the current study represents a signi ﬁcant advance in this application.Jenior et al.
+September/October 2021 Volume 6 Issue 5 e00919-21 msystems.asm.org 14
+
+Xu X, Li Y, Li M. 2016. d-Alanine metabolism is essential for growth and
+bioﬁlm formation of Streptococcus mutans. Mol Oral Microbiol 31:
+435–444. https://doi.org/10.1111/omi.12146 .
+87. Schubert AM, Sinani H, Schloss PD. 2015. Antibiotic-induced alterations
+of the murine gut microbiota and subsequent effects on colonization re-
+sistance against Clostridium dif ﬁcile. mBio 6:e00974-15. https://doi.org/
+10.1128/mBio.00974-15 .
+88. Ra škevi/C20cius V, Mikalayeva V, Antanavi /C20ciūtėI, Ceslevi /C20cien ėI, Skeberdis VA,
+Kairys V, Bordel S. 2018. Genome scale metabolic models as tools for
+drug design and personalized medicine. PLoS One 13:e0190636. https://
+doi.org/10.1371/journal.pone.0190636 .
+89. Tremblay YDN, Durand BAR, Hamiot A, Martin-Verstraete I, Oberkampf
+M, Monot M, Dupuy B. 2021. Metabolic adaption to extracellular pyru-
+vate triggers bio ﬁlm formation in Clostridioides dif ﬁcile. ISME J https://
+doi.org/10.1038/s41396-021-01042-5 .
+#--------------------------------------------------------#
+Question:
+What probiotic or microbiome-restorative therapies have been proposed or studied to prevent C. difficile infection recurrence?  
+Web Search Answer:
+Recurrent *Clostridioides difficile* infection (rCDI) poses a significant clinical challenge, often necessitating interventions that restore the gut microbiome. Several probiotic and microbiome-restorative therapies have been proposed and studied to prevent rCDI:
+
+**1. Fecal Microbiota Transplantation (FMT):**
+FMT involves transferring stool from a healthy donor to a patient with rCDI to restore a balanced gut microbiome. Clinical studies have demonstrated high efficacy, with cure rates around 85% across various trials. However, concerns about safety, standardization, and potential pathogen transmission have led to the exploration of alternative therapies. ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC10496268/?utm_source=openai))
+
+**2. SER-109:**
+SER-109 is an oral microbiome therapeutic composed of purified Firmicutes bacterial spores. In a randomized controlled trial involving 182 patients with rCDI, those receiving SER-109 had a significantly lower recurrence rate (12%) compared to the placebo group (40%). The FDA approved SER-109 in April 2023, marking it as the first oral microbiome-based therapy for rCDI. ([nejm.org](https://www.nejm.org/doi/full/10.1056/nejmoa2106516?utm_source=openai))
+
+**3. Probiotic Cocktails:**
+Probiotic mixtures containing multiple beneficial bacterial species have been investigated for rCDI prevention. A study developed a human-origin probiotic cocktail (Pro11) comprising 11 diverse probiotic species. In a mouse model, Pro11 protected against CDI, reduced C. difficile burden and toxin production, and enhanced gut barrier function. These findings suggest that targeted probiotic combinations may offer a promising approach to rCDI prevention. ([frontiersin.org](https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2025.1555220/full?utm_source=openai))
+
+**4. Kefir Supplementation:**
+Kefir, a fermented milk product rich in probiotics, has been used adjunctively with antibiotic therapy. In a study involving 25 patients with severe, recurrent CDI, a regimen combining staggered and tapered antibiotic withdrawal with daily kefir consumption resulted in an 84% resolution rate of symptoms. While promising, these results require validation through larger, multi-center trials. ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC5050073/?utm_source=openai))
+
+**5. Bio-K+ Probiotic Formula:**
+The Bio-K+ probiotic, containing *Lactobacillus* species, was administered to over 44,000 inpatients receiving antibiotics. This intervention led to a significant reduction in CDI incidence, from 18.0 to 2.3 cases per 10,000 patient-days. Notably, no severe multiple recurrent nosocomial cases were reported following the implementation of this probiotic therapy. ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC5050073/?utm_source=openai))
+
+In summary, various probiotic and microbiome-restorative therapies, including FMT, SER-109, probiotic cocktails, kefir supplementation, and specific probiotic formulations like Bio-K+, have been studied for preventing rCDI. While many show promise, further large-scale, randomized controlled trials are necessary to establish their efficacy and safety profiles comprehensively. 
+Local RAG Result:
+.
+Understanding C. diff's metabolic processes offers potential targets for new therapies. Inhibiting specific enzymes involved in fermentation, like proline reductase, could hinder its growth. 
+Restoring Gut Microbiome:
+.
+Restoring a healthy gut microbiome through probiotics or other microbiome-restorative therapies can help prevent recurrence of C. diff infections. 
+Preventing Dysbiosis:
+.
+Prophylactic measures, such as dietary interventions or targeted anti-virulence agents, may help prevent the dysbiosis that predisposes individuals to C. diff infections.
+
+ABSTRACT: Clostridioides difficile, a Gram-positive, spore-forming bacterium, is the primary cause of infectious nosocomial diarrhea. Antibiotics are a major risk factor for C. difficile infection (CDI), as they disrupt the gut microbial community, enabling increased germination of spores and growth of vegetative C. difficile. To date, the only single-species bacterial preparation that has demonstrated efficacy in reducing recurrent CDI in humans is nontoxigenic C. difficile. Using multiple infection models, we determined that precolonization with a less virulent strain is sufficient to protect from challenge with a lethal strain of C. difficile, surprisingly even in the absence of adaptive immunity. Additionally, we showed that protection is dependent on high levels of colonization by the less virulent strain and that it is mediated by exclusion of the invading strain. Our results suggest that reduction of amino acids, specifically glycine following colonization by the first strain
+
+primary cause of infectious nosocomial diarrhea. Antibiotics are a major risk factor
+forC. dif ﬁcileinfection (CDI), as they disrupt the gut microbial community, enabling
+increased germination of spores and growth of vegetative C. dif ﬁcile. To date, the
+only single-species bacterial preparation that has demonstrated ef ﬁcacy in reducing
+recurrent CDI in humans is nontoxigenic C. dif ﬁcile. Using multiple infection models,
+we determined that precolonization with a less virulent strain is suf ﬁcient to protect
+from challenge with a lethal strain of C. dif ﬁcile, surprisingly even in the absence of
+adaptive immunity. Additionally, we showed that protection is dependent on high
+levels of colonization by the less virulent strain and that it is mediated by exclusionof the invading strain. Our results suggest that reduction of amino acids, speci ﬁcally
+glycine following colonization by the ﬁrst strain of C. dif ﬁcile, is suf ﬁcient to decrease
+#--------------------------------------------------------#
+Question:
+What known regulatory systems control virulence factor expression in Clostridioides difficile?
+Web Search Answer:
+Clostridioides difficile regulates the expression of its primary virulence factors, toxins TcdA and TcdB, through a complex network of transcriptional regulators and environmental cues. Key regulatory systems include:
+
+1. **TcdR and TcdC**: TcdR is an alternative sigma factor that activates the transcription of toxin genes. Conversely, TcdC acts as an anti-sigma factor, inhibiting TcdR and thereby repressing toxin gene expression. ([pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/35389761/?utm_source=openai))
+
+2. **CodY**: This global regulator responds to nutrient availability, particularly branched-chain amino acids and GTP levels. Under nutrient-rich conditions, CodY represses toxin gene expression by binding to their promoters. ([pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/35389761/?utm_source=openai))
+
+3. **CcpA (Catabolite Control Protein A)**: CcpA mediates carbon catabolite repression. In the presence of glucose or other rapidly metabolizable carbon sources, CcpA binds to the promoter regions of toxin genes, repressing their transcription. ([mdpi.com](https://www.mdpi.com/2072-6651/8/5/153?utm_source=openai))
+
+4. **SigD (Sigma Factor D)**: SigD, associated with flagellar synthesis and motility, positively influences toxin gene expression. It can activate tcdR transcription, linking motility to toxin production. ([pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/35389761/?utm_source=openai))
+
+5. **PrdR**: PrdR regulates proline metabolism and indirectly affects toxin production. In the presence of proline, PrdR activates proline reductase genes and represses toxin gene expression, integrating metabolic status with virulence regulation. ([onlinelibrary.wiley.com](https://onlinelibrary.wiley.com/doi/10.1111/mmi.14245?utm_source=openai))
+
+6. **RstA**: RstA is a major regulator that influences both toxin production and motility. Mutations in RstA lead to altered toxin expression and reduced motility, indicating its central role in coordinating these processes. ([journals.asm.org](https://journals.asm.org/doi/full/10.1128/mbio.01991-18?utm_source=openai))
+
+7. **Agr Quorum Sensing System**: The Agr system, particularly the Agr1 locus, is involved in quorum sensing and regulates toxin production. Mutations in agrB1 and agrD1 result in decreased toxin A and B production, highlighting its role in virulence regulation. ([mdpi.com](https://www.mdpi.com/2076-2607/11/9/2161?utm_source=openai))
+
+8. **C-di-GMP Signaling**: The second messenger cyclic diguanylate monophosphate (c-di-GMP) influences toxin gene expression. High levels of c-di-GMP are associated with increased biofilm formation and reduced motility, linking environmental sensing to virulence factor regulation. ([pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/26596863/?utm_source=openai))
+
+These regulatory systems enable C. difficile to modulate toxin production in response to environmental conditions, ensuring optimal expression of virulence factors during infection. 
+Local RAG Result:
+McBride SM, Tamayo R. 2019. Phase variation of a signal transduction sys-
+tem controls Clostridioides dif ﬁcile colony morphology, motility, and viru-
+lence. PLoS Biol 17:e3000379. https://doi.org/10.1371/journal.pbio. 3000379 .
+84. Dubois T, Tremblay YDN, Hamiot A, Martin-Verstraete I, Deschamps J,
+Monot M, Briandet R, Dupuy B. 2019. A microbiota-generated bile salt
+induces bio ﬁlm formation in Clostridium dif ﬁcile. NPJ Bio ﬁlms Micro-
+biomes 5:14. https://doi.org/10.1038/s41522-019-0087-4 .
+85. Shrestha R, Lockless SW, Sorg JA. 2017. A Clostridium dif ﬁcile alanine race-
+mase affects spore germination and accommodates serine as a substrate. J
+Biol Chem 292:10735 –10742. https://doi.org/10.1074/jbc.M117.79 1749 .
+86. Qiu W, Zheng X, Wei Y, Zhou X, Zhang K, Wang S, Cheng L, Li Y, Ren B,
+Xu X, Li Y, Li M. 2016. d-Alanine metabolism is essential for growth and
+bioﬁlm formation of Streptococcus mutans. Mol Oral Microbiol 31:
+435–444. https://doi.org/10.1111/omi.12146 .
+
+ABSTRCT: The pathogen Clostridioides difficile causes toxin-mediated diarrhea and is the leading cause of hospital-acquired infection in the United States. Due to growing antibiotic resistance and recurrent infection, targeting C. difficile metabolism presents a new approach to combat this infection. Genome-scale metabolic network recon- structions (GENREs) have been used to identify therapeutic targets and uncover prop- erties that determine cellular behaviors. Thus, we constructed C. difficile GENREs for a hypervirulent isolate (strain [str.] R20291) and a historic strain (str. 630), validating both with in vitro and in vivo data sets. Growth simulations revealed significant corre- lations with measured carbon source usage (positive predictive value [PPV] $ 92.7%), and single-gene deletion analysis showed .89.0% accuracy. Next, we utilized each GENRE to identify metabolic drivers of both sporulation and biofilm formation. Through contextualization of each model using transcriptomes
+
+fDepartment of Microbiology & Immunology, University of North Carolina Chapel Hill School of Medicine, Chapel Hill, North Carolina, USA
+ABSTRACT The pathogen Clostridioides dif ﬁcilecauses toxin-mediated diarrhea and is
+the leading cause of hospital-acquired infection in the United States. Due to growingantibiotic resistance and recurrent infection, targeting C. dif ﬁcilemetabolism presents
+a new approach to combat this infection. Genome-scale metabolic network recon-
+structions (GENREs) have been used to identify therapeutic targets and uncover prop-
+erties that determine cellular behaviors. Thus, we constructed C. dif ﬁcileGENREs for a
+hypervirulent isolate (strain [str.] R20291) and a historic strain (str. 630), validatingboth with in vitro and in vivo data sets. Growth simulations revealed signi ﬁcant corre-
+lations with measured carbon source usage (positive predictive value [PPV] $92.7%),
+and single-gene deletion analysis showed .89.0% accuracy. Next, we utilized each
