@@ -1,6 +1,7 @@
 import os
 import math
 import asyncio
+from asyncio import TimeoutError
 from tenacity import (
     retry,
     stop_after_attempt,
@@ -115,10 +116,8 @@ class CompletionHandler(ResearchAgent):
 
     @retry(
         wait=wait_random_exponential(multiplier=2, min=5, max=30),
-        stop=stop_after_attempt(9),
-        retry=retry_if_exception_type(
-            (RateLimitError, asyncio.TimeoutError, Exception)
-        ),
+        stop=stop_after_attempt(3),
+        retry=retry_if_exception_type((RateLimitError, asyncio.TimeoutError)),
     )
     async def perform_api_call(
         self,
@@ -151,46 +150,52 @@ class CompletionHandler(ResearchAgent):
         """
         # Screen for prompt injection
         if injection_screen is True:
+            self.logger.info(f"Testing for prompt injection...")
             injection_test = await self.detect_prompt_injection(prompt)
             if injection_test is True:
-                self.logger.warning(f"Skipping prompt")
+                self.logger.warning(f"Prompt injection detected: {prompt}")
                 return {
                     "prompt": prompt,
                     "response": "Prompt injection detected. Skipped.",
                     "source": source,
                 }
+            else:
+                self.logger.info("No prompt injection detected. Proceeding.")
 
+        # Assemble messages and call parameters
+        call_params = self.assemble_messages(
+            prompt, prompt_type, web_search, context_size
+        )
+
+        # Run completion query with timeout
         try:
-            call_params = self.assemble_messages(
-                prompt, prompt_type, web_search, context_size
+            # No retries, handle errors locally
+            response = await asyncio.wait_for(
+                self.client.responses.create(**call_params, **kwargs),
+                timeout=timeout_seconds,
             )
 
-            # Run completion query with timeout
-            try:
-                response = await asyncio.wait_for(
-                    self.client.responses.create(**call_params, **kwargs),
-                    timeout=timeout_seconds,
-                )
+            # Update usage and return prompt and response pair
+            self.update_usage(call_params["model"], response)
+            return {
+                "prompt": prompt,
+                "response": response.output_text,
+                "source": source,
+            }
 
-                # Update usage and return prompt and response pair
-                self.update_usage(call_params["model"], response)
-                return {
-                    "prompt": prompt,
-                    "response": response.output_text,
-                    "source": source,
-                }
+        except TimeoutError:
+            self.logger.error(f"API call timed out. Retrying...")
+            await asyncio.sleep(1)
+            raise
 
-            except asyncio.TimeoutError:
-                self.logger.error(f"API call timed out after {timeout_seconds} seconds")
-                raise
+        except RateLimitError as e:
+            self.logger.error(f"Current OpenAI API rate limit exceeded.")
+            await self._ratelimit_sleep(str(e))
+            raise
 
         except Exception as e:
-            self.logger.error(f"Error in perform_api_call: {str(e)}")
-            if "429 Too Many Requests" in str(e):
-                self.logger.error(f"Too many requests in time period to OpenAI API")
-                await self._429_sleep_time(str(e))
-            else:
-                raise e
+            self.logger.error(f"Unexpected error in API call: {str(e)}")
+            raise
 
     def update_usage(self, model, response):
         """Update usage statistics."""
@@ -199,7 +204,7 @@ class CompletionHandler(ResearchAgent):
         self.update_spending()
         self.update_session_totals()
 
-    async def _429_sleep_time(
+    async def _ratelimit_sleep(
         self, error_message: str, adjust: float = 0.25, dec: int = 2
     ) -> float:
         """
@@ -217,10 +222,14 @@ class CompletionHandler(ResearchAgent):
                 error_message.split("Please try again in ")[1].split(".")[0]
             )
         except Exception as e:
-            raise e
+            if "429 Too Many Requests" in e:
+                sleep_time = 5.0
+            else:
+                self.logger.error(f"Unexpected error in API call: {str(e)}")
+                raise e
 
         sleep_time = self.round_up_to_decimal_place(sleep_time + adjust, dec)
-        self.logger.error(f"Waiting for {sleep_time} seconds before retrying")
+        self.logger.warning(f"Waiting for {sleep_time} seconds before retrying")
         await asyncio.sleep(sleep_time)
 
     @staticmethod
@@ -233,18 +242,14 @@ class CompletionHandler(ResearchAgent):
         """
         Detect potential prompt injection and return boolean test result
         """
-        # Detect prompt injection
-        self.logger.info("Testing for prompt injection...")
         test_result = await self.perform_api_call(
             prompt=prompt.strip(),
             prompt_type="detect_injection",
             context_size="low",
-            web_search=False,
+            injection_screen=False,  # Prevent infinite recursion
         )
-
         # Check test result
         if "yes" in test_result["response"].lower():
-            self.logger.warning(f"Prompt injection detected: {prompt}")
             return True
         else:
             return False

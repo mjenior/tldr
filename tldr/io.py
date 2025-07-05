@@ -49,7 +49,6 @@ class FileHandler:
         user_files: list = None,
         search_dir: str = ".",
         recursive: bool = False,
-        search: bool = False,
     ):
         """
         Find files and read in their contents.
@@ -57,7 +56,7 @@ class FileHandler:
         """
         self.logger.info(f"Reading content of {label} documents...")
         files = self._find_readable_files(
-            infiles=user_files, directory=search_dir, recursive=recursive, search=search
+            infiles=user_files, directory=search_dir, recursive=recursive
         )
 
         # Create content dictionary
@@ -79,10 +78,9 @@ class FileHandler:
 
     def _find_readable_files(
         self,
-        infiles: list = [],
+        infiles: list = None,
         directory: str = ".",
         recursive: bool = False,
-        search: bool = False,
     ) -> dict:
         """
         Scan for readable text files.
@@ -102,21 +100,22 @@ class FileHandler:
         }
 
         # Handle user selected files first
-        if len(infiles) >= 1:
-            search = False
-        infiles_found = 0
-        for file_path_item in infiles:
-            infiles_found += 1
-            ext = file_path_item.split(".")[-1].lower().strip()
-            self._update_file_dictionary(readable_files_by_type, file_path_item, ext)
-            self.logger.info(f"Found file '{file_path_item}' of type '{ext}'.")
-        if infiles_found >= 1:
-            return {k: v for k, v in readable_files_by_type.items() if v}
+        if infiles is not None:
+            if len(infiles) >= 1:
+                for file_path in infiles:
+                    ext = file_path.split(".")[-1].lower().strip()
+                    self._update_file_dictionary(readable_files_by_type, file_path, ext)
+                    self.logger.info(f"Found file '{file_path}' of type '{ext}'.")
+                return {k: v for k, v in readable_files_by_type.items() if v}
 
         # Then handle directory search in none are returned
-        if search is True and recursive is False:
+        elif recursive is False:
             for filename in os.listdir(directory):
+                # Skip previous tldr files
                 if ".tldr." in filename:
+                    continue
+                # Skip hidden files
+                elif filename[0] == ".":
                     continue
                 filepath = os.path.join(directory, filename)
                 if os.path.isfile(filepath):
@@ -126,7 +125,11 @@ class FileHandler:
         else:
             for root, _, files_in_dir in os.walk(directory):
                 for filename in files_in_dir:
+                    # Skip previous tldr files
                     if ".tldr." in filename:
+                        continue
+                    # Skip hidden files
+                    elif filename[0] == ".":
                         continue
                     filepath = os.path.join(root, filename)
                     ext = filepath.split(".")[-1].lower().strip()

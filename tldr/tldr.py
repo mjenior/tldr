@@ -53,13 +53,14 @@ async def pipeline():
     )
 
     # Establish initial context
-    await tldr.initial_context_search(context_size=args.context_size)
+    if args.query is not None and args.testing is False:
+        await tldr.initial_context_search(context_size=args.context_size)
 
     # Summarize documents
     await tldr.summarize_resources(context_size=args.context_size)
 
     # Optional: Use research agent to fill gaps
-    if args.web_search is True and args.testing is False:
+    if args.research is True and args.testing is False:
         await tldr.apply_research(context_size=args.context_size)
 
     # Synthesize content

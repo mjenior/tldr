@@ -66,19 +66,21 @@ class TldrEngine(CompletionHandler):
         context_files=None,
         context_size="medium",
         recursive=False,
-        search=True,
     ):
         """Establish context for the TldrEngine"""
 
         # Read in files and contents
-        if input_files is not None or len(input_files) > 0:
-            self.content = self.fetch_content(
-                user_files=input_files, label="reference", search=search
-            )
+        if input_files is not None:
+            if len(input_files) >= 1:
+                self.content = self.fetch_content(
+                    user_files=input_files, label="reference"
+                )
+            else:
+                self.logger.error(
+                    f"No valid resources provided for reference documents."
+                )
         else:
-            self.content = self.fetch_content(
-                recursive=recursive, label="reference", search=search
-            )
+            self.content = self.fetch_content(recursive=recursive, label="reference")
 
         if len(self.content.keys()) == 0:
             self.logger.error(f"No valid resources provided for reference documents.")
@@ -93,9 +95,7 @@ class TldrEngine(CompletionHandler):
 
         # Fetch and reformat additional context if provided
         if context_files is not None and len(context_files) >= 1:
-            all_context = self.fetch_content(
-                user_files=context_files, label="context", search=False
-            )
+            all_context = self.fetch_content(user_files=context_files, label="context")
             if len(all_context.keys()) == 0:
                 self.logger.error(f"No valid resources provided for context documents.")
             else:
@@ -246,7 +246,7 @@ class TldrEngine(CompletionHandler):
             prompt_type="executive_summary",
             context_size=context_size,
             web_search=False,
-            screen_for_injection=False,
+            injection_screen=False,
         )
         self.executive_summary = executive_summary["response"]
 

@@ -844,12 +844,13 @@ async def run_tldr_streamlit():
 def start_tldr_ui():
     """Command-line entry point to run the tldr streamlit UI."""
     from pathlib import Path
-    
+
     # Get the path to the current file
     streamlit_file = Path(__file__).resolve()
-    
+
     # Run streamlit with the current file
     import subprocess
+
     subprocess.run(["streamlit", "run", str(streamlit_file)], check=True)
 
 

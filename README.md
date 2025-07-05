@@ -106,8 +106,8 @@ tldr --context_files ./context_files/*
 # Enable recursive file search in input directories
 tldr --recursive_search True
 
-# Disable the web research agent
-tldr --web_search False
+# Disable the research agent
+tldr --research False
 
 # Use a modified output tone (e.g., 'stylized' or 'formal')
 tldr --tone formal
@@ -120,7 +120,7 @@ tldr --tone formal
 *   `--input_files <path>`: List of input files or directories. (Default: None)
 *   `--context_files <path>`: List of files for additional context. (Default: None)
 *   `--recursive_search <True|False>`: Recursively search input directories. (Default: `False`)
-*   `--web_search <True|False>`: Use the research agent to fill knowledge gaps. (Default: `True`)
+*   `--research <True|False>`: Use the research agent to fill knowledge gaps. (Default: `True`)
 *   `--tone <tone>`: Define the tone for the final summary. (Default: `default`)
 *   `--context_size <scale>`: Set the context window size for the model. (Choices: `low`, `medium`, `high`; Default: `medium`)
 *   `--verbose <True|False>`: Enable verbose logging to stdout. (Default: `True`)

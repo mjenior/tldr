@@ -63,7 +63,7 @@ def parse_tldr_arguments():
         help="Recursively search input directories",
     )
     parser.add_argument(
-        "--web_search",
+        "--research",
         type=bool,
         default=True,
         help="Additional research agent to find and fill knowledge gaps",
