@@ -67,7 +67,7 @@ class CompletionHandler(ResearchAgent):
         instructions_dict = self.prompt_dictionary[prompt_type.lower()]
         instructions = instructions_dict["system_instruction"]
         output_tokens = self._scale_token(instructions_dict["max_output_tokens"])
-        model = instructions_dict["model"]
+        model = instructions_dict["openai_model"]
 
         # Check message
         if len(message.strip()) == 0:
