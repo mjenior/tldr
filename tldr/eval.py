@@ -12,11 +12,11 @@ import asyncio
 from deepeval.metrics import FaithfulnessMetric, GEval
 from deepeval.test_case import LLMTestCase
 
-from .openai import CompletionHandler
+from .openai import CompletionHandlerOpenAI
 from .args import parse_eval_arguments
 
 
-class SummaryEvaluator(CompletionHandler):
+class SummaryEvaluator(CompletionHandlerOpenAI):
     """Attempt to objectively score the quality of a summary from a highly technical resource."""
 
     def __init__(

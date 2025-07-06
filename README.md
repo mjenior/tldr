@@ -148,7 +148,7 @@ from tldr.eval import SummaryEvaluator
 # Initialize the evaluator with custom settings
 evaluator = SummaryEvaluator(
     iterations=5,  # Number of evaluations to run (default: 5)
-    model="gpt-4o-mini",  # Model to use for evaluation
+    model="gpt-4o",  # Currently only the OpenAI platform is supported
     temperature=0.9,  # Controls randomness in evaluation
     verbose=True  # Enable detailed logging
 )
