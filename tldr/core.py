@@ -10,55 +10,109 @@ output of intermediate and final results.
 """
 
 import asyncio
-from .openai import CompletionHandlerOpenAI
-from .google import CompletionHandlerGoogle
 
-
-class TldrEngine(CompletionHandlerOpenAI or CompletionHandlerGoogle):
+class TldrEngine:
     """
-    Handles the core logic for generating TLDR summaries.
-
-    This class is responsible for processing input files, fetching additional context,
-    optionally performing Retrieval Augmented Generation (RAG) using local embeddings,
-    refining user queries, and generating summaries based on the provided information.
-    It manages interactions with a completion API and handles the output of
-    intermediate and final results.
-
-    Attributes:
-        recursive (bool): Whether to search for input files recursively in directories.
-        verbose (bool): If True, enables detailed logging.
-        api_key (str, optional): The API key for the completion service.
-        context_size (str): Specifies the context window size for the model (e.g., "small", "medium", "large").
-        tag (str): A tag for the current run, used for naming output directories.
-        output_directory (str): The path to the directory where intermediate and final files are saved.
-        content (list[str]): A list of strings, where each string is the content of an input file.
-        query (str): The user's query to be addressed by the summary.
-        added_context (str): Formatted additional context to be used in prompts.
+    Factory class for creating TLDR engine instances with different backends.
+    
+    This class provides a unified interface to create TldrEngine instances
+    with either OpenAI or Google backend, while maintaining a consistent API.
+    
+    Example:
+        # Create with OpenAI backend
+        tldr = TldrEngine(platform='openai', api_key='your-key')
+        
+        # Create with Google backend
+        tldr = TldrEngine(platform='google', api_key='your-key')
     """
+    
+    def __new__(cls, platform='openai', **kwargs):
+        """
+        Factory method to create a TldrEngine with the specified handler type.
+        
+        Args:
+            platform: Either 'openai' or 'google' to specify which backend to use
+            **kwargs: Additional arguments to pass to the handler's __init__
+            
+        Returns:
+            An instance of TldrEngineOpenAI or TldrEngineGoogle
+            
+        Raises:
+            ValueError: If an unsupported platform is provided
+        """
+        if platform == 'openai':
+            from .openai import CompletionHandlerOpenAI
+            return TldrEngineOpenAI(**kwargs)
+        elif platform == 'google':
+            from .google import CompletionHandlerGoogle
+            return TldrEngineGoogle(**kwargs)
+        else:
+            raise ValueError(f"Unsupported handler type: {platform}. Use 'openai' or 'google'.")
 
-    def __init__(
-        self,
-        verbose=True,
-        api_key=None,
-        injection_screen=True,
-    ):
-        # Initialize parent class chain
-        super().__init__(api_key=api_key, injection_screen=injection_screen)
+class TldrEngineOpenAI(BaseTldrEngine, CompletionHandlerOpenAI):
+    """
+    TldrEngine implementation using OpenAI's completion API.
+    """
+    def __init__(self, **kwargs):
+        # First initialize CompletionHandlerOpenAI (which initializes ResearchAgent)
+        CompletionHandlerOpenAI.__init__(
+            self,
+            context_size=kwargs.get('context_size', 'medium'),
+            api_key=kwargs.get('api_key'),
+            injection_screen=kwargs.get('injection_screen', True)
+        )
+        
+        # Then initialize BaseTldrEngine
+        BaseTldrEngine.__init__(self, **kwargs)
+        
+        # Platform-specific initialization
+        self.platform = "openai"
+        self._new_openai_client()
 
-        # Additional attributes
-        self.verbose = verbose
+
+class TldrEngineGoogle(BaseTldrEngine, CompletionHandlerGoogle):
+    """
+    TldrEngine implementation using Google's completion API.
+    """
+    def __init__(self, **kwargs):
+        # First initialize CompletionHandlerGoogle (which initializes ResearchAgent)
+        CompletionHandlerGoogle.__init__(
+            self,
+            context_size=kwargs.get('context_size', 'medium'),
+            api_key=kwargs.get('api_key'),
+            injection_screen=kwargs.get('injection_screen', True)
+        )
+        
+        # Then initialize BaseTldrEngine
+        BaseTldrEngine.__init__(self, **kwargs)
+        
+        # Platform-specific initialization
+        self.platform = "google"
+        self._new_gemini_client()
+
+class BaseTldrEngine:
+    """
+    Base class containing common functionality for TLDR engines.
+    
+    This class implements the core logic for generating TLDR summaries that is shared
+    between different platform-specific implementations.
+    """
+    def __init__(self, **kwargs):
+        # Common initialization code here
+        self.verbose = kwargs.get('verbose', True)
         self.random_seed = 42
         self.content = None
         self.query = None
         self.added_context = ""
-        self.platform = "openai"
 
+        # Set by subclass
+        self.platform = ""
+        
         # Initialize session
         self._generate_run_tag()
         self._create_output_path()
         self._start_logging()
         self._read_system_instructions()
-        self._new_openai_client()
 
     async def load_all_content(
         self,

@@ -14,7 +14,7 @@ from openai import AsyncOpenAI, RateLimitError
 from .search import ResearchAgent
 
 
-class CompletionHandler(ResearchAgent):
+class CompletionHandlerOpenAI(ResearchAgent):
     """
     Handles interactions with the OpenAI completion API.
 

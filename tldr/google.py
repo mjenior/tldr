@@ -13,7 +13,7 @@ from google.genai import types
 
 from .search import ResearchAgent
 
-class CompletionHandler(ResearchAgent):
+class CompletionHandlerGoogle(ResearchAgent):
     """
     Handles interactions with the Google Gemini completion API.
 
