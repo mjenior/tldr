@@ -1,0 +1,3 @@
+[console_scripts]
+tldr = tldr.cli:run_tldr
+tldr_ui = tldr.interface:start_tldr_ui
