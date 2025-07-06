@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 1.2.0 - Google Gemini API Integration
+* Added support for Google Gemini models (2.0-flash, 2.5-flash, 2.5-pro)
+* Implemented all core functionality for Google Gemini API integration
+* Added web search capability through Gemini's Google Search integration
+* Added support for temperature controls
+
 ## Version 1.1.3 - Streamlit Interface and Code Refactoring
 * Added prompt injection testing and system instructions guardrails
 * Added Streamlit-based web interface for easier interaction
