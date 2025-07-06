@@ -190,6 +190,8 @@ async def run_tldr_streamlit():
     )
 
     # Initialize session state
+    if "api_provider" not in st.session_state:
+        st.session_state.api_provider = "openai"
     st.session_state.processing = False
     st.session_state.status = "Ready"
     st.session_state.input_token_count = 0
@@ -215,7 +217,8 @@ async def run_tldr_streamlit():
     # Initialize TLDR classes if first run
     if "tldr_ui" not in st.session_state:
         st.session_state.tldr_ui = TldrUI()
-        st.session_state.tldr_ui.tldr = TldrEngine()
+        st.session_state.current_platform = "OpenAI"  # Default platform
+        st.session_state.tldr_ui.tldr = TldrEngine(platform=st.session_state.current_platform.lower())
 
         # Log initialization success
         print("TLDR: TldrEngine initialized successfully")
@@ -239,6 +242,26 @@ async def run_tldr_streamlit():
 
         # Select options
         st.subheader("Options", divider=True)
+        
+        # Initialize platform in session state if not exists
+        if "current_platform" not in st.session_state:
+            st.session_state.current_platform = None
+            
+        # Platform selection with callback to reinitialize TldrEngine
+        def on_platform_change():
+            if st.session_state.current_platform != st.session_state.platform_selector:
+                st.session_state.current_platform = st.session_state.platform_selector
+                st.session_state.tldr_ui.tldr = TldrEngine(platform=st.session_state.platform_selector.lower())
+                st.rerun()
+        platform = st.radio(
+            "API Provider",
+            ["OpenAI", "Google"],
+            index=0 if st.session_state.current_platform is None else ["OpenAI", "Google"].index(st.session_state.current_platform),
+            help="The API provider to use (Changing reinitializes the client).",
+            key="platform_selector",
+            on_change=on_platform_change
+        )
+        # Other options
         tone = st.selectbox(
             "Polished summary tone",
             ["stylized", "formal"],
@@ -249,7 +272,7 @@ async def run_tldr_streamlit():
             "Context window",
             ["small", "medium", "large"],
             index=1,
-            help="The context window size for the summarization and research effort.",
+            help="The context window size and research effort.",
         )
         # Status
         st.divider()
