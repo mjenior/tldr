@@ -1,5 +1,4 @@
 import os
-import math
 import asyncio
 from tenacity import (
     retry,
@@ -37,37 +36,38 @@ class CompletionHandler(ResearchAgent):
         self.api_key = api_key
         self.injection_screen = injection_screen
 
-    def _new_openai_client(self):
-        """Initialize OpenAI client"""
+    def _new_gemini_client(self, version="v1beta"):
+        """Initialize Gemini client"""
         # Set API key
         self.api_key = self.api_key or os.environ.get("GEMINI_API_KEY")
         if not self.api_key:
             raise ValueError("Google Gemini API key not provided.")
 
-        # Initialize OpenAI clients
-        self.client = genai.Client(api_key=self.api_key, http_options={"api_version": "v1beta"})
+        # Initialize Gemini client
+        self.client = genai.Client(api_key=self.api_key, http_options={"api_version": version})
         self.logger.info(
-            f"Initialized OpenAI client: version={self.client._version}, context size={self.context_size}"
+            f"Initialized Google Gemini client; version={version}"
         )
         if self.injection_screen is True:
             self.logger.info("Prompt injection screen enabled.")
         else:
             self.logger.info("Prompt injection screen disabled.")
 
-    def assemble_config(self, prompt_type, web_search=False):
+    def assemble_config(self, prompt_type, web_search=False, context_size="medium"):
         """Assemble configuration for API call."""
         role = self.prompt_dictionary[prompt_type.lower()]
         model = role["gemini_model"]
         
-        
-
-        # TODO: Scale output tokens
+        # Scale dynamic threshold
+        thinking_dict = {"low": 0, "medium": 0.4, "high": 0.8}
+        thinking = types.ThinkingConfig(thinking_budget=thinking_dict[context_size])
 
         if web_search is True:
+            search_dict = {"low": 0.25, "medium": 0.5, "high": 0.75}
             tools = [
                 genai.types.Tool(
                     google_search=genai.types.GoogleSearchRetrieval(
-                        dynamic_retrieval_config=genai.types.DynamicRetrievalConfig(dynamic_threshold=0.7)
+                        dynamic_retrieval_config=genai.types.DynamicRetrievalConfig(dynamic_threshold=search_dict[context_size])
                     )
                 )
             ]
@@ -80,15 +80,9 @@ class CompletionHandler(ResearchAgent):
             system_instruction=role["system_instruction"],
             max_output_tokens=role["max_output_tokens"],
             tools=tools,
-            thinking_config=types.ThinkingConfig(thinking_budget=0) # Disables thinking
+            thinking_config=thinking
         )
-        config = {
-                "": role["temperature"],temperature
-                "system_instruction": role["system_instruction"],
-                "max_output_tokens": role["max_output_tokens"],
-                "tools": tools,
-                "reasoning": reasoning,
-            }
+
         return model, config
 
 
@@ -140,23 +134,26 @@ class CompletionHandler(ResearchAgent):
                 self.logger.info("No prompt injection detected. Proceeding.")
 
         # Assemble messages and call parameters
-        call_params = self.assemble_messages(
-            prompt, prompt_type, web_search, context_size
-        )
+        model, config = self.assemble_config(prompt_type, web_search, context_size)
 
         # Run completion query with timeout
         try:
             # No retries, handle errors locally
             response = await asyncio.wait_for(
-                self.client.responses.create(**call_params, **kwargs),
+                self.client.models.generate_content(
+                    model=model, 
+                    contents=prompt,
+                    config=config,
+                    **kwargs,
+                ),
                 timeout=timeout_seconds,
             )
 
             # Update usage and return prompt and response pair
-            self.update_usage(call_params["model"], response)
+            self.update_usage(model, response)
             return {
                 "prompt": prompt,
-                "response": response.output_text,
+                "response": response.text,
                 "source": source,
             }
         except asyncio.TimeoutError:
@@ -166,11 +163,26 @@ class CompletionHandler(ResearchAgent):
             self.logger.error(f"Unexpected error in API call: {str(e)}")
             raise
 
+    def update_usage(self, model, response):
+        """Update usage statistics."""
+        usage_metadata = response.usage_metadata
+        self.model_tokens[model]["input"] += usage_metadata.input_token_count
+        self.model_tokens[model]["output"] += usage_metadata.output_token_count
+        self.update_spending()
+        self.update_session_totals()
 
-client = genai.Client()
-response = client.models.generate_content(
-    model="gemini-2.0-flash", contents="Write a story about a magic backpack."
-)
-print(response.text)
-    
-    
+    async def detect_prompt_injection(self, prompt: str) -> bool:
+        """
+        Detect potential prompt injection and return boolean test result
+        """
+        test_result = await self.perform_api_call(
+            prompt=prompt.strip(),
+            prompt_type="detect_injection",
+            context_size="low",
+            injection_screen=False,  # Prevent infinite recursion
+        )
+        # Check test result
+        if "yes" in test_result["response"].lower():
+            return True
+        else:
+            return False

@@ -102,10 +102,17 @@ def parse_tldr_arguments():
         "--verbose", type=bool, default=True, help="Verbose stdout reporting"
     )
     parser.add_argument(
+        "--platform",
+        type=str,
+        choices=["openai", "chatgpt", "gemini", "google"],
+        default="openai",
+        help="Platform to use for API calls",
+    )
+    parser.add_argument(
         "--api_key",
         type=str,
         default=None,
-        help="API key for OpenAI",
+        help="API key for OpenAI or Google Gemini",
     )
     parser.add_argument(
         "--injection_screen",

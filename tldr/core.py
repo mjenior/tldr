@@ -9,12 +9,12 @@ provided information. It manages interactions with a completion API and handles 
 output of intermediate and final results.
 """
 
-import re
 import asyncio
-from .openai import CompletionHandler
+from .openai import CompletionHandlerOpenAI
+from .google import CompletionHandlerGoogle
 
 
-class TldrEngine(CompletionHandler):
+class TldrEngine(CompletionHandlerOpenAI or CompletionHandlerGoogle):
     """
     Handles the core logic for generating TLDR summaries.
 

@@ -28,6 +28,12 @@ import asyncio
 from .core import TldrEngine
 from .args import parse_tldr_arguments
 
+# Class factory
+def get_tldr_engine(handler_type='openai'):
+    handler_cls = CompletionHandlerOpenAI if handler_type == 'openai' else CompletionHandlerGoogle
+    class TldrEngine(handler_cls):
+        pass
+    return TldrEngine
 
 async def pipeline():
     """Main entry point for the tldr command"""

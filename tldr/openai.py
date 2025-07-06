@@ -68,6 +68,7 @@ class CompletionHandler(ResearchAgent):
         instructions = instructions_dict["system_instruction"]
         output_tokens = self._scale_token(instructions_dict["max_output_tokens"])
         model = instructions_dict["openai_model"]
+        temperature = instructions_dict["temperature"]
 
         # Check message
         if len(message.strip()) == 0:
@@ -110,6 +111,7 @@ class CompletionHandler(ResearchAgent):
             "max_output_tokens": output_tokens,
             "tools": tools,
             "reasoning": reasoning,
+            "temperature": temperature,
         }
 
         return params

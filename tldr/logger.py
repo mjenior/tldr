@@ -87,28 +87,42 @@ class LogHandler(FileHandler):
         logger (logging.Logger): The logger instance for the application.
     """
 
-    def __init__(self, verbose=True):
+    def __init__(self, platform="openai", verbose=True):
         super().__init__()
         self.verbose = verbose
-        self.model = "gpt-4o-mini"
+        self.platform = platform
         self.streamlit_handler: Optional[StreamlitLogHandler] = None
         self.logger = logging.getLogger()
 
-        # Define spending dictionaries
-        self.model_rates_perM = {
-            "gpt-4o-mini": {"input": 0.15, "output": 0.6},
-            "gpt-4o": {"input": 2.5, "output": 10.0},
-            "o4-mini": {"input": 1.1, "output": 4.4},
-        }
+        if self.platform == "openai":
+            low_model = "gpt-4o-mini"
+            medium_model = "gpt-4o"
+            high_model = "o4-mini"
+            self.model_rates_perM = {
+                low_model: {"input": 0.15, "output": 0.6},
+                medium_model: {"input": 2.5, "output": 10.0},
+                high_model: {"input": 1.1, "output": 4.4},
+            }
+        elif self.platform == "gemini":
+            low_model = "gemini-2.0-flash"
+            medium_model = "gemini-2.5-flash"
+            high_model = "gemini-2.5-pro"
+            self.model_rates_perM = {
+                low_model: {"input": 0.1, "output": 0.4},
+                medium_model: {"input": 0.3, "output": 2.5},
+                high_model: {"input": 1.25, "output": 10.0},
+            }
+
+        self.model = low_model
         self.model_tokens = {
-            "gpt-4o-mini": {"input": 0, "output": 0},
-            "gpt-4o": {"input": 0, "output": 0},
-            "o4-mini": {"input": 0, "output": 0},
+            low_model: {"input": 0, "output": 0},
+            medium_model: {"input": 0, "output": 0},
+            high_model: {"input": 0, "output": 0},
         }
         self.model_spend = {
-            "gpt-4o-mini": {"input": 0.0, "output": 0.0},
-            "gpt-4o": {"input": 0.0, "output": 0.0},
-            "o4-mini": {"input": 0.0, "output": 0.0},
+            low_model: {"input": 0.0, "output": 0.0},
+            medium_model: {"input": 0.0, "output": 0.0},
+            high_model: {"input": 0.0, "output": 0.0},
         }
         self.session_spend = {"input": 0.0, "output": 0.0}
         self.total_spend = 0.0
