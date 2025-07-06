@@ -11,6 +11,9 @@ output of intermediate and final results.
 
 import asyncio
 
+from .openai_client import CompletionHandlerOpenAI
+from .google_client import CompletionHandlerGoogle
+
 class TldrEngine:
     """
     Factory class for creating TLDR engine instances with different backends.
@@ -35,21 +38,19 @@ class TldrEngine:
             **kwargs: Additional arguments to pass to the handler's __init__
             
         Returns:
-            An instance of TldrEngineOpenAI or TldrEngineGoogle
+            An instance of TldrOpenAI or TldrGoogle
             
         Raises:
             ValueError: If an unsupported platform is provided
         """
         if platform == 'openai':
-            from .openai import CompletionHandlerOpenAI
-            return TldrEngineOpenAI(**kwargs)
+            return TldrOpenAI(**kwargs)
         elif platform == 'google':
-            from .google import CompletionHandlerGoogle
-            return TldrEngineGoogle(**kwargs)
+            return TldrGoogle(**kwargs)
         else:
             raise ValueError(f"Unsupported platform: {platform}. Use 'openai' or 'google'.")
 
-class TldrEngineOpenAI(BaseTldrEngine, CompletionHandlerOpenAI):
+class TldrOpenAI(BaseTldr, CompletionHandlerOpenAI):
     """
     TldrEngine implementation using OpenAI's completion API.
     """
@@ -62,15 +63,15 @@ class TldrEngineOpenAI(BaseTldrEngine, CompletionHandlerOpenAI):
             injection_screen=kwargs.get('injection_screen', True)
         )
         
-        # Then initialize BaseTldrEngine
-        BaseTldrEngine.__init__(self, **kwargs)
+        # Then initialize BaseTldr
+        BaseTldr.__init__(self, **kwargs)
         
         # Platform-specific initialization
         self.platform = "openai"
         self._new_openai_client()
 
 
-class TldrEngineGoogle(BaseTldrEngine, CompletionHandlerGoogle):
+class TldrGoogle(BaseTldr, CompletionHandlerGoogle):
     """
     TldrEngine implementation using Google's completion API.
     """
@@ -83,14 +84,14 @@ class TldrEngineGoogle(BaseTldrEngine, CompletionHandlerGoogle):
             injection_screen=kwargs.get('injection_screen', True)
         )
         
-        # Then initialize BaseTldrEngine
-        BaseTldrEngine.__init__(self, **kwargs)
+        # Then initialize BaseTldr
+        BaseTldr.__init__(self, **kwargs)
         
         # Platform-specific initialization
         self.platform = "google"
         self._new_gemini_client()
 
-class BaseTldrEngine:
+class BaseTldr:
     """
     Base class containing common functionality for TLDR engines.
     

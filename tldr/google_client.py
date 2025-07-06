@@ -89,7 +89,7 @@ class CompletionHandlerGoogle(ResearchAgent):
     @retry(
         wait=wait_random_exponential(multiplier=2, min=5, max=30),
         stop=stop_after_attempt(3),
-        retry=retry_if_exception_type((RateLimitError, asyncio.TimeoutError)),
+        retry=retry_if_exception_type((Exception, asyncio.TimeoutError)),
     )
     async def perform_api_call(
         self,
