@@ -16,9 +16,10 @@ The tool operates through a modular, object-oriented design:
 
 -   **`TldrEngine`**: The central orchestrator. It manages the entire summarization pipeline, from parsing user arguments to generating the final polished response.
 -   **`FileHandler`**: A robust module for all file I/O operations. It handles reading different document types (PDF, DOCX, HTML, TXT, Markdown), discovering readable files, and saving all output files, including intermediate summaries and the final PDF report.
--   **`CompletionHandler`**: Manages all interactions with the OpenAI API, including sending prompts and processing the responses for summarization, query refinement, and research.
+-   **`CompletionHandler`**: Manages all interactions with the OpenAI or Google Gemini APIs, including sending prompts and processing the responses for summarization, query refinement, and research.
 -   **`SummaryJudge`**: An evaluation tool to objectively score the quality of generated summaries based on criteria like correctness, coherence, and conciseness.
--   **`PromptInjectionScreen`**: Tests the system for prompt injection vulnerabilities.
+-   **`SearchAgent`**: Manages all interactions with the local vector store, including encoding documents and searching for relevant documents.
+-   **`ResearchAgent`**: Manages all interactions with the web, including searching for relevant documents and performing web research.
 
 This architecture allows for a clear separation of concerns and makes the system easily extensible.
 
