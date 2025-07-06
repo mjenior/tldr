@@ -28,12 +28,6 @@ import asyncio
 from .core import TldrEngine
 from .args import parse_tldr_arguments
 
-# Class factory
-def get_tldr_engine(handler_type='openai'):
-    handler_cls = CompletionHandlerOpenAI if handler_type == 'openai' else CompletionHandlerGoogle
-    class TldrEngine(handler_cls):
-        pass
-    return TldrEngine
 
 async def pipeline():
     """Main entry point for the tldr command"""
@@ -41,6 +35,7 @@ async def pipeline():
     # Initialize TldrEngine
     args = parse_tldr_arguments()
     tldr = TldrEngine(
+        platform=args.platform.lower(),
         verbose=args.verbose,
         api_key=args.api_key,
         injection_screen=args.injection_screen,
@@ -50,7 +45,7 @@ async def pipeline():
     if args.refine_query is True and args.testing is False:
         await tldr.refine_user_query(query=args.query, context_size=args.context_size)
 
-    # Establish context
+    # Read in all provided files
     await tldr.load_all_content(
         input_files=args.input_files,
         context_files=args.context_files,
@@ -58,7 +53,7 @@ async def pipeline():
         recursive=args.recursive_search,
     )
 
-    # Establish initial context
+    # Optional: Establish initial context
     if args.query is not None and args.testing is False:
         await tldr.initial_context_search(context_size=args.context_size)
 

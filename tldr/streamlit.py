@@ -2,7 +2,7 @@
 TLDR Summary Generator - Streamlit Web Interface
 """
 
-version = "1.1.3"
+version = "1.2.0"
 
 import os
 import math

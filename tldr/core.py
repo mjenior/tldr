@@ -1,4 +1,4 @@
-version = "1.1.3"
+version = "1.2.0"
 """
 This module contains the core logic for generating TLDR summaries.
 
@@ -47,7 +47,7 @@ class TldrEngine:
             from .google import CompletionHandlerGoogle
             return TldrEngineGoogle(**kwargs)
         else:
-            raise ValueError(f"Unsupported handler type: {platform}. Use 'openai' or 'google'.")
+            raise ValueError(f"Unsupported platform: {platform}. Use 'openai' or 'google'.")
 
 class TldrEngineOpenAI(BaseTldrEngine, CompletionHandlerOpenAI):
     """

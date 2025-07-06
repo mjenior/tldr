@@ -104,9 +104,9 @@ def parse_tldr_arguments():
     parser.add_argument(
         "--platform",
         type=str,
-        choices=["openai", "chatgpt", "gemini", "google"],
+        choices=["openai", "google"],
         default="openai",
-        help="Platform to use for API calls",
+        help="Platform to use for API calls (openai or google)",
     )
     parser.add_argument(
         "--api_key",
