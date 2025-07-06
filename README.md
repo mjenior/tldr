@@ -24,6 +24,7 @@ This architecture allows for a clear separation of concerns and makes the system
 
 ## Features
 
+-   **Multi-platform Support**: Choose between OpenAI and Google Gemini as your AI backend.
 -   **Multi-format document support**: Handles PDF, DOCX, HTML, Markdown, and TXT files.
 -   **Intelligent Query Refinement**: Automatically improves user queries for more accurate results.
 -   **Local RAG with Vector Store**: Creates local embeddings of your documents to provide highly relevant, in-context answers to your queries.
@@ -52,11 +53,14 @@ pip install -e .
 ## Requirements
 
 -   Python 3.11 or higher
--   An OpenAI API key, set as an environment variable `OPENAI_API_KEY`.
+-   An API key for your chosen platform:
+    -   OpenAI: Set `OPENAI_API_KEY` environment variable
+    -   Google Gemini: Set `GOOGLE_API_KEY` environment variable
 
 Key Python packages are listed in the `pixi.toml` file and include:
 
--   `openai`
+-   `openai` (for OpenAI platform)
+-   `google-genai` (for Google Gemini platform)
 -   `pypdf2`
 -   `python-docx`
 -   `beautifulsoup4`
@@ -91,11 +95,14 @@ streamlit run tldr/streamlit.py
 The tool can also be used via the command line very simply.
 
 ```bash
-# Basic usage - summarize all text files in the current directory
+# Basic usage with default platform (OpenAI) - summarize all text files in the current directory
 tldr
 
+# Explicitly specify the platform (openai or google)
+tldr --platform google
+
 # Provide a specific query to guide the summarization
-tldr "What are the latest advancements in CRISPR gene editing?"
+tldr --platform openai "What are the latest advancements in CRISPR gene editing?"
 
 # Specify input files for summarization
 tldr --input_files ./my_papers/*
@@ -121,10 +128,11 @@ tldr --tone formal
 *   `--context_files <path>`: List of files for additional context. (Default: None)
 *   `--recursive_search <True|False>`: Recursively search input directories. (Default: `False`)
 *   `--research <True|False>`: Use the research agent to fill knowledge gaps. (Default: `True`)
+*   `--platform <platform>`: Choose which AI platform to use. (Choices: `openai`, `google`; Default: `openai`)
 *   `--tone <tone>`: Define the tone for the final summary. (Default: `default`)
 *   `--context_size <scale>`: Set the context window size for the model. (Choices: `low`, `medium`, `high`; Default: `medium`)
 *   `--verbose <True|False>`: Enable verbose logging to stdout. (Default: `True`)
-*   `--api_key <key>`: API key for OpenAI. (Default: None)
+*   `--api_key <key>`: API key for the selected platform. (Default: None, uses environment variables)
 *   `--injection_screen <True|False>`: Enable prompt injection testing. (Default: `True`)
 
 ### BETA - Summary Evaluation (Python API)

@@ -160,6 +160,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/56/53/eb690efa8513166adef3e0669afd31e95ffde69fb3c52ec2ac7223ed6018/fsspec-2025.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a0/61/5c78b91c3143ed5c14207f463aecfc8f9dbb5092fb2869baf37c273b2705/gitdb-4.0.12-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1d/9a/4114a9057db2f1462d5c8f8390ab7383925fe1ac012eaa42402ad65c2963/GitPython-3.1.44-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/b9/b4/08f3ea414060a7e7d4436c08bb22d03dabef74cc05ef13ef8cd846156d5b/google_genai-1.20.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/52/48/e929e6e3db6e4758c2adf0f2ca2c59287f1b76229d8bdc1a4c9cfc05212e/hf_xet-1.1.3-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/33/fb/53587a89fbc00799e4179796f51b3ad713c5de6bb680b2becb6d37c94649/huggingface_hub-0.33.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/2c/e1/e6716421ea10d38022b952c159d5161ca1193197fb744506875fbb87ea7b/iniconfig-2.1.0-py3-none-any.whl
@@ -234,6 +235,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/bf/0e/c68adf10adda05f28a6ed7b9f4cd7b8e07f641b44af88ba72d9c89e4de7a/typer-0.9.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/23/c7abc0ca0a1526a0774eca151daeb8de62ec457e77262b66b359c3c7679e/tzdata-2025.2-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b5/e8/dbf020b4d98251a9860752a094d09a65e1b436ad181faf929983f697048f/watchdog-6.0.0-py3-none-manylinux2014_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/14/8f/aa61f528fba38578ec553c145857a181384c72b98156f858ca5c8e82d9d3/websockets-15.0.1-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/11/a7/81dba5010f7e733de88af9555725146fc133be97ce36533867f4c7e75066/xxhash-3.5.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       osx-64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/aiohappyeyeballs-2.6.1-pyhd8ed1ab_0.conda
@@ -377,6 +379,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/56/53/eb690efa8513166adef3e0669afd31e95ffde69fb3c52ec2ac7223ed6018/fsspec-2025.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a0/61/5c78b91c3143ed5c14207f463aecfc8f9dbb5092fb2869baf37c273b2705/gitdb-4.0.12-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1d/9a/4114a9057db2f1462d5c8f8390ab7383925fe1ac012eaa42402ad65c2963/GitPython-3.1.44-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/b9/b4/08f3ea414060a7e7d4436c08bb22d03dabef74cc05ef13ef8cd846156d5b/google_genai-1.20.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9b/1f/bc01a4c0894973adebbcd4aa338a06815c76333ebb3921d94dcbd40dae6a/hf_xet-1.1.3-cp37-abi3-macosx_10_12_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/33/fb/53587a89fbc00799e4179796f51b3ad713c5de6bb680b2becb6d37c94649/huggingface_hub-0.33.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/2c/e1/e6716421ea10d38022b952c159d5161ca1193197fb744506875fbb87ea7b/iniconfig-2.1.0-py3-none-any.whl
@@ -435,6 +438,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/96/f2/25b27b396af03d5b64e61976b14f7209e2939e9e806c10749b6d277c273e/transformers-4.52.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bf/0e/c68adf10adda05f28a6ed7b9f4cd7b8e07f641b44af88ba72d9c89e4de7a/typer-0.9.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/23/c7abc0ca0a1526a0774eca151daeb8de62ec457e77262b66b359c3c7679e/tzdata-2025.2-py2.py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/f4/71/809a0f5f6a06522af902e0f2ea2757f71ead94610010cf570ab5c98e99ed/websockets-15.0.1-cp312-cp312-macosx_10_13_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/07/0e/1bfce2502c57d7e2e787600b31c83535af83746885aa1a5f153d8c8059d6/xxhash-3.5.0-cp312-cp312-macosx_10_9_x86_64.whl
 packages:
 - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
@@ -1507,6 +1511,20 @@ packages:
   - pkg:pypi/google-auth-httplib2?source=hash-mapping
   size: 14910
   timestamp: 1733907507837
+- pypi: https://files.pythonhosted.org/packages/b9/b4/08f3ea414060a7e7d4436c08bb22d03dabef74cc05ef13ef8cd846156d5b/google_genai-1.20.0-py3-none-any.whl
+  name: google-genai
+  version: 1.20.0
+  sha256: ccd61d6ebcb14f5c778b817b8010e3955ae4f6ddfeaabf65f42f6d5e3e5a8125
+  requires_dist:
+  - anyio>=4.8.0,<5.0.0
+  - google-auth>=2.14.1,<3.0.0
+  - httpx>=0.28.1,<1.0.0
+  - pydantic>=2.0.0,<3.0.0
+  - requests>=2.28.1,<3.0.0
+  - websockets>=13.0.0,<15.1.0
+  - typing-extensions>=4.11.0,<5.0.0
+  - aiohttp<4.0.0 ; extra == 'aiohttp'
+  requires_python: '>=3.9'
 - conda: https://conda.anaconda.org/conda-forge/noarch/google-generativeai-0.8.5-pyh29332c3_0.conda
   sha256: cafbf58ff4fb4fb76d5f609da01123639ca6a490d76bdf90ef79008d823af0f0
   md5: 56d67a6c270d786913823cc9c2045ab1
@@ -5332,6 +5350,16 @@ packages:
   sha256: 20ffe5b202af80ab4266dcd3e91aae72bf2da48c0d33bdb15c66658e685e94e2
   requires_dist:
   - pyyaml>=3.10 ; extra == 'watchmedo'
+  requires_python: '>=3.9'
+- pypi: https://files.pythonhosted.org/packages/14/8f/aa61f528fba38578ec553c145857a181384c72b98156f858ca5c8e82d9d3/websockets-15.0.1-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+  name: websockets
+  version: 15.0.1
+  sha256: 64dee438fed052b52e4f98f76c5790513235efaa1ef7f3f2192c392cd7c91b65
+  requires_python: '>=3.9'
+- pypi: https://files.pythonhosted.org/packages/f4/71/809a0f5f6a06522af902e0f2ea2757f71ead94610010cf570ab5c98e99ed/websockets-15.0.1-cp312-cp312-macosx_10_13_x86_64.whl
+  name: websockets
+  version: 15.0.1
+  sha256: 592f1a9fe869c778694f0aa806ba0374e97648ab57936f092fd9d87f8bc03665
   requires_python: '>=3.9'
 - conda: https://conda.anaconda.org/conda-forge/noarch/wheel-0.45.1-pyhd8ed1ab_1.conda
   sha256: 1b34021e815ff89a4d902d879c3bd2040bc1bd6169b32e9427497fa05c55f1ce

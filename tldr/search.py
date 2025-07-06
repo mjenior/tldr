@@ -62,7 +62,6 @@ class ResearchAgent(LogHandler):
         extra_text: str = "",
         chunk_size: int = 1000,
         chunk_overlap: int = 200,
-        platform: str = "openai",
     ) -> FAISS:
         """
         Encodes a string into a FAISS vector store using OpenAI embeddings.
@@ -100,7 +99,7 @@ class ResearchAgent(LogHandler):
 
             embeddings = (
                 OpenAIEmbeddings()
-                if platform == "openai"
+                if self.platform == "openai"
                 else GoogleGenerativeAIEmbeddings()
             )
             vector_store = FAISS.from_documents(docs, embeddings)
