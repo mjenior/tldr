@@ -16,11 +16,11 @@ patch minor major:
 format:
 	pixi run black tldr/*.py
 
-build: 
+build: format
 	pixi lock
 	pixi run python -m build
 
-install: 
+install: build 
 	pixi install
 	pixi run pip install -e .
 
@@ -36,3 +36,6 @@ uninstall:
 
 publish: build
 	pixi publish
+	git tag ${VERSION}
+	git push origin ${VERSION}
+	git push origin --tags

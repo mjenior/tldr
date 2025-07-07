@@ -2,6 +2,16 @@
 TLDR Summary Generator - Streamlit Web Interface
 """
 
+import streamlit as st
+
+# Page config must be the first Streamlit command
+st.set_page_config(
+    page_title="TLDR Summary Generator",
+    page_icon="📝",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
 version = "1.2.0"
 
 import os
@@ -10,17 +20,7 @@ import asyncio
 import traceback
 from typing import List
 
-import streamlit as st
-
 from tldr.core import TldrEngine
-
-# Page config
-st.set_page_config(
-    page_title="TLDR Summary Generator",
-    page_icon="📝",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
 
 # Custom CSS for better styling
 st.markdown(
@@ -218,15 +218,13 @@ async def run_tldr_streamlit():
     if "tldr_ui" not in st.session_state:
         st.session_state.tldr_ui = TldrUI()
         st.session_state.current_platform = "OpenAI"  # Default platform
-        st.session_state.tldr_ui.tldr = TldrEngine(platform=st.session_state.current_platform.lower())
+        st.session_state.tldr_ui.tldr = TldrEngine(
+            platform=st.session_state.current_platform.lower()
+        )
 
         # Log initialization success
         print("TLDR: TldrEngine initialized successfully")
         print("TLDR: StreamlitLogHandler is ready for log capture")
-
-    # Finish initialization
-    tldr_ui = st.session_state.tldr_ui
-    tldr_ui.tldr.logger.info("TLDR system initialized and ready for use")
 
     # Handle refined query and initial context updates
     if "refined_query" in st.session_state:
@@ -236,30 +234,41 @@ async def run_tldr_streamlit():
         st.session_state.added_context = st.session_state.initial_context
         del st.session_state.initial_context
 
+    # Finish initialization
+    tldr_ui = st.session_state.tldr_ui
+    tldr_ui.tldr.logger.info("TLDR system initialized and ready for use")
+
     # Sidebar for settings
     with st.sidebar:
         st.title("⚙️ Settings")
 
         # Select options
         st.subheader("Options", divider=True)
-        
+
         # Initialize platform in session state if not exists
         if "current_platform" not in st.session_state:
             st.session_state.current_platform = None
-            
+
         # Platform selection with callback to reinitialize TldrEngine
         def on_platform_change():
             if st.session_state.current_platform != st.session_state.platform_selector:
                 st.session_state.current_platform = st.session_state.platform_selector
-                st.session_state.tldr_ui.tldr = TldrEngine(platform=st.session_state.platform_selector.lower())
+                st.session_state.tldr_ui.tldr = TldrEngine(
+                    platform=st.session_state.platform_selector.lower()
+                )
                 st.rerun()
+
         platform = st.radio(
             "API Provider",
             ["OpenAI", "Google"],
-            index=0 if st.session_state.current_platform is None else ["OpenAI", "Google"].index(st.session_state.current_platform),
+            index=(
+                0
+                if st.session_state.current_platform is None
+                else ["OpenAI", "Google"].index(st.session_state.current_platform)
+            ),
             help="The API provider to use (Changing reinitializes the client).",
             key="platform_selector",
-            on_change=on_platform_change
+            on_change=on_platform_change,
         )
         # Other options
         tone = st.selectbox(
@@ -862,20 +871,3 @@ async def run_tldr_streamlit():
             """,
             unsafe_allow_html=True,
         )
-
-
-def start_tldr_ui():
-    """Command-line entry point to run the tldr streamlit UI."""
-    from pathlib import Path
-
-    # Get the path to the current file
-    streamlit_file = Path(__file__).resolve()
-
-    # Run streamlit with the current file
-    import subprocess
-
-    subprocess.run(["streamlit", "run", str(streamlit_file)], check=True)
-
-
-if __name__ == "__main__":
-    start_tldr_ui()

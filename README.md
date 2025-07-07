@@ -81,14 +81,11 @@ Key Python packages are listed in the `pixi.toml` file and include:
 
 ### Web Interface (Streamlit)
 
-TLDR is most easily used via a web interface.
+TLDR is most easily used via an interactive web interface.
 
 ```bash
-# To run the web interface, simply use the alias added during installation
-tldr_ui
-
-# Or run the script directly
-streamlit run tldr/streamlit.py
+# To initialize, just run:
+streamlit run interface.py
 ```
 
 ### Command Line

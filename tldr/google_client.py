@@ -13,6 +13,7 @@ from google.genai import types
 
 from .search import ResearchAgent
 
+
 class GenerationAPI_Google(ResearchAgent):
     """
     Handles interactions with the Google Gemini completion API.
@@ -44,10 +45,10 @@ class GenerationAPI_Google(ResearchAgent):
             raise ValueError("Google Gemini API key not provided.")
 
         # Initialize Gemini client
-        self.client = genai.Client(api_key=self.api_key, http_options={"api_version": version})
-        self.logger.info(
-            f"Initialized Google Gemini client; version={version}"
+        self.client = genai.Client(
+            api_key=self.api_key, http_options={"api_version": version}
         )
+        self.logger.info(f"Initialized Google Gemini client; version={version}")
         if self.injection_screen is True:
             self.logger.info("Prompt injection screen enabled.")
         else:
@@ -57,7 +58,7 @@ class GenerationAPI_Google(ResearchAgent):
         """Assemble configuration for API call."""
         role = self.prompt_dictionary[prompt_type.lower()]
         model = role["gemini_model"]
-        
+
         # Scale dynamic threshold
         thinking_dict = {"low": 0, "medium": 0.4, "high": 0.8}
         thinking = types.ThinkingConfig(thinking_budget=thinking_dict[context_size])
@@ -67,7 +68,9 @@ class GenerationAPI_Google(ResearchAgent):
             tools = [
                 genai.types.Tool(
                     google_search=genai.types.GoogleSearchRetrieval(
-                        dynamic_retrieval_config=genai.types.DynamicRetrievalConfig(dynamic_threshold=search_dict[context_size])
+                        dynamic_retrieval_config=genai.types.DynamicRetrievalConfig(
+                            dynamic_threshold=search_dict[context_size]
+                        )
                     )
                 )
             ]
@@ -80,11 +83,10 @@ class GenerationAPI_Google(ResearchAgent):
             system_instruction=role["system_instruction"],
             max_output_tokens=role["max_output_tokens"],
             tools=tools,
-            thinking_config=thinking
+            thinking_config=thinking,
         )
 
         return model, config
-
 
     @retry(
         wait=wait_random_exponential(multiplier=2, min=5, max=30),
@@ -141,7 +143,7 @@ class GenerationAPI_Google(ResearchAgent):
             # No retries, handle errors locally
             response = await asyncio.wait_for(
                 self.client.models.generate_content(
-                    model=model, 
+                    model=model,
                     contents=prompt,
                     config=config,
                     **kwargs,

@@ -14,96 +14,19 @@ import asyncio
 from .openai_client import GenerationAPI_OpenAI
 from .google_client import GenerationAPI_Google
 
-class TldrEngine:
-    """
-    Factory class for creating TLDR engine instances with different backends.
-    
-    This class provides a unified interface to create TldrEngine instances
-    with either OpenAI or Google backend, while maintaining a consistent API.
-    
-    Example:
-        # Create with OpenAI backend
-        tldr = TldrEngine(platform='openai', api_key='your-key')
-        
-        # Create with Google backend
-        tldr = TldrEngine(platform='google', api_key='your-key')
-    """
-    
-    def __new__(cls, platform='openai', **kwargs):
-        """
-        Factory method to create a TldrEngine with the specified handler type.
-        
-        Args:
-            platform: Either 'openai' or 'google' to specify which backend to use
-            **kwargs: Additional arguments to pass to the handler's __init__
-            
-        Returns:
-            An instance of TldrOpenAI or TldrGoogle
-            
-        Raises:
-            ValueError: If an unsupported platform is provided
-        """
-        if platform == 'openai':
-            return TldrOpenAI(**kwargs)
-        elif platform == 'google':
-            return TldrGoogle(**kwargs)
-        else:
-            raise ValueError(f"Unsupported platform: {platform}. Use 'openai' or 'google'.")
 
-class TldrOpenAI(BaseTldr, GenerationAPI_OpenAI):
-    """
-    TldrEngine implementation using OpenAI's completion API.
-    """
-    def __init__(self, **kwargs):
-        super().__init__()
-        # First initialize GenerationAPI_OpenAI (which initializes ResearchAgent)
-        GenerationAPI_OpenAI.__init__(
-            self,
-            context_size=kwargs.get('context_size', 'medium'),
-            api_key=kwargs.get('api_key'),
-            injection_screen=kwargs.get('injection_screen', True)
-        )
-        
-        # Then initialize BaseTldr
-        BaseTldr.__init__(self, **kwargs)
-        
-        # Platform-specific initialization
-        self.platform = "openai"
-        self._new_openai_client()
-
-
-class TldrGoogle(BaseTldr, GenerationAPI_Google):
-    """
-    TldrEngine implementation using Google's completion API.
-    """
-    def __init__(self, **kwargs):
-        super().__init__()
-        # First initialize GenerationAPI_Google (which initializes ResearchAgent)
-        GenerationAPI_Google.__init__(
-            self,
-            context_size=kwargs.get('context_size', 'medium'),
-            api_key=kwargs.get('api_key'),
-            injection_screen=kwargs.get('injection_screen', True)
-        )
-        
-        # Then initialize BaseTldr
-        BaseTldr.__init__(self, **kwargs)
-        
-        # Platform-specific initialization
-        self.platform = "google"
-        self._new_gemini_client()
-
-class BaseTldr:
+class TldrBase:
     """
     Base class containing common functionality for TLDR engines.
-    
+
     This class implements the core logic for generating TLDR summaries that is shared
     between different platform-specific implementations.
     """
+
     def __init__(self, **kwargs):
         # Common initialization
         super().__init__()
-        self.verbose = kwargs.get('verbose', True)
+        self.verbose = kwargs.get("verbose", True)
         self.random_seed = 42
         self.content = None
         self.query = None
@@ -111,7 +34,7 @@ class BaseTldr:
 
         # Set by subclass, here for documentation
         self.platform = ""
-        
+
         # Initialize session
         self._generate_run_tag()
         self._create_output_path()
@@ -467,3 +390,88 @@ class BaseTldr:
         result = self.save_response_text(research_str, label="research_results")
         self.logger.info(f"Response saved to: {result}")
         self.logger.info(f"Finished researching knowledge gaps")
+
+
+class TldrEngine:
+    """
+    Factory class for creating TLDR engine instances with different backends.
+
+    This class provides a unified interface to create TldrEngine instances
+    with either OpenAI or Google backend, while maintaining a consistent API.
+
+    Example:
+        # Create with OpenAI backend
+        tldr = TldrEngine(platform='openai', api_key='your-key')
+
+        # Create with Google backend
+        tldr = TldrEngine(platform='google', api_key='your-key')
+    """
+
+    def __new__(cls, platform="openai", **kwargs):
+        """
+        Factory method to create a TldrEngine with the specified handler type.
+
+        Args:
+            platform: Either 'openai' or 'google' to specify which backend to use
+            **kwargs: Additional arguments to pass to the handler's __init__
+
+        Returns:
+            An instance of TldrOpenAI or TldrGoogle
+
+        Raises:
+            ValueError: If an unsupported platform is provided
+        """
+        if platform == "openai":
+            return TldrOpenAI(**kwargs)
+        elif platform == "google":
+            return TldrGoogle(**kwargs)
+        else:
+            raise ValueError(
+                f"Unsupported platform: {platform}. Use 'openai' or 'google'."
+            )
+
+
+class TldrOpenAI(TldrBase, GenerationAPI_OpenAI):
+    """
+    TldrEngine implementation using OpenAI's completion API.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__()
+        # First initialize GenerationAPI_OpenAI (which initializes ResearchAgent)
+        GenerationAPI_OpenAI.__init__(
+            self,
+            context_size=kwargs.get("context_size", "medium"),
+            api_key=kwargs.get("api_key"),
+            injection_screen=kwargs.get("injection_screen", True),
+        )
+
+        # Then initialize TldrBase
+        TldrBase.__init__(self, **kwargs)
+
+        # Platform-specific initialization
+        self.platform = "openai"
+        self._new_openai_client()
+
+
+class TldrGoogle(TldrBase, GenerationAPI_Google):
+    """
+    TldrEngine implementation using Google's completion API.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__()
+        # First initialize GenerationAPI_Google (which initializes ResearchAgent)
+        GenerationAPI_Google.__init__(
+            self,
+            context_size=kwargs.get("context_size", "medium"),
+            api_key=kwargs.get("api_key"),
+            injection_screen=kwargs.get("injection_screen", True),
+        )
+
+        # Then initialize TldrBase
+        TldrBase.__init__(self, **kwargs)
+
+        # Platform-specific initialization
+        self.platform = "google"
+        self._new_gemini_client()
