@@ -12,7 +12,7 @@ import asyncio
 from deepeval.metrics import FaithfulnessMetric, GEval
 from deepeval.test_case import LLMTestCase
 
-from .openai import CompletionHandlerOpenAI
+from .openai_client import CompletionHandlerOpenAI
 from .args import parse_eval_arguments
 
 
