@@ -871,3 +871,6 @@ async def run_tldr_streamlit():
             """,
             unsafe_allow_html=True,
         )
+
+if __name__ == "__main__":
+    asyncio.run(run_tldr_streamlit())
