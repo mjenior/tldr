@@ -18,7 +18,6 @@ The tool operates through a modular, object-oriented design:
 -   **`FileHandler`**: A robust module for all file I/O operations. It handles reading different document types (PDF, DOCX, HTML, TXT, Markdown), discovering readable files, and saving all output files, including intermediate summaries and the final PDF report.
 -   **`CompletionHandler`**: Manages all interactions with the OpenAI API, including sending prompts and processing the responses for summarization, query refinement, and research.
 -   **`SummaryJudge`**: An evaluation tool to objectively score the quality of generated summaries based on criteria like correctness, coherence, and conciseness.
--   **`PromptInjectionScreen`**: Tests the system for prompt injection vulnerabilities.
 
 This architecture allows for a clear separation of concerns and makes the system easily extensible.
 
@@ -79,11 +78,8 @@ Key Python packages are listed in the `pixi.toml` file and include:
 TLDR is most easily used via a web interface.
 
 ```bash
-# To run the web interface, simply use the alias added during installation
-tldr_ui
-
-# Or run the script directly
-streamlit run tldr/streamlit.py
+# To open the web interface, simply run:
+streamlit run interface.py
 ```
 
 ### Command Line

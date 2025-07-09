@@ -4,7 +4,7 @@ import math
 import logging
 from typing import List, Optional
 
-from .io import FileHandler
+from .i_o import FileHandler
 
 
 class StreamlitLogHandler(logging.Handler):

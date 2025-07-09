@@ -9,9 +9,8 @@ provided information. It manages interactions with a completion API and handles 
 output of intermediate and final results.
 """
 
-import re
 import asyncio
-from .openai import CompletionHandler
+from .client import CompletionHandler
 
 
 class TldrEngine(CompletionHandler):
@@ -25,7 +24,6 @@ class TldrEngine(CompletionHandler):
     intermediate and final results.
 
     Attributes:
-        recursive (bool): Whether to search for input files recursively in directories.
         verbose (bool): If True, enables detailed logging.
         api_key (str, optional): The API key for the completion service.
         context_size (str): Specifies the context window size for the model (e.g., "small", "medium", "large").
@@ -65,7 +63,6 @@ class TldrEngine(CompletionHandler):
         input_files=None,
         context_files=None,
         context_size="medium",
-        recursive=False,
     ):
         """Establish context for the TldrEngine"""
 
@@ -80,7 +77,7 @@ class TldrEngine(CompletionHandler):
                     f"No valid resources provided for reference documents."
                 )
         else:
-            self.content = self.fetch_content(recursive=recursive, label="reference")
+            self.content = self.fetch_content(label="reference")
 
         if len(self.content.keys()) == 0:
             self.logger.error(f"No valid resources provided for reference documents.")

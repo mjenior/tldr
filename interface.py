@@ -22,6 +22,8 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+version = "1.1.3"
+
 # Custom CSS for better styling
 st.markdown(
     """
