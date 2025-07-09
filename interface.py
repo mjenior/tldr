@@ -8,6 +8,7 @@ import os
 import math
 import asyncio
 import traceback
+import pyperclip
 from typing import List
 
 import streamlit as st
@@ -21,8 +22,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
-version = "1.1.3"
 
 # Custom CSS for better styling
 st.markdown(
@@ -167,7 +166,7 @@ class TldrUI:
         uploaded_files = st.file_uploader(
             "Upload documents (PDF, TXT, DOCX)",
             type=["pdf", "txt", "docx"],
-            disabled=self.processing,
+            disabled=st.session_state.processing is True,
             help=description,
             accept_multiple_files=True,
             key=key,
@@ -200,19 +199,23 @@ async def run_tldr_streamlit():
     if "documents" not in st.session_state:
         st.session_state.documents = None
     if "added_context" not in st.session_state:
-        st.session_state.added_context = None
+        st.session_state.added_context = "None"
     if "executive_summary" not in st.session_state:
-        st.session_state.executive_summary = None
+        st.session_state.executive_summary = "None"
     if "research_results" not in st.session_state:
-        st.session_state.research_results = None
+        st.session_state.research_results = "None"
     if "polished_summary" not in st.session_state:
-        st.session_state.polished_summary = None
+        st.session_state.polished_summary = "None"
     if "summarized" not in st.session_state:
         st.session_state.summarized = False
     if "selected_doc" not in st.session_state:
         st.session_state.selected_doc = None
     if "user_query" not in st.session_state:
         st.session_state.user_query = None
+    if "output_lines" not in st.session_state:
+        st.session_state.output_lines = []
+    if "active_tab" not in st.session_state:
+        st.session_state.active_tab = "added_context"
 
     # Initialize TLDR classes if first run
     if "tldr_ui" not in st.session_state:
@@ -243,18 +246,19 @@ async def run_tldr_streamlit():
         st.subheader("Options", divider=True)
         tone = st.selectbox(
             "Polished summary tone",
-            ["stylized", "formal"],
+            ["formal", "stylized"],
             index=0,
+            disabled=st.session_state.processing is True,
             help="The tone of the polished summary (Stylized follows writing style of certain prominent authors).",
         )
         context_size = st.selectbox(
             "Context window",
             ["small", "medium", "large"],
             index=1,
+            disabled=st.session_state.processing is True,
             help="The context window size for the summarization and research effort.",
         )
         # Status
-        st.divider()
         st.subheader("Status", divider=True)
         st.text(f"System: {st.session_state.status}")
         st.text(f"Input Token Count: {st.session_state.input_token_count}")
@@ -316,7 +320,6 @@ async def run_tldr_streamlit():
                         input_files=input_files,
                         context_files=context_files,
                         context_size=context_size,
-                        search=False,
                     )
                     # And update the session state
                     for doc in st.session_state.documents:
@@ -531,10 +534,10 @@ async def run_tldr_streamlit():
                     help="Synthesize summaries, research, and new added context",
                 ):
                     with st.spinner(
-                        "Synthesizing summaries, research, and new added context..."
+                        "Synthesizing summaries and research..."
                     ):
                         await tldr_ui.execute_session_process(
-                            log_message="Synthesizing summaries, research, and new added context...",
+                            log_message="Synthesizing summaries and research...",
                             function=tldr_ui.tldr.integrate_summaries,
                             context_size=context_size,
                         )
@@ -564,9 +567,9 @@ async def run_tldr_streamlit():
                         st.rerun()
 
         if (
-            st.session_state.added_context is not None
-            or st.session_state.research_results is not None
-            or st.session_state.executive_summary is not None
+            st.session_state.added_context not in ["None", ""]
+            or st.session_state.research_results != "None"
+            or st.session_state.executive_summary != "None"
         ):
 
             # Summary tabs
@@ -585,13 +588,6 @@ async def run_tldr_streamlit():
                 "polished_summary",
             ]
 
-            # Update active tab in session state
-            for i, tab in enumerate(tabs):
-                with tab:
-                    # This will run when the tab is active
-                    st.session_state.active_tab = tab_names[i]
-
-            # Summary content
             # Initialize edit mode state if not exists
             if "edit_mode" not in st.session_state:
                 st.session_state.edit_mode = {
@@ -660,31 +656,33 @@ async def run_tldr_streamlit():
                     "help_text": "Edit polished summary",
                 },
             ]
-
-            # Create tab contents
+                
+            # Populate tab contents
             for i, tab in enumerate(tabs):
                 with tab:
                     tab_info = tab_contents[i]
+                    st.session_state.active_tab = tab_info["key"]
+                    
                     st.text_area(
                         tab_info["title"],
-                        value=st.session_state.edit_buffers[tab_info["key"]],
-                        key=f"{tab_info['key']}_area",
-                        disabled=not st.session_state.edit_mode[tab_info["key"]],
-                        on_change=lambda k=tab_info[
-                            "key"
-                        ]: st.session_state.edit_buffers.update(
+                        value=st.session_state.edit_buffers.get(st.session_state.active_tab, ""),
+                        key=f"{st.session_state.active_tab}_area",
+                        disabled=not st.session_state.edit_mode[st.session_state.active_tab],
+                        on_change=lambda k=st.session_state.active_tab: st.session_state.edit_buffers.update(
                             {k: st.session_state[f"{k}_area"]}
                         ),
                     )
+
+                    # Edit and save buttons
                     tab_col1, tab_col2 = st.columns([1, 1])
                     with tab_col1:
-                        if st.button(f"✏️ Edit", key=f"edit_{tab_info['key']}"):
-                            st.session_state.edit_mode[tab_info["key"]] = True
+                        if st.button(f"✏️ Edit", key=f"edit_{tab_info['key']}", 
+                        disabled=st.session_state.edit_mode[st.session_state.active_tab]):
+                            st.session_state.edit_mode[st.session_state.active_tab] = True
                     with tab_col2:
-                        if st.session_state.edit_mode[tab_info["key"]] and st.button(
-                            "💾 Save", key=f"save_{tab_info['key']}"
-                        ):
-                            st.session_state.edit_mode[tab_info["key"]] = False
+                        if st.session_state.edit_mode[st.session_state.active_tab] and st.button(
+                            "💾 Save", key=f"save_{tab_info['key']}"):
+                            st.session_state.edit_mode[st.session_state.active_tab] = False
                             setattr(
                                 tldr_ui.tldr,
                                 tab_info["key"],
@@ -697,70 +695,43 @@ async def run_tldr_streamlit():
                 help="Save summaries, research, and integrate TLDR text.",
                 divider=True,
             )
-            # Create three columns for buttons
-            output_col1, output_col2, output_col3 = st.columns(3)
+            
 
+            output_col1, output_col2 = st.columns(2)
             with output_col1:
-                # Determine which tab is active and get its content
-                active_tab = st.session_state.get("active_tab", "executive_summary")
-                tab_content = st.session_state.edit_buffers.get(active_tab, None)
-
                 if st.button(
-                    "📋 Copy to Clipboard",
+                    f"📋 Copy Current Tab to Clipboard",
                     key="copy_btn_hidden",
-                    disabled=tab_content is None,
-                    help="Copy current tab's content to clipboard",
+                    help="Copy current tab's content to clipboard"
                 ):
-                    st.session_state.clipboard = tab_content
-                    st.toast("Copied to clipboard!")
+                    pyperclip.copy(st.session_state.edit_buffers.get(st.session_state.active_tab, ""))
+                    st.toast(f"{tab_info['key'].replace('_', ' ').title()} copied to clipboard!")
 
             with output_col2:
                 if st.button(
-                    "💾 Save Executive Summary as PDF",
-                    key="executive_pdf_btn_hidden",
-                    disabled=st.session_state.executive_summary is None,
-                    help="Save summary as PDF",
+                    f"💾 Generate PDF for Current Tab",
+                    key="pdf_btn_hidden",
+                    help="Save current tab's content as PDF",
                 ):
                     with st.spinner("Generating PDF..."):
                         await tldr_ui.execute_session_process(
                             log_message="Saving to PDF...",
                             function=tldr_ui.tldr.save_to_pdf,
-                            polished=False,
+                            content=st.session_state.edit_buffers.get(st.session_state.active_tab, ""),
                         )
-                    st.toast("PDF saved!")
-
-            with output_col3:
-                if st.button(
-                    "💾 Save Polished Summary as PDF",
-                    key="polished_pdf_btn_hidden",
-                    disabled=st.session_state.polished_summary is None,
-                    help="Save summary as PDF",
-                ):
-                    with st.spinner("Generating PDF..."):
-                        await tldr_ui.execute_session_process(
-                            log_message="Saving to PDF...",
-                            function=tldr_ui.tldr.save_to_pdf,
-                            polished=True,
-                        )
-                    st.toast("PDF saved!")
+                        st.toast(f"{tab_info['key'].replace('_', ' ').title()} PDF created!")
 
         elif st.session_state.summarized is True:
             st.text("Use provided tools to view TLDR-generated text.")
 
     # Status and Output section
     with st.expander("🔍 Processing Logs", expanded=False):
-        # Initialize session state for logs if needed
-        if "output_lines" not in st.session_state:
-            st.session_state.output_lines = []
-
         # Clear logs button
         if st.button("Clear Logs"):
             st.session_state.output_lines = []
 
-        # Try to get logs from different possible sources
-        new_logs = []
-
         # Method 1: Check for StreamlitLogHandler if it exists
+        new_logs = []
         if (
             hasattr(tldr_ui.tldr, "streamlit_handler")
             and tldr_ui.tldr.streamlit_handler is not None
@@ -843,18 +814,5 @@ async def run_tldr_streamlit():
         )
 
 
-def start_tldr_ui():
-    """Command-line entry point to run the tldr streamlit UI."""
-    from pathlib import Path
-
-    # Get the path to the current file
-    streamlit_file = Path(__file__).resolve()
-
-    # Run streamlit with the current file
-    import subprocess
-
-    subprocess.run(["streamlit", "run", str(streamlit_file)], check=True)
-
-
 if __name__ == "__main__":
-    start_tldr_ui()
+    asyncio.run(run_tldr_streamlit())

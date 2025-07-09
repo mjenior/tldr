@@ -20,15 +20,14 @@ class TldrEngine(CompletionHandler):
     This class is responsible for processing input files, fetching additional context,
     optionally performing Retrieval Augmented Generation (RAG) using local embeddings,
     refining user queries, and generating summaries based on the provided information.
-    It manages interactions with a completion API and handles the output of
-    intermediate and final results.
+    It manages interactions with a completion API and handles the output.
 
     Attributes:
         verbose (bool): If True, enables detailed logging.
         api_key (str, optional): The API key for the completion service.
         context_size (str): Specifies the context window size for the model (e.g., "small", "medium", "large").
         tag (str): A tag for the current run, used for naming output directories.
-        output_directory (str): The path to the directory where intermediate and final files are saved.
+        output_directory (str): The path to the directory where  files are saved.
         content (list[str]): A list of strings, where each string is the content of an input file.
         query (str): The user's query to be addressed by the summary.
         added_context (str): Formatted additional context to be used in prompts.
@@ -279,17 +278,14 @@ class TldrEngine(CompletionHandler):
 
         self.logger.info(f"Finished polishing response")
 
-    async def save_to_pdf(self, smart_title=True, polished=True):
+    async def save_to_pdf(self, content, smart_title=True):
         """Saves polished summary string to formatted PDF document."""
         self.logger.info("Saving final summary to PDF...")
-        summary_text = (
-            self.polished_summary if polished is True else self.executive_summary
-        )
 
         # Generate title
         if smart_title is True:
             doc_title = await self.perform_api_call(
-                prompt=summary_text,
+                prompt=content,
                 prompt_type="title_instructions",
                 context_size="low",
                 web_search=False,
@@ -297,7 +293,7 @@ class TldrEngine(CompletionHandler):
 
         # Save to PDF
         pdf_path = self.generate_tldr_pdf(
-            summary_text=summary_text,
+            summary_text=content,
             doc_title=doc_title["response"],
         )
         self.logger.info(f"Final summary saved to {pdf_path}")

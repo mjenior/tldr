@@ -141,11 +141,8 @@ class LogHandler(FileHandler):
         file_handler = logging.FileHandler(log_file)
         file_handler.setFormatter(formatter)
         self.logger.addHandler(file_handler)
-
         self.logger.info("Logging system initialized")
-        self.logger.info(
-            f"Intermediate files being written to: {self.output_directory}"
-        )
+        self.logger.info(f"Output directory: {self.output_directory}")
 
     def update_spending(self):
         """Calculates approximate cost (USD) of LLM tokens generated to a given decimal place"""

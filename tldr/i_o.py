@@ -343,7 +343,8 @@ class FileHandler:
         """Saves polished summary string to formatted PDF document."""
 
         # Create file path with linted name
-        file_path = self._create_filename(doc_title)
+        file_name = self._create_filename(doc_title)
+        file_path = os.path.join(self.output_directory, file_name)
 
         # Format content
         styles = getSampleStyleSheet()

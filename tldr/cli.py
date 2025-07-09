@@ -72,7 +72,10 @@ async def pipeline():
 
     # Optional: Save final context
     if args.pdf is True and args.testing is False:
-        await tldr.save_to_pdf(polished=args.polish)
+        if args.polish is True:
+            await tldr.save_to_pdf(content=tldr.polished_summary)
+        else:
+            await tldr.save_to_pdf(content=tldr.executive_summary)
 
     # End session
     await tldr.finish_session()
